@@ -1,0 +1,88 @@
+﻿@model IEnumerable<ComfySocks.Models.InventoryModel.Item>
+
+@{
+    ViewBag.Title = null;
+}
+<div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.StoreType.ID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StoreType.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Unit.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Code)
+                </th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.StoreType.ID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.StoreType.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Unit.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Code)
+                </th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreType.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreType.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Unit.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Description)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Code)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+<script>
+    $(document).ready(function () {
+        $('#dtaTable').DataTable({
+            "paging": true,
+            "ordering": true,
+            "info": true
+        });
+    });</script>

@@ -1,0 +1,27 @@
+﻿@model ComfySocks.Models.InventoryModel.ItemType
+
+@{
+    ViewBag.Title = null;
+}
+
+
+<div class="box box-body box-primary">
+    <div>
+        <h4>ItemType</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Discription)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Discription)
+            </dd>
+
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</div>

@@ -1,0 +1,149 @@
+﻿@using Microsoft.AspNet.Identity
+@*
+    This partial controls the left menu of the AdminLTE dashboard and is called automatically by _AdminLteLayout
+       This is where you can add, modify, or remove navigation options in your app
+       TODO: This preserves the links as-is for the demo, which lead to broken pages!
+       It's up to you to make sure these links either get deleted or lead somewhere REAL!
+*@
+
+@{
+    Layout = null;
+}
+
+<aside class="main-sidebar">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar">
+        <!-- Sidebar user panel -->
+        <div class="user-panel">
+            <div class="pull-left image">
+                @*<img src="/Content/AdminLTE/img/user2-160x160.jpg" class="img-circle" alt="User Image" />*@
+
+            </div>
+        </div>
+
+        <!-- sidebar menu: : style can be found in sidebar.less -->
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="treeview-menu">
+                <a href="~/Home/Index">
+                    <i class="fa fa-home"></i> <span>Home</span> <i class="fa fa-angle-left pull-right"></i>
+                </a>
+            </li>
+            @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
+        {*@
+            <li class="active">
+                <a href="~/Home/Index">
+                    <i class="fa fa-home"></i> <span>Home</span>
+                </a>
+            </li>
+
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa  fa-dollar"></i>
+                    <span>Purchase</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/PurchaseRequest/Index"><i class="fa fa-circle-o"></i> Purchase Request</a></li>
+                    <li><a href="~/PurchaseEntry/Index"><i class="fa fa-circle-o"></i> New Purchase Entry</a></li>
+                    <li><a href="~/Purchase/Index"><i class="fa fa-circle-o"></i>Purchase History</a></li>
+                    <li><a href="~/Suppliers/Index"><i class="fa fa-circle-o"></i> Suppliers</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa  fa-send-o"></i>
+                    <span>Store Request</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/OrderEntrys/Index"><i class="fa fa-circle-o"></i> New Request</a></li>
+                    <li><a href="~/Orders/Index"><i class="fa fa-circle-o"></i> Request History</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa  fa-bug"></i>
+                    <span>Order</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/OrderEntrys/Index"><i class="fa fa-circle-o"></i> New Order</a></li>
+                    <li><a href="~/Orders/Index"><i class="fa fa-circle-o"></i> Order History</a></li>
+                    <li><a href="~/Customers/Index"><i class="fa fa-circle-o"></i> Customers</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-list-alt"></i>
+                    <span>Inventory</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/StoreTypes/Index"><i class="fa fa-circle-o"></i>StoreType</a></li>
+                    <li><a href="~/Items/Index"><i class="fa fa-circle-o"></i> Items</a></li>
+                    <li><a href="~/ItemTypes/Index"><i class="fa fa-circle-o"></i>ItemType</a></li>
+                    <li><a href="~/Units/Index"><i class="fa fa-circle-o"></i> Unit</a></li>
+                </ul>
+            </li>
+            //}
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-money"></i> <span>Sales</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/SalesEntrys/Index"><i class="fa fa-circle-o"></i> New Sales</a></li>
+                    <li><a href="~/Saless/Index"><i class="fa fa-circle-o"></i> Sales History</a></li>
+                    <li><a href="~/SalesReturns/Index"><i class="fa fa-circle-o"></i> Sales Return</a></li>
+                </ul>
+            </li>
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-shopping-basket"></i>
+                    <span>Stock</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/Product/"><i class="fa fa-circle-o"></i>ProductMateril</a></li>
+                    <li><a href="~/Office/Index"><i class="fa fa-circle-o"></i> OfficeMateril</a></li>
+                    <li><a href="~/Machinery/Index"><i class="fa fa-circle-o"></i>MachineryMateril</a></li>
+                    <li><a href="~/RowStocks/Index"><i class="fa fa-circle-o"></i> RowMateril</a></li>
+                </ul>
+            </li>
+            @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
+        {*@
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-edit"></i> <span>Reports</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <li><a href="~/Reports/Stocks"><i class="fa fa-circle-o"></i> Stocks </a></li>
+                    <li><a href="~/Reports/DailySales"><i class="fa fa-circle-o"></i> Daily Sales</a></li>
+                    <li><a href="~/Reports/MonthlySalesByDate"><i class="fa fa-circle-o"></i> Monthly Sales</a></li>
+                    <li><a href="~/Reports/YearlySalesByMonth"><i class="fa fa-circle-o"></i> Yearly Sales</a></li>
+                    <li><a href="~/Reports/Purchase"><i class="fa fa-circle-o"></i>Purchase Report</a></li>
+                    <!--  <li><a href="~/Reports/ProfitAndLoss"><i class="fa fa-circle-o"></i> ProfitAndLoss</a></li> -->
+                </ul>
+            </li>
+            //}
+
+            @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
+        {*@
+            <li class="treeview">
+                <a href="#">
+                    <i class="fa fa-users"></i>
+                    <span>User Management</span>
+                    <i class="fa fa-angle-left pull-right"></i>
+                </a>
+                <ul class="treeview-menu">
+                    <!--  <li><a href="~/RolesAdmin/Index"><i class="fa fa-circle-o"></i> Roles</a></li> -->
+                    <li><a href="~/UsersAdmin/Index"><i class="fa fa-circle-o"></i> Users</a></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+    <!-- /.sidebar -->
+</aside>
+
