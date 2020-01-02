@@ -1,0 +1,7 @@
+﻿==========================ComfySocks.DAL.MyContext==============================
+Enable-Migrations -ContextTypeName ComfySocks.DAL.MyContext -MigrationsDirectory Migrations\ComfyMigation
+Add-Migration -ConfigurationTypeName ComfySocks.Migrations.ComfyMigation.Configuration "InitialModel"
+Update-database -ConfigurationTypeName ComfySocks.Migrations.ComfyMigation.Configuration 
+
+=========================ComfySocks.Models.ApplicationDbContext=================
+Enable-Migrations -ContextTypeName ComfySocks.Models.ApplicationDbContext

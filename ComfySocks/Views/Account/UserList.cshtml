@@ -1,0 +1,71 @@
+﻿
+<div class="box box-body box-primary">
+    <div class="row page-titles">
+        <div class="col-sm-5 col-8 align-self-center">
+        </div>
+        <div class="col-sm-6  align-self-center text-danger">
+            <h5 class="text-danger">@ViewBag.errorMessage</h5>
+            <h5 class="text-success">@ViewBag.succsessMessage</h5>
+        </div>
+        <div class="col-sm-1  align-self-center ">
+            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+            {
+                <a href="~/Account/Register" class="btn btn-add">New  <span class="glyphicon glyphicon-tag"></span></a>
+            }
+            else
+            {
+                <a href="~/Account/Register" class="btn btn-add disabled">New  <span class="glyphicon glyphicon-tag"></span></a>
+            }
+        </div>
+
+    </div>
+    
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Full Name</td>
+                    <td>User Name</td>
+                    <td>Status</td>
+                </tr>
+            </thead>
+            @foreach (ComfySocks.Models.ApplicationUser users in ViewBag.users)
+            {
+                <tr>
+                    <td>@users.FullName</td>
+                    <td>@users.UserName</td>
+
+                    <td>
+                        @{
+
+                            if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                            {
+                                if (users.IsActive)
+                                {
+                                    @Html.ActionLink("Block", "Block", new { id = users.Id });
+                                }
+
+                                else
+                                {
+                                    @Html.ActionLink("Activate", "Activate", new { id = users.Id });
+                                }
+                            }
+                            else
+                            {
+                                if (users.IsActive)
+                                {
+                                    @Html.ActionLink("Block", "Block", new { id = users.Id }, new { @class = "btn disabled " });
+                                }
+
+                                else
+                                {
+                                    @Html.ActionLink("Activate", "Activate", new { id = users.Id }, new { @class = "btn disabled " });
+                                }
+                            }
+                        }
+                    </td>
+
+                </tr>
+            }
+        </table>
+
+</div>

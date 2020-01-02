@@ -1,0 +1,48 @@
+﻿@*
+    This partial controls the top menu of the AdminLTE Template, being called automatically by _AdminLteLayout
+       TODO: All of the content in here is stand-in that must be replaced by the real behavior of your app
+*@
+
+@{
+    ViewBag.Layout = null;
+}
+
+<header class="main-header">
+    <!-- Logo -->
+    <a href="~/Home/Index" class="logo"><b>VTS</b>Inventory</a>
+    <!-- Header Navbar: style can be found in header.less -->
+    <nav class="navbar navbar-static-top" role="navigation">
+        <!-- Sidebar toggle button-->
+        <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+            <span class="sr-only">Toggle navigation</span>
+        </a>
+        <!-- Navbar Right Menu -->
+        <div class="navbar-collapse collapse">
+
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-gears">&nbsp;Setting</i>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="~/StoreTypes/Index"><i class="fa fa-circle-o"></i>Stock Type</a></li>
+                            <li><a href="~/ItemTypes/Index"><i class="fa fa-circle-o"></i>ItemType</a></li>
+                            <li><a href="~/Units/Index"><i class="fa fa-circle-o"></i>Unit</a></li>
+                            <li><a href="~/Stores/Index"><i class="fa fa-shopping-cart"> Store</i></a></li>
+                            <li><a href="~/Units/Index" class="glyphicon glyphicon-stats"> Sales</a></li>
+
+                        </ul>
+                    </li>
+                </ul>
+                @Html.Partial("_LoginPartial")
+
+            </div><!-- /.navbar-custom-menu -->
+
+
+
+        </div><!-- /.container-fluid -->
+
+    </nav>
+</header>

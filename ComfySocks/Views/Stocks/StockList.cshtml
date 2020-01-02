@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ComfySocks.Models.InventoryModel.StockReferance>
+
+@{
+    ViewBag.Title = "Stock Information List";
+}
+
+<div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Supplier)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Invoice)
+                </th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Supplier)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Invoice)
+                </th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Supplier.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Invoice)
+            </td>
+            <td><a class="btn-sm btn btn-info" href="~/Stocks/StockDetails?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a></td>
+
+        </tr>
+        }
+
+    </table>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>

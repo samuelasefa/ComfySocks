@@ -1,0 +1,166 @@
+﻿@model ComfySocks.Models.Request.StoreRequestInfo
+
+
+@if (ViewBag.errorList != null)
+{
+    @*<div class="danger">
+        <table>
+            <thead>
+                <tr>
+                    <td>Item </td>
+                    <td>Selected Quantity</td>
+                    <td>Error Detail</td>
+                </tr>
+            </thead>
+
+            @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
+            {
+                <tr>
+                    <td>@error.StoreOrder.Item</td>
+                    <td>@error.StoreOrder.Quantity</td>
+                    <td>@error.Error</td>
+
+                </tr>
+            }
+        </table>
+    </div>*@
+}
+<div id="printable">
+    <div>
+        @*<img src='~/Images/print logo.jpg' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />*@
+    </div>
+
+
+    <div class="col-sm-8 col-sm-offset-2 panel" style="margin-right:40px">
+        <table class="table">
+
+            <tr>
+                <td>
+                    Requested By   @Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
+                </td>
+                <td>
+                    Date  @Html.DisplayFor(modelItem => Model.Date)
+                </td>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
+                {
+                    if (Model.Status == "Wating")
+                    {
+                        <td><a href="~/Request/OrderAproved?id=@Model.ID">Aprove<span class="glyphicon glyphicon-ok"></span></a></td>
+
+                    }
+                }
+                else
+                {
+                    if (Model.Status == "Submmited")
+                    {
+                        <td><a href="~/Request/OrderAproved?id=@Model.ID" class="btn disabled"> Aprove<span class="glyphicon glyphicon-ok"></span></a></td>
+
+                    }
+                }
+
+            </tr>
+            <tr>
+                <td>
+                    Requsted By  @Html.DisplayFor(modelItem => Model.RequestedBy)
+                </td>
+                <td>
+                    Aproved By  @Html.DisplayFor(modelItem => Model.ApprovedBy)
+                </td>
+                @if (Model.Status == "Submmited")
+                {
+                    <td><a href="~/Request/OrderReject?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a></td>
+                }
+            </tr>
+            <tr>
+                <td>
+                    SR No#  @Html.DisplayFor(modelItem => Model.StoreRequestNumber)
+                </td>
+                <td>
+                    Request Status  @Html.DisplayFor(modelItem => Model.Status)
+                </td>
+                @if (Model.Status == "Submmited")
+                {
+                    <td><a href="~/Request/OrderDeleat?id=@Model.ID">Delete <span class="glyphicon glyphicon-floppy-remove"></span></a></td>
+                }
+                else
+                {
+                    <td>@Model.Status</td>
+                }
+            </tr>
+            <tr>
+                <td>
+                    From @Html.DisplayFor(modelItem => Model.Store.Name)
+                </td>
+                <td>
+                    To @Html.DisplayFor(modelItem => Model.Store.Name)
+                </td>
+
+            </tr>
+        </table>
+        <table class="table well">
+            <thead>
+                <tr>
+                    <td>Item Description</td>
+                    <td>Item Code</td>
+                    <td>Unit</td>
+                    <td>Quantity</td>
+                    <td>Remark</td>
+                </tr>
+            </thead>
+            @foreach (ComfySocks.Models.Request.StoreRequest storeRequest in Model.StoreRequest)
+            {
+
+                <tr>
+                    <td>
+                        @storeRequest.Item.Name + @storeRequest.Item.ItemType.Name
+                    </td>
+                    <td>@storeRequest.Item.Code</td>
+                    <td>@storeRequest.Item.Unit.Name</td>
+                    <td>
+                        @storeRequest.Quantity
+                    </td>
+
+                    <td>
+                        @storeRequest.Remark
+                    </td>
+                </tr>
+
+            }
+        </table>
+        <div id="footer" class=" col-sm-8 col-sm-offset-2">
+
+            <h6 style="margin-left:50px">Requested by    @Model.ApplicationUser.FullName</h6>
+            <h6 style="margin-left:50px">Approved by    @Model.ApprovedBy</h6>
+            <h6 style="margin-left:50px">Dispatched  Date _________________________</h6>
+            <h6 style="margin-left:50px">Requested  by _________________________</h6>
+            <h6 style="margin-left:50px">Signature _________________________</h6>
+            <br />
+
+            <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
+        </div>
+    </div>
+ 
+</div>
+<script>
+
+    function Print() {
+
+        var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+        var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
+
+        var footstr = "</body><html>";
+
+        var newstr = document.getElementById('printable').innerHTML;
+        var oldstr = document.body.innerHTML;
+        document.body.innerHTML = headstr + newstr + footstr;
+        window.print();
+
+        document.body.innerHTML = oldstr;
+
+
+        return false;
+    }
+
+
+</script>
+

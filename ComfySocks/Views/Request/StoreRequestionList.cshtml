@@ -1,0 +1,67 @@
+﻿@model IEnumerable<ComfySocks.Models.Request.StoreRequestInfo>
+
+@{
+    ViewBag.Title = "Store Requestion List";
+}
+
+<div class="box box-body box-primary">
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Remark</th>
+                <th>SR.No</th>
+                <th>Requested By</th>
+                <th>Approved By</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Date</th>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Remark</th>
+                <th>SR.No</th>
+                <th>Requested By</th>
+                <th>Approved By</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+            @foreach (ComfySocks.Models.Request.StoreRequest storeRequest in item.StoreRequest)
+            {
+                <td>@storeRequest.Item.Name @storeRequest.Item.ItemType.Name</td>
+                <td>@storeRequest.Quantity</td>
+                <td>@storeRequest.Remark</td>
+            }
+            <td>@Html.DisplayFor(modelItem => item.StoreRequestNumber)</td>
+            <td>@Html.DisplayFor(modelItem => item.RequestedBy)</td>
+            <td>@Html.DisplayFor(modelItem => item.ApprovedBy)</td>
+            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Detail", "StoreRequestDetial", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })    
+            </td>
+
+
+
+        </tr>
+        }
+    </table>
+    
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>

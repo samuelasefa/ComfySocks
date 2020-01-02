@@ -1,0 +1,74 @@
+﻿@model ComfySocks.Models.Items.Item
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<div class="box box-body box-primary">
+    <div>
+        <h4>Item</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ID)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ID)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ApplicationUser.FullName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ApplicationUser.FullName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ItemType.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ItemType.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.StoreType.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.StoreType.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Unit.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Unit.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Code)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Code)
+            </dd>
+
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+
+</div>
