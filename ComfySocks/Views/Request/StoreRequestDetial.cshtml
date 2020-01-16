@@ -4,100 +4,79 @@
 @if (ViewBag.errorList != null)
 {
     @*<div class="danger">
-        <table>
-            <thead>
-                <tr>
-                    <td>Item </td>
-                    <td>Selected Quantity</td>
-                    <td>Error Detail</td>
-                </tr>
-            </thead>
+            <table>
+                <thead>
+                    <tr>
+                        <td>Item </td>
+                        <td>Selected Quantity</td>
+                        <td>Error Detail</td>
+                    </tr>
+                </thead>
 
-            @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
-            {
-                <tr>
-                    <td>@error.StoreOrder.Item</td>
-                    <td>@error.StoreOrder.Quantity</td>
-                    <td>@error.Error</td>
+                @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
+                {
+                    <tr>
+                        <td>@error.StoreOrder.Item</td>
+                        <td>@error.StoreOrder.Quantity</td>
+                        <td>@error.Error</td>
 
-                </tr>
-            }
-        </table>
-    </div>*@
+                    </tr>
+                }
+            </table>
+        </div>*@
 }
-<div id="printable">
-    <div>
-        @*<img src='~/Images/print logo.jpg' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />*@
+
+<div class="row">
+    <div class="col-md-10">
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        {
+            <a href="~/Request/NewRequestEntry">New <span class="glyphicon glyphicon-plus"></span></a>
+        }
+        <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
     </div>
+    <div class="col-md-2">
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        {
+         <div class="row">
+             
+          <div class="col-md-6">
+             <a href="~/Request/RequestApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+          </div>
+          <div class="col-md-6" style="float:right">
+              <a href="~/Request/RequestRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+          </div>
+         </div>
+        }
+    </div>
+</div>
+<div class="box box-primary" id="printable">
+    <div style="margin:40px">
+        <div>
+            <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <h3 style="align-content:center;text-decoration:underline">Store Requestion</h3>
+            </div>
+            <div class="col-md-4" style="float:right">
+                Date: @Html.DisplayFor(modelItem => Model.Date)<br />
+                @Html.DisplayFor(modelItem => Model.StoreRequestNumber)
+            </div>
+        </div>
 
-
-    <div class="col-sm-8 col-sm-offset-2 panel" style="margin-right:40px">
         <table class="table">
-
             <tr>
                 <td>
-                    Requested By   @Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
+                    From:@Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
                 </td>
-                <td>
-                    Date  @Html.DisplayFor(modelItem => Model.Date)
-                </td>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
-                {
-                    if (Model.Status == "Wating")
-                    {
-                        <td><a href="~/Request/OrderAproved?id=@Model.ID">Aprove<span class="glyphicon glyphicon-ok"></span></a></td>
-
-                    }
-                }
-                else
-                {
-                    if (Model.Status == "Submmited")
-                    {
-                        <td><a href="~/Request/OrderAproved?id=@Model.ID" class="btn disabled"> Aprove<span class="glyphicon glyphicon-ok"></span></a></td>
-
-                    }
-                }
-
             </tr>
             <tr>
                 <td>
-                    Requsted By  @Html.DisplayFor(modelItem => Model.RequestedBy)
+                    To: @Html.DisplayFor(modelItem => Model.Store.Name)
                 </td>
-                <td>
-                    Aproved By  @Html.DisplayFor(modelItem => Model.ApprovedBy)
-                </td>
-                @if (Model.Status == "Submmited")
-                {
-                    <td><a href="~/Request/OrderReject?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a></td>
-                }
-            </tr>
-            <tr>
-                <td>
-                    SR No#  @Html.DisplayFor(modelItem => Model.StoreRequestNumber)
-                </td>
-                <td>
-                    Request Status  @Html.DisplayFor(modelItem => Model.Status)
-                </td>
-                @if (Model.Status == "Submmited")
-                {
-                    <td><a href="~/Request/OrderDeleat?id=@Model.ID">Delete <span class="glyphicon glyphicon-floppy-remove"></span></a></td>
-                }
-                else
-                {
-                    <td>@Model.Status</td>
-                }
-            </tr>
-            <tr>
-                <td>
-                    From @Html.DisplayFor(modelItem => Model.Store.Name)
-                </td>
-                <td>
-                    To @Html.DisplayFor(modelItem => Model.Store.Name)
-                </td>
-
             </tr>
         </table>
-        <table class="table well">
+        <table class="table well table-bordered">
             <thead>
                 <tr>
                     <td>Item Description</td>
@@ -112,14 +91,13 @@
 
                 <tr>
                     <td>
-                        @storeRequest.Item.Name + @storeRequest.Item.ItemType.Name
+                        @storeRequest.Item.Name @storeRequest.Item.ItemType.Name
                     </td>
                     <td>@storeRequest.Item.Code</td>
                     <td>@storeRequest.Item.Unit.Name</td>
                     <td>
                         @storeRequest.Quantity
                     </td>
-
                     <td>
                         @storeRequest.Remark
                     </td>
@@ -127,24 +105,33 @@
 
             }
         </table>
-        <div id="footer" class=" col-sm-8 col-sm-offset-2">
-
-            <h6 style="margin-left:50px">Requested by    @Model.ApplicationUser.FullName</h6>
-            <h6 style="margin-left:50px">Approved by    @Model.ApprovedBy</h6>
-            <h6 style="margin-left:50px">Dispatched  Date _________________________</h6>
-            <h6 style="margin-left:50px">Requested  by _________________________</h6>
-            <h6 style="margin-left:50px">Signature _________________________</h6>
+        <div id="footer">
+            <div class="row" style="margin-top:10%">
+                <div class="col-md-8" style="float:left">
+                    Requested by : @Model.ApplicationUser.FullName
+                </div>
+                <div class="col-md-4" style="float:right">
+                    Approved by : @Model.ApprovedBy
+                </div>
+            </div>
             <br />
 
             <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
         </div>
     </div>
- 
+
 </div>
+
 <script>
 
     function Print() {
-
+        var height = document.getElementById("printable").clientHeight;
+        var pages = 1000 - (height % 950);
+        document.getElementById("footer").style.marginTop = pages + "px";
+        //document.getElementById("logo-img").style.width = 100 + "vw";
+        print2()
+    }
+    function print2() {
         var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
         var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
 
@@ -154,10 +141,8 @@
         var oldstr = document.body.innerHTML;
         document.body.innerHTML = headstr + newstr + footstr;
         window.print();
-
         document.body.innerHTML = oldstr;
-
-
+        document.getElementById("footer").style.marginTop = 0 + "px";
         return false;
     }
 

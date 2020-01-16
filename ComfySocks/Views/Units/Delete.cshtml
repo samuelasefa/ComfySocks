@@ -24,7 +24,6 @@
             <dd>
                 @Html.DisplayFor(model => model.Name)
             </dd>
-
         </dl>
 
         @using (Html.BeginForm())
@@ -33,9 +32,25 @@
 
             <div class="form-actions no-color">
                 <input type="submit" value="Delete" class="btn btn-default" /> |
-                @Html.ActionLink("Back to List", "Index")
+                @Html.ActionLink("Back to List", "UnitList")
             </div>
         }
     </div>
 
 </div>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                    sweetAlert("Removed...", "@ViewBag.infoMessage", "info");
+                    return false;
+                }
+    </script>
+
+}

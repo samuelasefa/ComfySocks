@@ -13,6 +13,7 @@ namespace ComfySocks.Models.InventoryModel
         public int ID { get; set; }
 
         public virtual Item Item { get; set; }
+
         public float Avaliable { get; set; }
         public float RecentlyReduced { get; set; }
     }

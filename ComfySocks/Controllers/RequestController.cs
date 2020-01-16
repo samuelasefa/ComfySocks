@@ -5,13 +5,14 @@ using ComfySocks.Models.Request;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
-    public class RequestController : Controller
+    public class RequestController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Request
@@ -58,7 +59,7 @@ namespace ComfySocks.Controllers
                         {
                             sr.StoreRequest.Quantity += storeRequest.Quantity;
                             found = true;
-                            ViewBag.succsessMessage = "Added";
+                            ViewBag.succsessMessage = "Item is Added Congrates!!!";
                             break;
                         }
                         else if (AvalableQuantity(sr.StoreRequest.ItemID) == -2)
@@ -145,9 +146,7 @@ namespace ComfySocks.Controllers
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
             List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
-
             if (TempData[User.Identity.GetUserId() + "selectedStoreRequests"] != null)
             {
                 selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
@@ -164,13 +163,13 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Super Admin, Admin, Store Manager,")]
+        [Authorize(Roles ="Super Admin, Admin, Production,")]
         public ActionResult NewStoreRequsteInfo(StoreRequestInfo storeRequestInfo)
         {   
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            ViewBag.StoreID = new SelectList(db.Stores, "ID", "NAME");
+            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
 
             if (TempData[User.Identity.GetUserId() + "selectedStoreRequests"] != null)
@@ -186,7 +185,7 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from sr in db.StoreRequestInfo orderby sr.ID descending select sr.ID).First();
-                storeRequestInfo.StoreRequestNumber = "SR.No" + (LastId + 1);
+                storeRequestInfo.StoreRequestNumber = "SR.No:-" + (LastId + 1);
             }
             catch
             {
@@ -245,6 +244,106 @@ namespace ComfySocks.Controllers
             return View(storeRequestInfo);
         }
 
+   
+        //Request is approved 
+
+        public ActionResult RequestApproved(int? id)
+        {
+            if (id == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected!. Try again";
+                return RedirectToAction("StoreRequestList");
+            }
+            StoreRequestInfo storeRequestInfo = db.StoreRequestInfo.Find(id);
+            if (storeRequestInfo == null) {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Reterive Store Request Information";
+                return RedirectToAction("StoreRequestList");
+            }
+            List<StoreRequstVMForError> ErrorList = new List<StoreRequstVMForError>();
+            bool pass = true;
+            foreach (StoreRequest storeRequest in storeRequestInfo.StoreRequest)
+            {
+                Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == storeRequestInfo.StoreID select s).First();
+                if (stock == null)
+                {
+                    StoreRequstVMForError storeRequstVMForError = new StoreRequstVMForError()
+                    {
+                        StoreRequest = storeRequest,
+                        Error = "Unable to load store Information Posible reason is no information registed about the item"
+                    }; pass = false;
+                    ViewBag.errorMessage = "Some error found. see error detail for more information";
+                    ErrorList.Add(storeRequstVMForError);
+                }
+                else if(stock.Total < storeRequest.Quantity)
+                {
+                    StoreRequstVMForError storeRequstVMError = new StoreRequstVMForError()
+                    {
+                        StoreRequest = storeRequest,
+                        Error = "The Avaliable stock in "+storeRequestInfo.Store.Name + "store is less than requested Quantity" + stock.Total
+                    };
+                    pass = false;
+                    ViewBag.errorMessage = "Some error found. see error in detail for more information";
+                    ErrorList.Add(storeRequstVMError);
+                }
+            }
+            if (pass)
+            {
+                foreach (StoreRequest storeRequest in storeRequestInfo.StoreRequest)
+                {
+                    Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == storeRequestInfo.StoreID select s).First();
+                    stock.Total -= (float)storeRequest.Quantity;
+                    db.Entry(stock).State = EntityState.Modified;
+                    db.SaveChanges();
+                    AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(storeRequest.ItemID);
+                    Item i = db.Items.Find(avaliableOnStock.ID);
+                    float deference = avaliableOnStock.RecentlyReduced - storeRequest.Quantity;
+
+                    if (deference > 0)
+                    {
+                        avaliableOnStock.RecentlyReduced -= (float)storeRequest.Quantity;
+                    }
+                    else {
+                        avaliableOnStock.RecentlyReduced = 0;
+                        avaliableOnStock.Avaliable += deference;
+                        
+                    }
+                    db.Entry(avaliableOnStock).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                storeRequestInfo.Status = "Approved";
+                storeRequestInfo.ApprovedBy = User.Identity.GetUserName();
+                db.Entry(storeRequestInfo).State = EntityState.Modified;
+                db.SaveChanges();
+                ViewBag.succsessMessage = "Store Request is approved!!.";
+            }
+
+            else
+            {
+                ViewBag.erroList = ErrorList;
+            }
+            return RedirectToAction("StoreRequestionList");
+        }
+
+        //Request is Rejected
+
+        public ActionResult RequestRejected(int? id)
+        {
+            if (id == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected!. Try again";
+                return RedirectToAction("StoreRequestList");
+            }
+            StoreRequestInfo storeRequestInfo = db.StoreRequestInfo.Find(id);
+            if (storeRequestInfo == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Reterive Store Request Information";
+                return RedirectToAction("StoreRequestList");
+            }
+            return View();
+        }
+
+
+        //to check avaliable on stock 
         float AvalableQuantity(int item)
         {
             AvaliableOnStock avalable = db.AvaliableOnStocks.Find(item);
@@ -254,6 +353,7 @@ namespace ComfySocks.Controllers
             }
             return -2;
         }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

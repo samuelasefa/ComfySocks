@@ -1,0 +1,34 @@
+﻿@model ComfySocks.Models.ProductStock.ProductCode
+
+@{
+    ViewBag.Title = "Details";
+}
+<div class="box box-body box-info">
+
+    <div>
+        <h4>ProductCode</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.Code)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Code)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProductSize)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProductSize)
+            </dd>
+
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</div>

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
+using ComfySocks.Repository;
 using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
@@ -23,10 +24,10 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var stocks = (from s in db.StockReferances select s).Include(e => e.Stocks).Include(e => e.ApplicationUser);
+            var StockInformation = (from s in db.StockReferances select s).Include(e => e.Stocks).Include(e => e.ApplicationUser);
             ViewBag.center = true;
 
-            return View(stocks.ToList());
+            return View(StockInformation.ToList());
         }
 
         // GET: Stocks/Details/5
@@ -43,7 +44,7 @@ namespace ComfySocks.Controllers
             StockReferance stockinfo = db.StockReferances.Find(id);
             if (stockinfo == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Stock Information. try agin";
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Stock Information. try agin type:'error'";
                 return RedirectToAction("StockList");
             }
             return View(stockinfo);
@@ -65,12 +66,12 @@ namespace ComfySocks.Controllers
                 ViewBag.item = "";
                 ViewBag.supplier = "";
                 if (store.Count() == 0) {
-                    ViewBag.store = "Register Supplier Information";
+                    ViewBag.store = "Register Store Information";
                     ViewBag.RequiredItems = true;
                 }
                 if (supplier.Count() == 0)
                 {
-                    ViewBag.supplier = "Register Store Information";
+                    ViewBag.supplier = "Register Supplier Information";
                     ViewBag.RequiredItems = true;
                 }
                 if (item.Count() == 0)
@@ -122,6 +123,7 @@ namespace ComfySocks.Controllers
                         if (items.Stock.ItemID == stock.ItemID && items.Stock.StoreID == stock.StoreID)
                         {
                             items.Stock.Quantity += stock.Quantity;
+                            ViewBag.infoMessage = "Item is Added";
                             TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
                             ViewBag.SelectedList = SelectedList;
                             return View();
@@ -146,10 +148,9 @@ namespace ComfySocks.Controllers
                 ViewBag.errorMessage = "Unable to extract Item Information";
             }
             else {
-                model.ID = i.ID;
+                model.Code = i.Code;
                 model.ItemDescription = i.Name;
                 model.Type = i.ItemType.Name;
-                model.Code = i.Code;
                 model.Unit = i.Unit.Name;
                 model.Stock = stock;
 
@@ -159,6 +160,7 @@ namespace ComfySocks.Controllers
             ViewBag.SelectedList = SelectedList.ToList();
             return View();
         }
+
         [Authorize(Roles = "Store Manager,Super Admin,Admin,")]
 
         public ActionResult RemoveSelected(int id = 0)
@@ -184,7 +186,6 @@ namespace ComfySocks.Controllers
                             {
                                 TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
                                 ViewBag.SelectedList = SelectedList;
-                                return View("NewPurchaseEntry");
                             }
                             return View("NewPurchaseEntry");
                         }
@@ -201,6 +202,7 @@ namespace ComfySocks.Controllers
             return View("NewPurchaseEntry");
         }
 
+        [Authorize(Roles = "Super Admin, Admin, Store Manager,")]
         public ActionResult NewStockInformation(){
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
@@ -212,11 +214,13 @@ namespace ComfySocks.Controllers
             }
             TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
             ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.InvoiceID = new SelectList(db.Suppliers, "ID", "No");
+
             return View();
         }
 
-        [Authorize(Roles ="Super Admin, Admin, Store Manager,")]
         [HttpPost]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager,")]
         public ActionResult NewStockInformation(StockReferance stockReferances)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -232,7 +236,7 @@ namespace ComfySocks.Controllers
             stock = (List<StockViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
             TempData[User.Identity.GetUserId() + "SelectedList"] = stock;
             ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
-            if (stockReferances.Date > DateTime.Now)
+            if (stockReferances.Date == null || stockReferances.Date > DateTime.Now)
             {
                 ViewBag.errorMessage = "The date you provide is not valid!.";
                 return View(stockReferances);
@@ -243,11 +247,11 @@ namespace ComfySocks.Controllers
                 try
                 {
                     var lastID = (from s in db.StockReferances orderby s.ID orderby s.ID descending select s).First();
-                    stockReferances.StoreNumber = "SH-info-" + (lastID.ID + 1);
+                    stockReferances.StoreNumber = "GR-No-" + (lastID.ID + 1);
                 }
                 catch
                 {
-                    stockReferances.StoreNumber = "SH-info-1";
+                    stockReferances.StoreNumber = "GR-No-1";
                 }
                 db.StockReferances.Add(stockReferances);
                 db.SaveChanges();
@@ -272,18 +276,25 @@ namespace ComfySocks.Controllers
                             db.Entry(S).State = EntityState.Modified;
                             db.SaveChanges();
                             items.Stock.Total += S.Total + items.Stock.Quantity;
+                            //added
+                            items.Stock.ProwTotal += S.ProwTotal + items.Stock.Quantity;
                         }
                         catch
                         {
                             items.Stock.Total += items.Stock.Quantity;
-                        }
+                            //added
+                            items.Stock.ProwTotal += items.Stock.Quantity;
 
+                        }
+                        items.Stock.ProwTotal += items.Stock.Quantity;
+                        items.Stock.Total += items.Stock.Quantity;
                         Item I = db.Items.Find(items.Stock.ItemID);
                         items.Stock.StockReferanceID = stockReferances.ID;
                         db.Stocks.Add(items.Stock);
                         db.SaveChanges();
                         AvaliableOnStock AV = db.AvaliableOnStocks.Find(items.Stock.ItemID);
-                        if (AV == null)
+                        RowMaterialRepositery repositery = db.RowMaterialRepositeries.Find(items.Stock.ItemID);
+                        if (AV == null && repositery == null)
                         {
                             AV = new AvaliableOnStock()
                             {
@@ -291,16 +302,23 @@ namespace ComfySocks.Controllers
                                 Avaliable = items.Stock.Quantity,
 
                             };
+                            //added
+                            repositery = new RowMaterialRepositery()
+                            {
+                                ID = items.Stock.ItemID,
+                                RowMaterialAavliable = items.Stock.Quantity,
+                            };
                             db.AvaliableOnStocks.Add(AV);
+                            //added
+                            db.RowMaterialRepositeries.Add(repositery);
                             db.SaveChanges();
                         }
                         else
                         {
                             AV.Avaliable += items.Stock.Quantity;
+                            repositery.RowMaterialAavliable += items.Stock.Quantity;
                             db.Entry(AV).State = EntityState.Modified;
                             db.SaveChanges();
-
-
                         }
                         insertedStock.Add(items.Stock);
 
@@ -315,7 +333,9 @@ namespace ComfySocks.Controllers
                             Item I = db.Items.Find(item.ItemID);
 
                             AvaliableOnStock AV = db.AvaliableOnStocks.Find(item.ItemID);
+                            RowMaterialRepositery repositery = db.RowMaterialRepositeries.Find(item.ItemID);
                             AV.Avaliable -= items.Stock.Quantity;
+                            repositery.RowMaterialAavliable -= items.Stock.Quantity;
                             db.Entry(AV).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -325,7 +345,7 @@ namespace ComfySocks.Controllers
                         return RedirectToAction("NewPurchaseEntry");
                     }
                 }
-                TempData[User.Identity.GetUserId() + "succsessMessage"] = "Stock information Saved";
+                TempData[User.Identity.GetUserId() + "infoMessage"] = "Stock information Saved";
                 return RedirectToAction("NewPurchaseEntry");
 
             }
@@ -335,6 +355,7 @@ namespace ComfySocks.Controllers
             }
             TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
             ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.InvoiceID = new SelectList(db.Suppliers, "ID", "No");
             return View();
         }
         protected override void Dispose(bool disposing)

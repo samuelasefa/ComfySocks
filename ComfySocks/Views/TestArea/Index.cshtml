@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "Test";
+}
+
+<br />
+<div align="center">
+    @if (ViewBag.Message != null)
+    {
+        <span class="success sweet-alert"> @ViewBag.Message</span>
+    }
+    <br />
+    <div align="right" class="btn btn-default">
+        @using (Html.BeginForm("UploadExcel", "ExcelUpload", FormMethod.Post, new { @enctype = "multipart/form-data" }))
+        {
+            <input type="file" id="fileUpload" class="btn btn-primary" name="FileUpload" /><br />
+            <input type="submit" class="btn btn-primary" name="UploadNewEmployee" id="fileUploadExcel" value="POST" />
+        }
+    </div>
+
+
+</div>
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+<script>
+
+    $('#fileUploadExcel').click(function (e) {
+        if ($('#fileUpload').val() === "") {
+            sweetAlert("File Shouldn't Be Empty!!", "Please select file", "info");
+            //alert("File Shouldn't Be Empty!!");
+            return false;
+        }
+        if ($('#fileUpload').val() !== "") {
+            sweetAlert("Congratulations!!", "You Uploaded A Valid File", "success");
+            return false;
+        }
+    });
+
+</script> 

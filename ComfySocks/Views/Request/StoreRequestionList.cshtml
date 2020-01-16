@@ -5,6 +5,9 @@
 }
 
 <div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "NewRequestEntry")
+    </p>
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead>
             <tr>
@@ -12,9 +15,6 @@
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Remark</th>
-                <th>SR.No</th>
-                <th>Requested By</th>
-                <th>Approved By</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -25,39 +25,27 @@
                 <th>Item</th>
                 <th>Quantity</th>
                 <th>Remark</th>
-                <th>SR.No</th>
-                <th>Requested By</th>
-                <th>Approved By</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
         </tfoot>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Date)</td>
-            @foreach (ComfySocks.Models.Request.StoreRequest storeRequest in item.StoreRequest)
-            {
-                <td>@storeRequest.Item.Name @storeRequest.Item.ItemType.Name</td>
-                <td>@storeRequest.Quantity</td>
-                <td>@storeRequest.Remark</td>
-            }
-            <td>@Html.DisplayFor(modelItem => item.StoreRequestNumber)</td>
-            <td>@Html.DisplayFor(modelItem => item.RequestedBy)</td>
-            <td>@Html.DisplayFor(modelItem => item.ApprovedBy)</td>
-            <td>@Html.DisplayFor(modelItem => item.Status)</td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Detail", "StoreRequestDetial", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })    
-            </td>
-
-
-
-        </tr>
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                @foreach (ComfySocks.Models.Request.StoreRequest storeRequest in item.StoreRequest)
+                {
+                    <td>@storeRequest.Item.Name @storeRequest.Item.ItemType.Name</td>
+                    <td>@storeRequest.Quantity</td>
+                    <td>@storeRequest.Remark</td>
+                }
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @Html.ActionLink("View ", "StoreRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                </td>
+            </tr>
         }
     </table>
-    
 </div>
 
 <script>

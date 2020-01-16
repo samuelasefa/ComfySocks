@@ -30,40 +30,40 @@
             </thead>
             @foreach (ComfySocks.Models.ApplicationUser users in ViewBag.users)
             {
-                <tr>
-                    <td>@users.FullName</td>
-                    <td>@users.UserName</td>
+            <tr>
+                <td>@users.FullName</td>
+                <td>@users.UserName</td>
 
-                    <td>
-                        @{
+                <td>
+                    @{
 
-                            if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                        if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                        {
+                            if (users.IsActive)
                             {
-                                if (users.IsActive)
-                                {
-                                    @Html.ActionLink("Block", "Block", new { id = users.Id });
-                                }
-
-                                else
-                                {
-                                    @Html.ActionLink("Activate", "Activate", new { id = users.Id });
-                                }
+                                @Html.ActionLink("Block", "Block", new { id = users.Id });
                             }
+
                             else
                             {
-                                if (users.IsActive)
-                                {
-                                    @Html.ActionLink("Block", "Block", new { id = users.Id }, new { @class = "btn disabled " });
-                                }
-
-                                else
-                                {
-                                    @Html.ActionLink("Activate", "Activate", new { id = users.Id }, new { @class = "btn disabled " });
-                                }
+                                @Html.ActionLink("Activate", "Activate", new { id = users.Id });
                             }
                         }
-                    </td>
+                        else
+                        {
+                            if (users.IsActive)
+                            {
+                                @Html.ActionLink("Block", "Block", new { id = users.Id }, new { @class = "btn disabled " });
+                            }
 
+                            else
+                            {
+                                @Html.ActionLink("Activate", "Activate", new { id = users.Id }, new { @class = "btn disabled " });
+                            }
+                        }
+                    }
+                </td>
+                 
                 </tr>
             }
         </table>

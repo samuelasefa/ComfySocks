@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
+using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
@@ -26,12 +27,14 @@ namespace ComfySocks.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
+                return RedirectToAction("Index");
             }
             Supplier supplier = db.Suppliers.Find(id);
             if (supplier == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found!!";
+                return RedirectToAction("Index");
             }
             return View(supplier);
         }
@@ -51,9 +54,13 @@ namespace ComfySocks.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Suppliers.Add(supplier);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if ((from s in db.Suppliers where s.ID == supplier.ID || s.No == supplier.No orderby s.ID select s).Count() == 0)
+                {
+                    db.Suppliers.Add(supplier);
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.errorMessage = "Duplicate Supplier or Invoice Number is Found";
             }
 
             return View(supplier);
@@ -64,12 +71,14 @@ namespace ComfySocks.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
+                return RedirectToAction("Index");
             }
             Supplier supplier = db.Suppliers.Find(id);
             if (supplier == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
+                return RedirectToAction("Index");
             }
             return View(supplier);
         }
@@ -83,9 +92,12 @@ namespace ComfySocks.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(supplier).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if ((from s in db.Suppliers where s.ID == supplier.ID || s.No == supplier.No orderby s.ID select s).Count() == 0) {
+                    db.Entry(supplier).State = EntityState.Modified;
+                    db.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+                ViewBag.errorMessage = "Duplicate Update of Supplier and Invoice Number";
             }
             return View(supplier);
         }
@@ -95,12 +107,14 @@ namespace ComfySocks.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
+                return RedirectToAction("Index");
             }
             Supplier supplier = db.Suppliers.Find(id);
             if (supplier == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
+                return RedirectToAction("Index");
             }
             return View(supplier);
         }

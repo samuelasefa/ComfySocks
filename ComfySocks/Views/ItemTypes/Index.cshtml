@@ -6,9 +6,12 @@
 
 
 <div class="box box-body box-primary">
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="">
             <tr>
@@ -18,8 +21,11 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                <th>Action</th>
-            </tr>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <th>Action</th>
+                }
+                </tr>
         </thead>
         <tfoot>
             <tr>
@@ -29,8 +35,11 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                <th>Action</th>
-            </tr>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <th>Action</th>
+                }
+                </tr>
         </tfoot>
 
         @foreach (var item in Model)
@@ -42,12 +51,15 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-            </td>
-        </tr>
+            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+            {
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>
+            }
+            </tr>
         }
 
     </table>

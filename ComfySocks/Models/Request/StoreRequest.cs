@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.Web.Mvc;
 
 namespace ComfySocks.Models.Request
 {
@@ -28,5 +29,12 @@ namespace ComfySocks.Models.Request
         public string Unit { get; set; }
         //referance 
         public virtual StoreRequest StoreRequest { get; set; }
+    }
+
+    public class StoreRequstVMForError
+    {
+        public StoreRequest StoreRequest { get; set; }
+
+        public String   Error { get; set; }
     }
 }

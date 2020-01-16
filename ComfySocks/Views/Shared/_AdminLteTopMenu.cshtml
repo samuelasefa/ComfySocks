@@ -21,20 +21,21 @@
 
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
-                    <li>
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <i class="fa fa-gears">&nbsp;Setting</i>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="~/StoreTypes/Index"><i class="fa fa-circle-o"></i>Stock Type</a></li>
-                            <li><a href="~/ItemTypes/Index"><i class="fa fa-circle-o"></i>ItemType</a></li>
-                            <li><a href="~/Units/Index"><i class="fa fa-circle-o"></i>Unit</a></li>
-                            <li><a href="~/Stores/Index"><i class="fa fa-shopping-cart"> Store</i></a></li>
-                            <li><a href="~/Units/Index" class="glyphicon glyphicon-stats"> Sales</a></li>
-
-                        </ul>
-                    </li>
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    {
+                        <li>
+                            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                                <i class="fa fa-gears">&nbsp;Setting</i>
+                                <span class="caret"></span>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="~/ItemTypes/Index"><i class="fa fa-list"></i>ItemType</a></li>
+                                <li><a href="~/Units/UnitList"><i class="fa fa-balance-scale"></i>Unit</a></li>
+                                <li><a href="~/ProductCodes/Index"><i class="fa fa-code"></i> Code</a></li>
+                                <li><a href="~/Stores/Index"><i class="fa fa-shopping-cart"></i> Store</a></li>
+                            </ul>
+                        </li>
+                    }
                 </ul>
                 @Html.Partial("_LoginPartial")
 

@@ -1,18 +1,21 @@
 ﻿@model IEnumerable<ComfySocks.Models.Items.Item>
 
 @{
-    ViewBag.Title = "List of Item";
+    ViewBag.Title = "Item Information";
 }
 
 <div class="box box-body box-primary">
-    <p>
-        @Html.ActionLink("Create New", "Create")
-    </p>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.StoreType.Name)
+                    @Html.DisplayNameFor(model => model.StoreType)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
@@ -28,16 +31,22 @@
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.AvaliableOnStock.Avaliable)
+                    @Html.DisplayNameFor(model => model.AvaliableOnStocks.Avaliable)
                 </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RowMaterialRepositery.RowMaterialAavliable)
+                </th>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
 
-                <th>Action</th>
+                    <th>Action</th>
+                }
             </tr>
         </thead>
         <tfoot>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.StoreType.Name)
+                    @Html.DisplayNameFor(model => model.StoreType)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
@@ -53,17 +62,22 @@
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.AvaliableOnStock.Avaliable)
+                    @Html.DisplayNameFor(model => model.AvaliableOnStocks.Avaliable)
                 </th>
-
-                <th>Action</th>
+                <th>
+                    @Html.DisplayNameFor(model => model.RowMaterialRepositery.RowMaterialAavliable)
+                </th>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <th>Action</th>
+                }
             </tr>
         </tfoot>
         @foreach (var item in Model)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.StoreType.Name)
+                    @Html.DisplayFor(modelItem => item.StoreType)
                 </td>
 
                 <td>
@@ -79,14 +93,35 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Unit.Name)
                 </td>
-                 <td>
-                    @Html.DisplayFor(modelItem => item.AvaliableOnStock.Avaliable)
+                <td>
+                    @try
+                    {
+                        @item.AvaliableOnStocks.Avaliable;
+                    }
+                    catch
+                    {
+                        <h5>0</h5>
+                    }
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    @try
+                    {
+                        @item.RowMaterialRepositery.RowMaterialAavliable;
+                    }
+                    catch
+                    {
+                        <h5>0</h5>
+                    }
                 </td>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    </td>
+                }
+
             </tr>
         }
 
@@ -95,7 +130,27 @@
 </div>
 
 <script>
-    $(document).ready(function () {
-        $("#dtaTable").DataTable({})
-    })
+    $("#dtaTable").DataTable({
+        //columnDefs: [
+        //    { visible: false, targets = 0 }
+        //],
+        //order: [[1, 'asc']],
+        //    displayLength: 5,
+        //        drawCallback: function ( settings ) {
+        //            var api = this.api();
+        //            var rows = api.rows({ page: 'current' }).nodes();
+        //            var last = null;
+
+        //            api.column(0, { page: 'current' }).data().each(function (group, i) {
+        //                if (last !== group) {
+        //                    $(rows).eq(i).before(
+        //                        '<tr class="bg-primary text-light"><td colspan="5">' + group + '</td></tr> '
+        //                    );
+        //                    last = group;
+        //                }
+        //            });
+
+        //        }
+    });
 </script>
+

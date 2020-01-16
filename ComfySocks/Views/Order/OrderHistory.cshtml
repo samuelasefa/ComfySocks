@@ -1,8 +1,64 @@
-﻿
+﻿@model IEnumerable<ComfySocks.Models.Order.ProductionOrderInfo>
+
 @{
-    ViewBag.Title = "Order History";
+    ViewBag.Title = "Production Order List";
 }
 
 <div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "NewOrderEntry")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                   Customer Name
+                </th>
+                <th>
+                    Order Number
+                </th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.FirstName)
+                </td>
+
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink("Edit", "Delivery", new { id = item.ID }) 
+                    }
+                    @Html.ActionLink("| Details", "OrderDetial", new { id = item.ID })
+
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    {
+                        @Html.ActionLink("| Delete", "Delete", new { id = item.ID })
+
+                    }
+                </td>
+            </tr>
+        }
+
+    </table>
 
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>

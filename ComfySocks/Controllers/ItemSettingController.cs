@@ -17,12 +17,13 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ItemSetting
+        [Authorize(Roles ="Super Admin, Admin, StoreManager")]
         public ActionResult Index()
         { //Succsess and error message goes upon here
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var items = db.Items.Include(i => i.ItemType).Include(i => i.StoreType).Include(i => i.Unit);
+            var items = db.Items.Include(i => i.ItemType).Include(i => i.Unit);
 
             if (items.ToList().Count > 0)
             {
@@ -34,27 +35,55 @@ namespace ComfySocks.Controllers
             }
             return View(items.ToList());
         }
-            
+
         // GET: ItemSetting/Details/5
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Bad Request, Invalide Navigation is detected";
+                return RedirectToAction("Index");
             }
             Item item = db.Items.Find(id);
             if (item == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found!!!";
+                return RedirectToAction("Index");
             }
             return View(item);
         }
 
         // GET: ItemSetting/Create
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
         public ActionResult Create()
         {
+            //error Message display
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
+
+            {
+                //First information to Fill
+                
+                var itemTypes = db.ItemTypes.ToList();
+                var unit = db.Units.ToList();
+                
+                ViewBag.itemTypes = "";
+                ViewBag.unit = "";
+
+                if (itemTypes.Count() == 0)
+                {
+                    ViewBag.itemTypes = "Register ItemType Information Frist";
+                    ViewBag.RequiredItems = true;
+                }
+                if (unit.Count() == 0)
+                {
+                    ViewBag.unit = "Register Unit Information  Frist";
+                    ViewBag.RequiredItems = true;
+                }
+            }
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name");
-            ViewBag.StoreTypeID = new SelectList(db.StoreTypes, "ID", "Name");
             ViewBag.UnitID = new SelectList(db.Units, "ID", "Name");
             return View();
         }
@@ -64,24 +93,29 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Name,StoreTypeID,ItemTypeID,UnitID,Code,ApplicationUserID")] Item item)
+        [Authorize(Roles ="Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        public ActionResult Create(Item item)
         {
-            item.ApplicationUserID = User.Identity.GetUserId();
+           item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                db.Items.Add(item);
-                db.SaveChanges();
-                TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
-                return RedirectToAction("Index");
+                if ((from c in db.Items where c.Code == item.Code select c).Count() == 0) {
+                    db.Items.Add(item);
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
+                    return RedirectToAction("Create");
+                }
+                ViewBag.errorMessage = "Duplicate item Code";
             }
 
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name", item.ItemTypeID);
-            ViewBag.StoreTypeID = new SelectList(db.StoreTypes, "ID", "Name", item.StoreTypeID);
             ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", item.UnitID);
             return View(item);
         }
 
         // GET: ItemSetting/Edit/5
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -94,7 +128,6 @@ namespace ComfySocks.Controllers
                 return HttpNotFound();
             }
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name", item.ItemTypeID);
-            ViewBag.StoreTypeID = new SelectList(db.StoreTypes, "ID", "Name", item.StoreTypeID);
             ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", item.UnitID);
             return View(item);
         }
@@ -104,8 +137,10 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Name,StoreTypeID,ItemTypeID,UnitID,Code,ApplicationUserID")] Item item)
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        public ActionResult Edit(Item item)
         {
+            item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
                 db.Entry(item).State = EntityState.Modified;
@@ -113,12 +148,12 @@ namespace ComfySocks.Controllers
                 return RedirectToAction("Index");
             }
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name", item.ItemTypeID);
-            ViewBag.StoreTypeID = new SelectList(db.StoreTypes, "ID", "Name", item.StoreTypeID);
             ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", item.UnitID);
             return View(item);
         }
 
         // GET: ItemSetting/Delete/5
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -136,6 +171,8 @@ namespace ComfySocks.Controllers
         // POST: ItemSetting/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+
         public ActionResult DeleteConfirmed(int id)
         {
             Item item = db.Items.Find(id);

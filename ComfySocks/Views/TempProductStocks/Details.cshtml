@@ -1,0 +1,50 @@
+﻿@model ComfySocks.Models.ProductStock.TempProductStock
+
+@{
+    ViewBag.Title = "Product Details";
+}
+
+<div class="box box-info box-body">
+    <div>
+        <h4>TempProductStock</h4>
+        <hr />
+        <dl class="dl-horizontal">
+            <dt>
+                @Html.DisplayNameFor(model => model.ApplicationUser.FullName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ApplicationUser.FullName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.ProductName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProductName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.ProductCode.Code)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.ProductCode.Code)
+            </dd>
+
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Unit.Name)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Unit.Name)
+            </dd>
+         
+        </dl>
+    </div>
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>
+</div>

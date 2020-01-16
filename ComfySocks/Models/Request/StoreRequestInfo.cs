@@ -1,4 +1,5 @@
 ﻿using ComfySocks.Models.InventoryModel;
+using ComfySocks.Models.Issue;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -12,15 +13,13 @@ namespace ComfySocks.Models.Request
     public partial class StoreRequestInfo
     {
         public int ID { get; set; }
-        [DataType(DataType.Date)]
+        [Required(ErrorMessage ="Request Date is required")]
+        [DisplayFormat(DataFormatString = "{0:mm-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name = "SR-No.")]
         public string StoreRequestNumber { get; set; }
-
-        [Required]
-        [Display(Name = "Requested By")]
-        public string RequestedBy { get; set; }
+        
         [Required]
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
@@ -29,12 +28,13 @@ namespace ComfySocks.Models.Request
         public string ApplicationUserID { get; set; }
 
         [Display(Name = "To")]
-        public string StoreID { get; set; }
+        public int StoreID { get; set; }
 
         public string Status { get; set; }
         //reference
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Store Store { get; set; }
         public virtual ICollection<StoreRequest> StoreRequest { get; set; }
+        public virtual ICollection<StoreIssueInfo> StoreIssuesInfo { get; set; }
     }
 }

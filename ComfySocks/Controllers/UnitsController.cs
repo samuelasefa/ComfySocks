@@ -17,25 +17,36 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Units
-        public ActionResult Index()
+        [Authorize(Roles="Super Admin, Admin StoreManager")]
+        public ActionResult UnitList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             var units = db.Units;
+            if (units.ToList().Count > 0)
+            {
+                ViewBag.HaveList = true;
+            }
+            else {
+                ViewBag.HaveList = false;
+            }
             return View(units.ToList());
         }
 
         // GET: Units/Details/5
+        [Authorize(Roles = "Super Admin, Admin, StoreManger")]
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalide Navigation is detected";
+                return RedirectToAction("UnitList");
             }
             Unit unit = db.Units.Find(id);
             if (unit == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unit Value is Not Found!!!";
+                return RedirectToAction("UnitList");
             }
             return View(unit);
         }
@@ -43,6 +54,10 @@ namespace ComfySocks.Controllers
         // GET: Units/Create
         public ActionResult Create()
         {
+            //error Message display
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
             return View();
         }
 
@@ -51,15 +66,24 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,Name,ApplicationUserID")] Unit unit)
+        public ActionResult Create([Bind(Include = "ID,Name,ProductUnit,ApplicationUserID")] Unit unit)
         {
+            //error Message display
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
             unit.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                db.Units.Add(unit);
-                db.SaveChanges();
-                TempData[User.Identity.GetUserId() + "succsessMessage"] = "New unit information created";
-                return RedirectToAction("Index");
+                if((from u in db.Units where u.Name == unit.Name orderby u.ID descending select u).Count() == 0) {
+                    db.Units.Add(unit);
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New unit information created";
+                    return RedirectToAction("UnitList");
+
+                }
+                ViewBag.errorMessage = "Duplicated Unit Name";
+                
             }
 
             return View(unit);
@@ -68,15 +92,27 @@ namespace ComfySocks.Controllers
         // GET: Units/Edit/5
         public ActionResult Edit(int? id)
         {
+            //error Message display
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Edit Invalid ID";
+                return RedirectToAction("UnitList");
             }
             Unit unit = db.Units.Find(id);
             if (unit == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unit Is Not Found";
+                return RedirectToAction("UnitList");
             }
+            Item unitItem = (from ut in db.Items where ut.UnitID == id select ut).First();
+            if (unitItem != null)
+            {
+                ViewBag.errorMessage = "You can not Update Unit related Item is found";
+            }
+            //return RedirectToAction("UnitList");
             return View(unit);
         }
 
@@ -85,14 +121,23 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,Name,ApplicationUserID")] Unit unit)
+        public ActionResult Edit([Bind(Include = "ID,Name,ProductUnit,ApplicationUserID")] Unit unit)
         {
+            //error Message display
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+          
             unit.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                db.Entry(unit).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if ((from u in db.Units where unit.Name == u.Name orderby u.ID descending select u).Count() == 0)
+                {
+                    db.Entry(unit).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "infoMessage"] = "Unit is Succsfully Updated";
+                    return RedirectToAction("UnitList");
+                }
+                ViewBag.errorMessage = "Duplicate Unit Update!!";
             }
             return View(unit);
         }
@@ -102,12 +147,20 @@ namespace ComfySocks.Controllers
         {
             if (id == null)
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                TempData[User.Identity.GetUserId()+"errorMessage"] = "Bad Request, Invalid Navigation Is Detected";
+                return RedirectToAction("UnitList");
             }
             Unit unit = db.Units.Find(id);
             if (unit == null)
             {
-                return HttpNotFound();
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unit Value is Not Found";
+                return RedirectToAction("UnitList");
+            }
+            
+            if ((from u in db.Items where u.UnitID == id select u).Count() > 0)
+            {
+                TempData[User.Identity.GetUserId()+"errorMessage"] = "You can't remove Unit INFO related Item is found!!!";
+                return RedirectToAction("UnitList");
             }
             return View(unit);
         }
@@ -120,7 +173,8 @@ namespace ComfySocks.Controllers
             Unit unit = db.Units.Find(id);
             db.Units.Remove(unit);
             db.SaveChanges();
-            return RedirectToAction("Index");
+            TempData[User.Identity.GetUserId() + "infoMessage"] = "Unit Info is successfully Deleted";
+            return RedirectToAction("UnitList");
         }
 
         protected override void Dispose(bool disposing)

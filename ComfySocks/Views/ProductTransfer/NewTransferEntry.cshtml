@@ -1,0 +1,111 @@
+﻿@model ComfySocks.Models.ProductTransferInfo.Transfer
+@{
+    ViewBag.Title = "Finished Product Transfer Entry";
+}
+
+<div class="box box-body box-primary">
+    @using (Html.BeginForm("NewTransferEntry", "ProductTransfer", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <hr />
+            <div class="col-md-4">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TempProductStockID, "Type of Product", htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.DropDownList("TempProductStockID", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TempProductStockID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control", rows = "6" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="AddToList" id="btnAdd" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    <div class="col-sm-8">
+        <div style=" background-color:#34495e; color:white; padding:10px">Product Transfering Item</div>
+        @********table here***********@
+        <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+            @if (ViewBag.transfers != null)
+            {
+                <table class="table table-border table-striped" id="dtaTable">
+                    <thead>
+                        <tr>
+                            <th>ItemCode</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Remark</th>
+                            <th><i class="glyphicon glyphicon-trash"></i></th>
+                        </tr>
+                    </thead>
+                    @foreach (ComfySocks.Models.ProductTransferInfo.Transfer pt in ViewBag.Transfers)
+                        {
+                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                    <tr>
+                        <td>@{var item = db.Items.Find(pt.TempProductStockID);} @item.Code</td>
+                        <td>@item.Name &nbsp; @item.ItemType.Name</td>
+                        <td>@item.Unit.Name</td>
+                        <td>@pt.Quantity</td>
+                        <td>@pt.Remark</td>
+                        <td>@Html.ActionLink(" ", "RemoveSelected", new {id = pt.ID }, new {@class ="fa fa-remove" })</td>
+                    </tr>
+                        }
+                </table>
+            }
+        </div>
+        <br />
+        <div>
+            <a class="btn btn-primary pull-right" href="~/ProductTransfer/NewTransferInfo">
+                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+            </a>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Back to List", "ProductTransferList")
+    </div>
+    <hr />
+</div>
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+

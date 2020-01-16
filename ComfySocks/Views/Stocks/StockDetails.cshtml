@@ -1,106 +1,122 @@
 ﻿@model ComfySocks.Models.InventoryModel.StockReferance
- 
-    <div class="row page-titles">
-        <div class="col-sm-6  align-self-center ">
-            <h4 class="text-danger"> @ViewBag.errorMessage</h4>
-            <h5 class="text-success">@ViewBag.succsessMessage</h5>
-        </div>
+
+<div class="row page-titles">
+    <div class="col-sm-6  align-self-center ">
+        <h4 class="text-danger"> @ViewBag.errorMessage</h4>
+        <h5 class="text-success">@ViewBag.succsessMessage</h5>
     </div>
+</div>
 
-    <div class="row">
-        <div class="col-sm-8 col-sm-offset-2" id="printable">
-            <div>
-               @* <img src='~/Images/print logo.jpg' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:123px" />*@
+<div class="row">
+    <div class="col-md-10">
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
+        {
+            <a href="~/Stocks/NewPurchaseEntry">New <span class="glyphicon glyphicon-plus"></span></a>
+        }
+        <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+    </div>
+    @*@if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+    {
+        <div class="col-md-2">
+            <a href="#">Accept <span class="glyphicon glyphicon-check"></span></a> &nbsp;
+            <a href="#">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+        </div>
+    }*@
+</div>
+<div class="box box-primary" id="printable">
+    <div style="margin:40px">
+        <div>
+            <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <h3 style="align-content:center;text-decoration:underline">Good Reciving Note</h3>
             </div>
-            <div class="panel">
-                <h3 style="align-content:center">Good Reciving Note</h3>
-                <table class="" style="float:right">
-                    <tr>
+            <div class="col-md-4" style="float:right">
+                Date: @Html.DisplayFor(modelItem => Model.Date)<br />
+                No:@Html.DisplayFor(modelItem => Model.ID)
+            </div>
+        </div>
 
-                        <td>
-                            File Number:@Html.DisplayFor(modelItem => Model.StoreNumber)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Stored Date:@Html.DisplayFor(modelItem => Model.Date)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            Suplayer:@Html.DisplayFor(modelItem => Model.Supplier.Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>Print Date @DateTime.Now</td>
-                    </tr>
-                </table>
-                <table class="table stylish-table table-bordered">
-                    <thead style="background-color:steelblue;color:azure">
-                        <tr>
-                            <td>#S.No</td>
-                            <td>Item Description</td>
-                            <td>ItemCode</td>
-                            <td>Unit</td>
-                            <td>Quantity</td>
-                        </tr>
-                    </thead>
-                    @foreach (var stock in Model.Stocks)
-                    {
-                        <tr>
-                            <td>@stock.Item.ID</td>
-                            <td>@stock.Item.Name @stock.Item.ItemType.Name</td>
-                            <td>@stock.Item.Code</td>
-                            <td>@stock.Item.Unit.Name</td>
-                            <td>@stock.Quantity </td>
-                        </tr>
-                    }
-                </table>
-                <div id="footer">
-                    <h6 style="margin-left:50px; ">Prepared by    @Model.ApplicationUser.FullName</h6>
-                    <h6 style="margin-left:50px">Approved by _______________________________</h6>
-                    <h6 style="margin-left:50px">I receive items listed above   Name ____________________________ Signature__________________ </h6>
-                    <br />
-                    <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
+        <table class="table">
+            <tr>
+                <td>
+                    Suppler's Name: @Html.DisplayFor(modelItem => Model.Supplier.Name)
+                </td>
+                <td>
+                    Supplier's Invoice No: @Html.DisplayFor(modelItem => Model.Supplier.No)
+                </td>
+            </tr>
+            <tr>
+                <td>Purchase Requestion No._______________________</td>
+            </tr>
+        </table>
+        <table class="table well table-bordered">
+            <thead>
+                <tr>
+                    <td>Item Description</td>
+                    <td>Item Code</td>
+                    <td>Unit</td>
+                    <td>Quantity</td>
+                </tr>
+            </thead>
+            @foreach (ComfySocks.Models.InventoryModel.Stock stock in Model.Stocks)
+            {
+
+                <tr>
+                    <td>
+                        @stock.Item.Name @stock.Item.ItemType.Name
+                    </td>
+                    <td>@stock.Item.Code</td>
+                    <td>@stock.Item.Unit.Name</td>
+                    <td>
+                        @stock.Quantity
+                    </td>
+                </tr>
+
+            }
+        </table>
+        <div id="footer">
+            <div class="row" style="margin-top:10%">
+                <div class="col-md-4" style="float:left">
+                    Requested by : @Model.ApplicationUser.UserName
+                </div>
+                <div class="col-md-4">
+                    Received by : @Model.Reciviedby
+                </div>
+                <div class="col-md-4">
+                    Approved by : _________________
                 </div>
             </div>
-       
-
+            <br />
+            <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
         </div>
-        <div class="col-sm-2  align-self-center pull-right">
-            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
-            {
-                <a href="~/Stocks/NewPruchaseEntry" class="btn btn-add">New <span class="glyphicon glyphicon-tag"></span></a>
-            }
-            else
-            { <a href="~/Stocks/NewPruchaseEntry" class="btn btn-add disabled">New <span class="glyphicon glyphicon-tag"></span></a>
 
-            }
+    </div>
+</div>
 
-            <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
-        </div>
-        </div>
-        <script>
 
-            function Print() {
-                var height = document.getElementById("printable").clientHeight;
-                var pages = 1000 - (height % 950);
-                document.getElementById("footer").style.marginTop = pages + "px";
-                //document.getElementById("logo-img").style.width = 100 + "vw";
-                print2()
-            }
-            function print2() {
-                var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
-                var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
+<script>
 
-                var footstr = "</body><html>";
+    function Print() {
+        var height = document.getElementById("printable").clientHeight;
+        var pages = 1000 - (height % 950);
+        document.getElementById("footer").style.marginTop = pages + "px";
+        //document.getElementById("logo-img").style.width = 100 + "vw";
+        print2()
+    }
+    function print2() {
+        var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+        var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
 
-                var newstr = document.getElementById('printable').innerHTML;
-                var oldstr = document.body.innerHTML;
-                document.body.innerHTML = headstr + newstr + footstr;
-                window.print();
-                document.body.innerHTML = oldstr;
-                document.getElementById("footer").style.marginTop = 0 + "px";
-                return false;
-            }
-        </script>
+        var footstr = "</body><html>";
+
+        var newstr = document.getElementById('printable').innerHTML;
+        var oldstr = document.body.innerHTML;
+        document.body.innerHTML = headstr + newstr + footstr;
+        window.print();
+        document.body.innerHTML = oldstr;
+        document.getElementById("footer").style.marginTop = 0 + "px";
+        return false;
+    }
+</script>

@@ -1,0 +1,100 @@
+﻿@model ComfySocks.Models.Order.Customer
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<div class="box box-body box-danger">
+    <h3>Are you sure you want to delete this?</h3>
+    <div>
+        <h4>Customer</h4>
+        <hr />
+        <dl class="dl-horizontal">
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FirstName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.FirstName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.LastName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.LastName)
+            </dd>
+            <dt>
+                @Html.DisplayNameFor(model => model.TinNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TinNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.City)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.City)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SubCity)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SubCity)
+            </dd>
+
+        </dl>
+
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-actions no-color">
+                <input type="submit" value="Delete" class="btn btn-default" /> |
+                @Html.ActionLink("Back to List", "Index")
+            </div>
+        }
+    </div>
+
+</div>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.Customer != null)
+{
+    <script>
+        window.onload = function() {
+            sweetAlert("Information", "@ViewBag.Customer", "Info");
+            return false;
+    }
+    </script>
+}
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+        window.onload = function() {
+            sweetAlert("Opps...", "@ViewBag.errorMessage","error");
+            return false;
+    }
+    </script>
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+        window.onload = function() {
+            sweetAlert("Congratualtion", "@ViewBag.succsessMessage", "success");
+            return false;
+    }
+    </script>
+}

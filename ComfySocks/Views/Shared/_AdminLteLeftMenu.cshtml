@@ -5,11 +5,9 @@
        TODO: This preserves the links as-is for the demo, which lead to broken pages!
        It's up to you to make sure these links either get deleted or lead somewhere REAL!
 *@
-
 @{
     Layout = null;
 }
-
 <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <section class="sidebar">
@@ -17,10 +15,8 @@
         <div class="user-panel">
             <div class="pull-left image">
                 @*<img src="/Content/AdminLTE/img/user2-160x160.jpg" class="img-circle" alt="User Image" />*@
-
             </div>
         </div>
-
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
             <li class="header">MAIN NAVIGATION</li>
@@ -30,7 +26,7 @@
                 </a>
             </li>
             @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
-        {*@
+                {*@
             <li class="active">
                 <a href="~/Home/Index">
                     <i class="fa fa-home"></i> <span>Home</span>
@@ -44,19 +40,7 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="~/ItemSetting/Create"><i class="fa fa-circle-o"></i>New Item</a></li>
-                  
-                </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-list-alt"></i>
-                    <span>Purchase</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="~/Stocks/StockList"><i class="fa fa-circle-o"></i>Purchase Information</a></li>
-                    <li><a href="~/Stocks/NewPurchaseEntry"><i class="fa fa-circle-o"></i>New  Purchase Entry</a></li>
-                    <li><a href="~/Suppliers/Index"><i class="fa fa-circle-o"></i>Supplier</a></li>
+                    <li><a href="~/ItemSetting/Index"><i class="fa fa-circle-o"></i>Item Information</a></li>
                 </ul>
             </li>
             <li class="treeview">
@@ -66,29 +50,36 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/ItemSetting/Index"><i class="fa fa-circle-o"></i>Stock Information</a></li>
+                    <li><a href="~/Stocks/StockList"><i class="fa fa-circle-o"></i>Stock Information</a></li>
+                    <li><a href="~/Product/ProductList"><i class="fa fa-circle-o"></i>Product Information</a></li>
+                    <li><a href="~/Stocks/NewPurchaseEntry"><i class="fa fa-circle-o"></i>New RowMateril Entry</a></li>
+                    <li><a href="~/Product/NewProductEntry"><i class="fa fa-circle-o"></i>New Product Entry</a></li>
+                    <li><a href="~/Suppliers/Index"><i class="fa fa-circle-o"></i>Supplier</a></li>
                 </ul>
             </li>
             <li class="treeview">
                 <a href="#">
                     <i class="fa  fa-product-hunt"></i>
-                    <span>Production</span>
+                    <span>Request</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/Request/NewRequestEntry"><i class="fa fa-circle-o"></i>New Request</a></li>
+                    <li><a href="~/Request/NewRequestEntry"><i class="fa fa-circle-o"></i>New Store Request</a></li>
                     <li><a href="~/Request/StoreRequestionList"><i class="fa fa-circle-o"></i>Requested List</a></li>
+
                 </ul>
             </li>
             <li class="treeview">
                 <a href="#">
                     <i class="fa  fa-shopping-cart"></i>
-                    <span>Store</span>
+                    <span>Production</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/Issue/NewIssueEntry"><i class="fa fa-circle-o"></i>New Store Issue</a></li>
-                    <li><a href="~/Issue/IssueList"><i class="fa fa-circle-o"></i> Issued List </a></li>
+                    <li><a href="~/TempProductStocks/Index"><i class="fa fa-circle-o"></i>Product Stock</a></li>
+                    <li><a href="~/ProductTransfer/NewTransferEntry"><i class="fa fa-circle-o"></i>Finished Product Transfer</a></li>
+                    <li><a href="~/ProductTransfer/ProductTransferList"><i class="fa fa-circle-o"></i>Product Transfering List</a></li>
+
                 </ul>
             </li>
             <li class="treeview">
@@ -99,8 +90,8 @@
                 </a>
                 <ul class="treeview-menu">
                     <li><a href="~/Order/NewOrderEntry"><i class="fa fa-circle-o"></i> New Order</a></li>
-                    <li><a href="~/Orders/OrderHistory"><i class="fa fa-circle-o"></i> Order History</a></li>
-                    <li><a href="~/Customer/Index"><i class="fa fa-circle-o"></i> Customers</a></li>
+                    <li><a href="~/Order/OrderHistory"><i class="fa fa-circle-o"></i> Order History</a></li>
+                    <li><a href="~/Customers/Index"><i class="fa fa-circle-o"></i> Customers</a></li>
                 </ul>
             </li>
             //}
@@ -110,8 +101,8 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/SalesEntrys/Index"><i class="fa fa-circle-o"></i> New Sales</a></li>
-                    <li><a href="~/Saless/Index"><i class="fa fa-circle-o"></i> Sales History</a></li>
+                    <li><a href="~/Sales/NewSalesEntry"><i class="fa fa-circle-o"></i> New Sales</a></li>
+                    <li><a href="~/Sales/SalesList"><i class="fa fa-circle-o"></i> Sales List</a></li>
                 </ul>
             </li>
             <li class="treeview">
@@ -120,12 +111,12 @@
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/SalesEntrys/Index"><i class="fa fa-circle-o"></i>New Delivery</a></li>
-                    <li><a href="~/Saless/Index"><i class="fa fa-circle-o"></i>Delivery Note</a></li>
+                    <li><a href="~/Delivery/NewDeliveryEntry"><i class="fa fa-circle-o"></i>New Delivery</a></li>
+                    <li><a href="~/Delivery/DeliveryList"><i class="fa fa-circle-o"></i>Delivery List</a></li>
                 </ul>
             </li>
             @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
-        {*@
+                {*@
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-edit"></i> <span>Reports</span>
@@ -140,7 +131,7 @@
             //}
 
             @*@if (Request.IsAuthenticated && User.IsInRole("Admin"))
-        {*@
+                {*@
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-users"></i>
@@ -155,4 +146,3 @@
     </section>
     <!-- /.sidebar -->
 </aside>
-

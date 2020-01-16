@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Web;
 using ComfySocks.Models.Items;
 using System.Web.Mvc;
+using ComfySocks.Models.ProductInfo;
 
 namespace ComfySocks.Models.InventoryModel
 {
@@ -16,8 +17,7 @@ namespace ComfySocks.Models.InventoryModel
         public int ID { get; set; }
 
         [Required]
-        [Display(Name = "Date")]
-        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:mm-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name = "Store No.")]
@@ -26,11 +26,16 @@ namespace ComfySocks.Models.InventoryModel
         [Required]
         [Display(Name = "Supplier's Name")]
         public int SupplierID { get; set; }
-        [Display(Name = "Supplier's Invoice No.")]
-        public string Invoice { get; set; }
 
-        [Display(Name = "Recived By")]
+        [Required]
+        [Display(Name = "Supplier's Invoice No.")]
+        public int InvoiceID { get; set; }
+
+        [Display(Name = "Requsted By")]
         public string ApplicationUserID { get; set; }
+
+        [Display(Name ="Recivied By")]
+        public string Reciviedby { get; set; }
 
         public virtual ICollection<Stock> Stocks { get; set; }
         public virtual Supplier Supplier { get; set; }
@@ -43,14 +48,21 @@ namespace ComfySocks.Models.InventoryModel
         [Required]
         public int ItemID { get; set; }
         public int StockReferanceID { get; set; }
+
+        public int ProductInfoID { get; set; }
+
+        [Required]
         public float Quantity { get; set; }
         [Required]
         [Display(Name ="To Store")]
         public int StoreID  { get; set; }
 
         public float Total { get; set; }
-        
+        //added
+        public float ProwTotal { get; set; }
+
         public virtual StockReferance StockReferance { get; set; }
+        public virtual ProductInformation ProductInformation { get; set; }
         public virtual Store Store { get; set; }
         public virtual Item Item { get; set; }
     }

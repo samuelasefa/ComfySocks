@@ -1,0 +1,159 @@
+﻿@model ComfySocks.Models.ProductInfo.Product
+
+@{
+    ViewBag.Title = "New Product Entry";
+}
+
+<div class="box box-body box-warning">
+    @if (ViewBag.RequiredItems != null)
+    {
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red"><strong>Before starting you have to set some information about?</strong></h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.supplier
+                </li>
+                <li style="color:orange">
+                    @ViewBag.product
+                </li>
+            </ul>
+        </div>
+    }
+    else
+    {
+        using (Html.BeginForm("NewProductEntry", "Product", FormMethod.Post))
+        {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <hr />
+            <div class="col-md-4">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TempProductStockID, "Type of Product", htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.DropDownList("TempProductStockID", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TempProductStockID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(model => model.StoreID, "Store Name", htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.DropDownList("StoreID", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.StoreID, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-5" })
+                    <div class="col-md-7">
+                        @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="AddToList" class="btn btn-default" />
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        }
+
+    <div class="col-sm-8">
+        <div style=" background-color:#34495e; color:white; padding:10px">Product Entry Item</div>
+        @********table here***********@
+        <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+            @if (ViewBag.SelectedList != null)
+            {
+                <table class="table table-border table-striped" id="dtaTable">
+                    <thead>
+                        <tr>
+                            <th>Type of Product</th>
+                            <th>Code No.</th>
+                            <th>Batch No.</th>
+                            <th>Unit</th>
+                            <th>Quantity</th>
+                            <th>Remark</th>
+                            <th><i class="glyphicon glyphicon-trash"></i></th>
+                        </tr>
+                    </thead>
+                    @foreach (ComfySocks.Models.ProductInfo.ProductViewModel items in ViewBag.Selectedlist)
+                    {
+                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                        <tr>
+                            <td>@{ var item = db.TempProductStocks.Find(items.Product.TempProductStockID);} @item.ProductName</td>
+                            <td>@items.Code</td>
+                            <td>@items.BatchNo</td>
+                            <td>@items.Unit</td>
+                            <td>@items.Product.Quantity</td>
+                            <td>@items.Product.Remark</td>
+                            <td><a href="~/Product/RemoveSelected?id=@items.Product.TempProductStockID"><span class="fa fa-remove"></span></a></td>
+                        </tr>
+                                }
+                </table>
+                                }
+        </div>
+        <br />
+        <div>
+            <a class="btn btn-primary pull-right" href="~/Product/NewProductInfo">
+                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+            </a>
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Back to List", "ProductList")
+    </div>
+    <hr />
+                                }
+</div>
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ComfySocks.Models.InventoryModel;
+using ComfySocks.Models.ProductStock;
 
 namespace ComfySocks.Models.Items
 {
@@ -12,13 +14,14 @@ namespace ComfySocks.Models.Items
     {
         public int ID { get; set; }
         [Required]
-        [Display(Name="Unit")]
+        [Display(Name="Unit Name")]
         public string Name { get; set; }
-
+        
         public string ApplicationUserID { get; set; }
 
-        //ref
+        //reference
         public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual ICollection<TempProductStock> TempProductStock { get; set; }
         public virtual ICollection<Item> Item { get; set; }
     }
 }
