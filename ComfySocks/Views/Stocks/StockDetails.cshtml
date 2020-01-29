@@ -1,4 +1,4 @@
-﻿@model ComfySocks.Models.InventoryModel.StockReferance
+﻿@model ComfySocks.Models.InventoryModel.StockInformation
 
 <div class="row page-titles">
     <div class="col-sm-6  align-self-center ">
@@ -14,6 +14,8 @@
             <a href="~/Stocks/NewPurchaseEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/Stocks/StockList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+
     </div>
     @*@if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
     {

@@ -13,6 +13,7 @@ namespace ComfySocks.Models.Items
     public partial class Unit
     {
         public int ID { get; set; }
+
         [Required]
         [Display(Name="Unit Name")]
         public string Name { get; set; }

@@ -12,14 +12,17 @@ using ComfySocks.Models.Items;
 using Microsoft.AspNet.Identity;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.ProductStock;
+using ComfySocks.Models.Repository;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Stocks
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult ProductList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -32,6 +35,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stocks/Details/5
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult ProductDetail(int? id)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -76,9 +80,8 @@ namespace ComfySocks.Controllers
                 }
             }
 
-            ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code");
+            //ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code");
             ViewBag.TempProductStockID = new SelectList(db.TempProductStocks, "ID", "ProductName");
-            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             if (id != 0)
             {
                 List<ProductViewModel> SelectedList = new List<ProductViewModel>();
@@ -107,7 +110,6 @@ namespace ComfySocks.Controllers
 
             //ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "ProductCode");
             ViewBag.TempProductStockID = new SelectList(db.TempProductStocks, "ID", "ProductName", product.TempProductStockID);
-            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name", product.StoreID);
 
             List<ProductViewModel> SelectedList = new List<ProductViewModel>();
             
@@ -118,7 +120,7 @@ namespace ComfySocks.Controllers
                     SelectedList = (List<ProductViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
                     foreach (ProductViewModel items in SelectedList)
                     {
-                     if (items.Product.TempProductStockID == product.TempProductStockID && items.Product.StoreID == product.StoreID && items.Product.Quantity > 0)
+                     if (items.Product.TempProductStockID == product.TempProductStockID && items.Product.Quantity > 0)
                             {
                                 items.Product.Quantity += product.Quantity;
                                 ViewBag.infoMessage = "Product is Added";
@@ -127,7 +129,6 @@ namespace ComfySocks.Controllers
                                 return View();
 
                             }
-                    ViewBag.errorMessage = "Please Fill all Product Entry Information First!!";
                     }
 
                 }
@@ -138,20 +139,20 @@ namespace ComfySocks.Controllers
 
             }
 
-            product.ProductInfoID = 1;
+            product.ProductInformationID = 1;
             ProductViewModel model = new ProductViewModel();
             TempProductStock i = db.TempProductStocks.Find(product.TempProductStockID);
-            Store s = db.Stores.Find(product.StoreID);
+            //Store s = db.Stores.Find(product.StoreID);
 
-            if (i == null || s == null)
+            if (i == null)
             {
                 ViewBag.errorMessage = "Unable to extract Item Information";
             }
             else
             {
-                model.ProductName = i.ProductName;
-                model.Code = i.ProductCode.Code;
-                model.Unit = i.Unit.Name;
+                model.ProductName = i.Item.Name;
+                model.Code = i.Item.Code;
+                model.Unit = i.Item.Unit.Name;
                 model.Product = product;
 
                 SelectedList.Add(model);
@@ -162,14 +163,12 @@ namespace ComfySocks.Controllers
         }
 
         [Authorize(Roles = "Store Manager,Super Admin,Admin,")]
-
         public ActionResult RemoveSelected(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
 
-            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             ViewBag.TempProductStockID = new SelectList(db.TempProductStocks, "ID", "ProductName");
             List<ProductViewModel> SelectedList = new List<ProductViewModel>();
             if (TempData[User.Identity.GetUserId() + "SelectedList"] != null)
@@ -214,7 +213,6 @@ namespace ComfySocks.Controllers
                 return RedirectToAction("NewProductEntry");
             }
             TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
             ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             return View();
         }
@@ -235,14 +233,13 @@ namespace ComfySocks.Controllers
             List<ProductViewModel> product = new List<ProductViewModel>();
             product = (List<ProductViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
             TempData[User.Identity.GetUserId() + "SelectedList"] = product;
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
             ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
 
-            //if (productInformation.Date == null || productInformation.Date > DateTime.Now)
-            //{
-            //    ViewBag.errorMessage = "The date you provide is not valid!.";
-            //    return View(productInformation);
-            //}
+            if (productInformation.Date == null || productInformation.Date > DateTime.Now)
+            {
+                ViewBag.errorMessage = "The date you provide is not valid!.";
+                return View(productInformation);
+            }
             try
             {
                 productInformation.ApplicationUserID = User.Identity.GetUserId();
@@ -258,8 +255,11 @@ namespace ComfySocks.Controllers
                 db.ProductInformation.Add(productInformation);
                 db.SaveChanges();
             }
-            catch
-            {}
+            catch(Exception)
+            {
+                ViewBag.errorMessage = "Please Provide date Information";
+                return View(productInformation);
+            }
 
             List<Product> insertedProduct = new List<Product>();
             ProductInformation ProductInformation = db.ProductInformation.Find(productInformation.ID);
@@ -271,22 +271,27 @@ namespace ComfySocks.Controllers
                     {
                         try
                         {
-                            Product P = (from i in db.Products where items.Product.TempProductStockID == i.TempProductStockID && items.Product.StoreID == i.StoreID select i).First();
+                            Product P = (from i in db.Products where items.Product.TempProductStockID == i.TempProductStockID select i).First();
                             db.Entry(P).State = EntityState.Modified;
                             db.SaveChanges();
                             items.Product.Total += P.Total + items.Product.Quantity;
+                            //added
+                            items.Product.PPTotal += P.PPTotal + items.Product.Quantity;
                         }
                         catch
                         {
                             items.Product.Total += items.Product.Quantity;
+                            //added
+                            items.Product.PPTotal += items.Product.Quantity;
                         }
-
-                        ProductCode I = db.ProductCodes.Find(items.Product.TempProductStockID);
-                        items.Product.ProductInfoID = productInformation.ID;
+                        items.Product.Total += items.Product.Quantity;
+                        items.Product.PPTotal += items.Product.Quantity;
+                        items.Product.ProductInformationID = productInformation.ID;
                         db.Products.Add(items.Product);
                         db.SaveChanges();
                         ProductAvialableOnStock AV = db.ProductAvialableOnStock.Find(items.Product.TempProductStockID);
-                        if (AV == null)
+                        ProductMaterialRepository repository = db.ProductMaterialRepositories.Find(items.Product.TempProductStockID);
+                        if (AV == null && repository == null)
                         {
                             AV = new ProductAvialableOnStock()
                             {
@@ -294,12 +299,19 @@ namespace ComfySocks.Controllers
                                 ProductAvaliable = items.Product.Quantity,
 
                             };
+                            repository = new ProductMaterialRepository()
+                            {
+                                //ID = items.Product.TempProductStockID,
+                                //ProductMaterialAavliable = items.Product.Quantity
+                            };
                             db.ProductAvialableOnStock.Add(AV);
+                            db.ProductMaterialRepositories.Add(repository);
                             db.SaveChanges();
                         }
                         else
                         {
                             AV.ProductAvaliable += items.Product.Quantity;
+                            //repository.ProductMaterialAavliable += items.Product.Quantity;
                             db.Entry(AV).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -307,15 +319,15 @@ namespace ComfySocks.Controllers
                     }
                     catch
                     {
-                        List<Product> products = (from s in db.Products where s.ProductInfoID == productInformation.ID select s).ToList();
+                        List<Product> products = (from s in db.Products where s.ProductInformationID == productInformation.ID select s).ToList();
                         foreach (var item in insertedProduct)
                         {
                             db.Products.Remove(item);
                             db.SaveChanges();
-                            ProductCode I = db.ProductCodes.Find(item.TempProductStockID);
+                           
 
-                            AvaliableOnStock AV = db.AvaliableOnStocks.Find(item.TempProductStockID);
-                            AV.Avaliable -= items.Product.Quantity;
+                            ProductAvialableOnStock AV = db.ProductAvialableOnStock.Find(item.TempProductStockID);
+                            AV.ProductAvaliable -= items.Product.Quantity;
                             db.Entry(AV).State = EntityState.Modified;
                             db.SaveChanges();
                         }

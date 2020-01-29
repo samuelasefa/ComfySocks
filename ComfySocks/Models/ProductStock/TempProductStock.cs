@@ -1,5 +1,8 @@
-﻿using ComfySocks.Models.Items;
+﻿using ComfySocks.Models.InventoryModel;
+using ComfySocks.Models.Items;
 using ComfySocks.Models.ProductStock;
+using ComfySocks.Models.Repository;
+using ComfySocks.Models.SalesInfo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,27 +11,50 @@ using System.Web;
 
 namespace ComfySocks.Models.ProductStock
 {
-    public class TempProductStock
+    public enum ProductSize
+    {
+        Small,
+        Medium,
+        Large
+    }
+    public partial class TempProductStock
     {
         public int ID { get; set; }
 
-        [Display(Name = "Type of Product")]
-        public string ProductName { get; set; }
+        public int TempProductInfoID { get; set; }
 
-        public int ProductCodeID { get; set; }
+        [Display(Name ="Type of Product ")]
+        public int ItemID { get; set; }
 
-        [Display(Name ="Unit")]
-        public int UnitID { get; set; }
+        [Display(Name = "Product Size")]
+        public ProductSize ProductSize { get; set; }
 
+        public int PStoreID { get; set; }
+        
         [Required]
-        public double Quantity { get; set; }
-
-        public string ApplicationUserID { get; set; }
+        public float Quantity { get; set; }
+        
+        public float TempProductTotal { get; set; }
 
         //reference
-        public virtual ProductCode ProductCode { get; set; }
-        public virtual Unit Unit { get; set; }
-        public virtual ProductAvialableOnStock ProductAvialableOnStock { get; set; }
-        public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual TempProductInfo TempProductInfo { get; set; }
+        public virtual Store Store { get; set; }
+        public virtual Item Item { get; set; }
+
     }
+    public class TempProductViewModel
+    {
+        public string TypeOfProduct { get; set; }
+        public string ProductCode { get; set; }
+        public string ProductUnit { get; set; }
+
+        public TempProductStock TempProductStock { get; set; }
+    }
+    public class TemProductVMForError
+    {
+        public TempProductStock Product { get; set; }
+
+        public String Error { get; set; }
+    }
+
 }

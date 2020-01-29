@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ComfySocks.Models.DeliveryInfo.DeliveryInformation>
+
+@{
+    ViewBag.Title = "Row Material Delivery List";
+}
+
+<div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "NewRowMaterialDelivery", new { id = ViewBag.id })
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Store Requestion Number</th>
+                <th>Remaining</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Date</th>
+                <th>Store Requestion Number</th>
+                <th>Remaining</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+        @foreach (var item in Model)
+        {
+            ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+            <td>@{var i = db.StoreRequest.Find(item.ID);}@i.StoreRequestInformation.StoreRequestNumber</td>
+            <td>@i.RemaningDelivery</td>
+            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+            <td>
+                @Html.ActionLink("View ", "RowMaterialDeliveryDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+
+            </td>
+        </tr>
+        }
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>

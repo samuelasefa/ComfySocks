@@ -30,12 +30,6 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AvaliableOnStocks.Avaliable)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.RowMaterialRepositery.RowMaterialAavliable)
-                </th>
                 @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
                 {
 
@@ -60,12 +54,6 @@
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.AvaliableOnStocks.Avaliable)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.RowMaterialRepositery.RowMaterialAavliable)
                 </th>
                 @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
                 {
@@ -93,26 +81,6 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Unit.Name)
                 </td>
-                <td>
-                    @try
-                    {
-                        @item.AvaliableOnStocks.Avaliable;
-                    }
-                    catch
-                    {
-                        <h5>0</h5>
-                    }
-                </td>
-                <td>
-                    @try
-                    {
-                        @item.RowMaterialRepositery.RowMaterialAavliable;
-                    }
-                    catch
-                    {
-                        <h5>0</h5>
-                    }
-                </td>
                 @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
                 {
                     <td>
@@ -131,26 +99,6 @@
 
 <script>
     $("#dtaTable").DataTable({
-        //columnDefs: [
-        //    { visible: false, targets = 0 }
-        //],
-        //order: [[1, 'asc']],
-        //    displayLength: 5,
-        //        drawCallback: function ( settings ) {
-        //            var api = this.api();
-        //            var rows = api.rows({ page: 'current' }).nodes();
-        //            var last = null;
-
-        //            api.column(0, { page: 'current' }).data().each(function (group, i) {
-        //                if (last !== group) {
-        //                    $(rows).eq(i).before(
-        //                        '<tr class="bg-primary text-light"><td colspan="5">' + group + '</td></tr> '
-        //                    );
-        //                    last = group;
-        //                }
-        //            });
-
-        //        }
     });
 </script>
 

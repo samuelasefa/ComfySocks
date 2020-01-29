@@ -16,6 +16,7 @@ namespace ComfySocks.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Order
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OrderHistory()
         {
             //display if error message send from onther controller
@@ -27,7 +28,7 @@ namespace ComfySocks.Controllers
 
             return View(productionOrderInfos.ToList());
         }
-
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OrderDetial(int id = 0)
         {
             //display if error message send from onther controller
@@ -48,7 +49,7 @@ namespace ComfySocks.Controllers
             }
             return View(POI);
         }
-
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewOrderEntry(int id = 0)
         {
             //This is to deisplay error message
@@ -81,6 +82,8 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult NewOrderEntry(ProductionOrder productionOrder)
         {
             //This is to deisplay error message
@@ -125,6 +128,7 @@ namespace ComfySocks.Controllers
         }
 
         //removing item from Production List Item
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult RemoveSelected(int id)
         {
             if (TempData[User.Identity.GetUserId() + "ProductionOrders"] == null)

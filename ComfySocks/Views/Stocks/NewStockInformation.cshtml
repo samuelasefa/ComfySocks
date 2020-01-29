@@ -1,4 +1,4 @@
-﻿@model ComfySocks.Models.InventoryModel.StockReferance
+﻿@model ComfySocks.Models.InventoryModel.StockInformation
 
 @{
     ViewBag.title = null;
@@ -14,37 +14,30 @@
     <div class="form-horizontal">
         <h4>Stock  Information</h4>
         <hr />
+
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
-            @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-4" })
+            <p class="control-label col-md-4">Date</p>
             <div class="col-md-8">
                 @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
                 <br />
                 @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
             </div>
         </div>
+
         <div class="form-group">
-            <p class="control-label col-md-4">Supplier</p>
-            <div class="col-md-8">
-                @Html.DropDownList("SupplierID", null, htmlAttributes: new { @class = "form-control" })
-                <br />
-                @Html.ValidationMessageFor(model => model.SupplierID, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            <p class="control-label col-md-4">Supplier Invoice</p>
-            <div class="col-md-8">
-                @Html.DropDownList("InvoiceID", null, htmlAttributes: new { @class = "form-control" })
-                <br />
-                @Html.ValidationMessageFor(model => model.InvoiceID, "", new { @class = "text-danger" })
-            </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.Reciviedby, htmlAttributes: new { @class = "control-label col-md-4" })
+            <p class="control-label col-md-4">Recivied By</p>
             <div class="col-md-8">
                 @Html.EditorFor(model => model.Reciviedby, new { htmlAttributes = new { @class = "form-control" } })
                 <br />
                 @Html.ValidationMessageFor(model => model.Reciviedby, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SupplierID, "Supplier", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DropDownList("SupplierID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SupplierID, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
@@ -83,11 +76,11 @@
     </script>
 }
 
-    <script>
-        //datepicker
-        $(function () {
-            $(".datepicker").datepicker({
-                format: 'mm-dd-yyyy'
-            });
+<script>
+    //datepicker
+    $(function () {
+        $(".datepicker").datepicker({
+            format: 'mm-dd-yyyy'
         });
-    </script>
+    });
+</script>

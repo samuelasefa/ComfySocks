@@ -1,0 +1,105 @@
+﻿@model IEnumerable<ComfySocks.Models.Items.Item>
+
+<div class="row page-titles">
+    <div><a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a></div>
+
+</div>
+
+<div class="row">
+    <form action="~/Report/Search" method="post" class="col-sm-4 col-sm-offset-4 panel">
+        <div class="col-md-10">
+            <input type="text" placeholder="Search key" id="key" name="key" class="form-control" />
+        </div>
+        <div class="col-md-2 ">
+            <input type="submit" class="btn btn-info glyphicon glyphicon-search " value="Search" />
+        </div>
+    </form>
+</div>
+<div class="col-sm-offset-1 col-sm-10 panel" id="printable">
+
+    <table class="table">
+        <tr>
+            <th>
+                ID #
+            </th>
+            <th>
+                Stock Type
+            </th>
+            <th>
+                Description
+            </th>
+            <th>
+                ItemType
+            </th>
+            <th>
+                Item Code
+            </th>
+            <th>
+                Unit
+            </th>
+            <th>
+                Logical Avalable
+            </th>
+            <th>
+                Physical Avalable
+            </th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StoreType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.ItemType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.AvaliableOnStocks.Avaliable)
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.RowMaterialRepositery.RowMaterialAavliable)</td>
+        </tr>
+        }
+
+    </table>
+</div>
+
+
+<script>
+
+    function Print() {
+
+
+
+        var utc = "<h4>Report date</h4>"+new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+        var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
+
+        var footstr = "</body><html>";
+        var dis = "<h3>Stock avalable Report</h3>";
+
+        var newstr = document.getElementById('printable').innerHTML;
+        var oldstr = document.body.innerHTML;
+        document.body.innerHTML = dis+utc+headstr + newstr + footstr;
+        window.print();
+
+        document.body.innerHTML = oldstr;
+
+
+        return false;
+    }
+
+
+</script>

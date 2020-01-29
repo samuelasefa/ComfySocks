@@ -1,88 +1,207 @@
 ﻿@model ComfySocks.Models.Request.StoreRequest
 @{
-    ViewBag.Title = "Store Requestion";
+    ViewBag.Title = "Product Material Request";
 }
 
-<div class="box box-body box-primary">
-    @using (Html.BeginForm("NewRequestEntry", "Request", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-        <div class="form-horizontal">
-            <hr />
-            <div class="col-md-4">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ItemID, "Item", htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.DropDownList("ItemID", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+
+<div class="box box-warning box-body">
+    @if (ViewBag.RequiredItems != null)
+    {
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red"><strong>Before starting you have to set some information about?</strong></h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.Stock
+                </li>
+                
+            </ul>
+        </div>
+    }
+
+    else
+    {
+        <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover" id="maintable">
+                            <thead>
+                                <tr style="background-color:#3d566e; color:#ecf0f1">
+                                    <th>
+                                        ItemID
+                                    </th>
+                                    <th>
+                                        Code No
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit
+                                    </th>
+                                    <th>
+                                        Quantity
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (ComfySocks.Models.InventoryModel.Stock s in ViewBag.StockID)
+                                {
+                                    <tr onclick="ItemSelected('@s.ID', '@s.Item.Code')">
+                                        <td>@s.ID</td>
+                                        <td>@s.Item.Code</td>
+                                        <td>@s.Item.Name @s.Item.ItemType.Name</td>
+                                        <td>@s.Item.Unit.Name</td>
+                                        <td>@s.Quantity</td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color:#3d566e; color:#ecf0f1">
+                                    <th>
+                                        ItemID
+                                    </th>
+                                    <th>
+                                        Code No
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit
+                                    </th>
+                                    <th>
+                                        Quantity
+                                    </th>
+                                </tr>
+                            </tfoot>
+
+                        </table>
                     </div>
                 </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-2" })
-                    <div class="col-md-10">
-                        @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control", rows = "6" } })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="AddToList" id="btnAdd" class="btn btn-default" />
-                    </div>
+                <div class="col-md-12">
+                    @using (Html.BeginForm())
+                    {
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                        @Html.AntiForgeryToken()
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <p style="text-align:center">Item</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <p style="text-align:center">Quantity</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <p style="text-align:center">Remark</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    &nbsp;
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="col-md-offset-1 col-md-12">
+                                                <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:8px" />
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         </div>
-    }
-    <div class="col-sm-8">
-        <div style=" background-color:#34495e; color:white; padding:10px">PurchaseItem</div>
-        @********table here***********@
-        <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
-            @if (ViewBag.selectedStoreRequests != null)
-            {
-                <table class="table table-border table-striped" id="dtaTable">
-                    <thead>
-                        <tr>
-                            <th>ItemCode</th>
-                            <th>Description</th>
-                            <th>Unit</th>
-                            <th>Quantity</th>
-                            <th>Remark</th>
-                            <th><i class="glyphicon glyphicon-trash"></i></th>
-                        </tr>
-                    </thead>
-                    @foreach (ComfySocks.Models.Request.StoreRequestVM sr in ViewBag.selectedStoreRequests)
-                    {
-                        <tr>
-                            <td>@sr.Code</td>
-                            <td>@sr.ItemDescription &nbsp; @sr.Type</td>
-                            <td>@sr.Unit</td>
-                            <td>@sr.StoreRequest.Quantity</td>
-                            <td>@sr.StoreRequest.Remark</td>
-                            <td><a href="~/Request/Remove?id=@sr.StoreRequest.ID"><span class="fa fa-remove"></span></a></td>
-                        </tr>
-                    }
-                </table>
+        <div class="col-sm-6">
+            <div style=" background-color:#34495e; color:white; padding:10px">Purchase Item</div>
+            @********table here***********@
+            <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                @if (ViewBag.selectedStoreRequests != null)
+                {
+                    <table class="table table-border table-striped" id="dtaTable">
+                        <thead>
+                            <tr>
+                                <th>ItemCode</th>
+                                <th>Description</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
+                                <th>Remark</th>
+                                <th><i class="glyphicon glyphicon-trash"></i></th>
+                            </tr>
+                        </thead>
+                        @foreach (ComfySocks.Models.Request.StoreRequestVM items in ViewBag.selectedStoreRequests)
+                        {
+                            ComfySocks.Models.Items.Item I = db.Items.Find(items.ID);
+                            <tr>
+                                <td>@items.Code</td>
+                                <td>@items.ItemDescription &nbsp; @items.Type</td>
+                                <td>@items.Unit</td>
+                                <td>@items.StoreRequest.Quantity</td>
+                                <td>@items.StoreRequest.Remark</td>
+                                <td><a href="~/Request/Remove?id=@items.StoreRequest.ItemID"><span class="fa fa-remove"></span></a></td>
+                            </tr>
+                        }
+                    </table>
+                }
+            </div>
+            <br />
+
+            <div>
+                @if (ViewBag.selectedStoreRequests != null)
+                {
+
+                    <a class="btn btn-primary pull-right" href="~/Request/NewStoreRequsteInfo">
+                        Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                    </a>
+                }
+
+            </div>
+        </div>
+
+        <script>
+            function ItemSelected(id, Code) {
+                document.getElementById("ItemID").value = id, Code;
             }
-        </div>
-        <br />
-        <div>
-            <a class="btn btn-primary pull-right" href="~/Request/NewStoreRequsteInfo">
-                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
-            </a>
-        </div>
-    </div>
+
+            //datatabale
+            $("#maintable").DataTable({
+                "info": false,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "lengthChange": false,
+            });
+        </script>
+    }
+    <hr />
     <div>
-        @Html.ActionLink("Back to List", "StoreRequestionList")
+        @Html.ActionLink("Back to List", "StockList")
     </div>
     <hr />
+
 </div>
+
 <script src="~/Scripts/sweetalert.js"></script>
 <script src="~/Scripts/sweetalert.min.js"></script>
 <link href="~/Scripts/sweetalert.css" rel="stylesheet" />
@@ -92,7 +211,7 @@
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
                     return false;
                 }
     </script>
@@ -102,11 +221,36 @@
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
                     return false;
                 }
     </script>
 }
 
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
 
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #847BAA;
+        color: #ecf0f1;
+        cursor: pointer;
+    }
+</style>
 

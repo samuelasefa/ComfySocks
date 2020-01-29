@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComfySocks.Models.SalesInfo;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -24,6 +25,7 @@ namespace ComfySocks.Models.Order
         public string SubCity { get; set; }
 
         //referance to Productionorderinfo
+        public virtual ICollection<SalesInformation> SalesInformation { get; set; }
         public virtual ICollection<ProductionOrderInfo> ProductionOrderInfos { get; set; }
     }
 }

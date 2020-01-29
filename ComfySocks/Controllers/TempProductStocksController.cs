@@ -7,6 +7,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using ComfySocks.Models;
+using ComfySocks.Models.InventoryModel;
+using ComfySocks.Models.Items;
 using ComfySocks.Models.ProductStock;
 using Microsoft.AspNet.Identity;
 
@@ -17,144 +19,306 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: TempProductStocks
-        public ActionResult Index()
+        public ActionResult TemporaryProductList()
         {
-            var tempProductStocks = db.TempProductStocks.Include(t => t.ApplicationUser).Include(t => t.ProductCode).Include(t => t.Unit);
-            return View(tempProductStocks.ToList());
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
+            var TempInfoList = (from t in db.TempProductInfos select t).Include(t => t.TempProductStock).Include(t => t.ApplicationUser);
+
+            ViewBag.center = true;
+            return View(TempInfoList.ToList());
         }
 
-        // GET: TempProductStocks/Details/5
-        public ActionResult Details(int? id)
+        //New Temprory Product Entry 
+        //GET:Product
+        [Authorize(Roles = "Super Admin, Admin, StoreManager, Production")]
+        public ActionResult NewTempoProductEntry(int id = 0)
         {
-            if (id == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
-                return RedirectToAction("Index");
-            }
-            TempProductStock tempProductStock = db.TempProductStocks.Find(id);
-            if (tempProductStock == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found 404 is detected";
-                return RedirectToAction("Index");
-                
-            }
-            return View(tempProductStock);
-        }
-
-        // GET: TempProductStocks/Create
-        public ActionResult Create()
-        {
-            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
             {
-                var productcode = db.ProductCodes.ToList();
                 var unit = db.Units.ToList();
+                var store = db.Stores.ToList();
 
-                ViewBag.productcode = "";
                 ViewBag.unit = "";
-                if (productcode.Count() == 0)
-                {
-                    ViewBag.productcode = "Register Product Code Information";
-                    ViewBag.RequiredItems = true;
-                }
+                ViewBag.store = "";
+
                 if (unit.Count() == 0)
                 {
-                    ViewBag.unit = "Register Unit Information frist";
-                    ViewBag.RequiredItems = true;
+                    ViewBag.unit = "Register Unit Inforamtion before adding Product";
+                }
+                if (store.Count() == 0) {
+                    ViewBag.store = "Register Store Information before adding Product";
                 }
             }
-            ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code");
-            ViewBag.UnitID = new SelectList(db.Units, "ID", "Name");
+            ViewBag.ItemID = (from I in db.Items where I.StoreType == StoreType.Product orderby I.Code ascending select I);
+            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
+            if (id != 0)
+            {
+                List<TempProductViewModel> SelectedList = new List<TempProductViewModel>();
+                SelectedList = (List<TempProductViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
+                TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
+                ViewBag.SelectedList = SelectedList.ToList();
+
+            }
+            else
+            {
+                TempData[User.Identity.GetUserId() + "SelectedList"] = null;
+            }
             return View();
         }
 
-        // POST: TempProductStocks/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
+        //Post:TempProduct Item
+
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ProductName,ProductCodeID,UnitID,ApplicationUserID")] TempProductStock tempProductStock)
+        [Authorize(Roles = "Store Manager, Super Admin, Admin")]
+        public ActionResult NewTempoProductEntry(TempProductStock tempProductStock)
         {
-            tempProductStock.ApplicationUserID = User.Identity.GetUserId();
-            if (ModelState.IsValid)
-            {
-                db.TempProductStocks.Add(tempProductStock);
-                db.SaveChanges();
-                return RedirectToAction("Create");
-            }
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code", tempProductStock.ProductCodeID);
-            ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", tempProductStock.UnitID);
-            return View(tempProductStock);
+
+            //List of Product item
+            ViewBag.ItemID = (from I in db.Items where I.StoreType == StoreType.Product orderby I.Code ascending select I);
+            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
+
+            List<TempProductViewModel> SelectedList = new List<TempProductViewModel>();
+            if (TempData[User.Identity.GetUserId() + "SelectedList"] != null)
+            {
+                try
+                {
+                    SelectedList = (List<TempProductViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
+                    foreach (TempProductViewModel item in SelectedList)
+                    {
+                        if (item.TempProductStock.Item.Code== tempProductStock.Item.Code)
+                        {
+                            item.TempProductStock.Quantity += tempProductStock.Quantity;
+                            ViewBag.succsessMessage = "Product Item is Added to Code =" + item.TempProductStock.Item.Code;
+                            TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
+                            ViewBag.SelectedList = SelectedList;
+                            return View();
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    ViewBag.errorMessage = e;
+                }
+            }
+            tempProductStock.TempProductInfoID = 1;
+            TempProductViewModel model = new TempProductViewModel();
+            Item i = db.Items.Find(tempProductStock.ItemID);
+            Store s = db.Stores.Find(tempProductStock.PStoreID);
+
+            if (i == null || s == null)
+            {
+                ViewBag.erroressage = "Unable to extract item information!.";
+            }
+            else {
+                model.TypeOfProduct = i.Name;
+                model.ProductCode = i.Code;
+                model.ProductUnit = i.Unit.Name;
+                model.TempProductStock = tempProductStock;
+
+                SelectedList.Add(model);
+            }
+            TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
+            ViewBag.SelectedList = SelectedList.ToList();
+            return View();
+        }
+        //Remove selecte List item
+
+            [Authorize(Roles ="Store Manager, Super Admin, Admin")]
+        public ActionResult RemoveSelected(int id = 0)
+        {
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            //Item and store List Item
+            ViewBag.ItemID = (from I in db.Items where I.StoreType == StoreType.Product orderby I.Code ascending select I);
+            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
+
+
+            List<TempProductViewModel> SelectedList = new List<TempProductViewModel>();
+            if (TempData[User.Identity.GetUserId()+ "SelectedList"] != null)
+            {
+                try
+                {
+                    SelectedList = (List<TempProductViewModel>)TempData[User.Identity.GetUserId()+ "SelectedList"];
+                    foreach (TempProductViewModel items in SelectedList)
+                    {
+                        if (items.TempProductStock.ItemID == id)
+                        {
+                            SelectedList.Remove(items);
+                            db.Entry(SelectedList).State = EntityState.Modified;
+                            db.SaveChanges();
+                            if (SelectedList.Count() > 0)
+                            {
+                                TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
+                                ViewBag.SelectedList = SelectedList;
+                            }
+                            return View("NewTempoProductEntry");
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    ViewBag.errorMessage = e;
+                }
+            }
+            ViewBag.errorMessage = "You process can not be done now please try again latter";
+            return View("NewTempoProductEntry");
         }
 
-        // GET: TempProductStocks/Edit/5
-        public ActionResult Edit(int? id)
+
+        //GET:TempoProduct Information
+        [Authorize(Roles ="Super Admin, Admin, Store Manager")]
+        public ActionResult TemProductInfo()
         {
-            if (id == null)
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
+          
+
+            if (TempData[User.Identity.GetUserId() + "SelectedList"] == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
-                return RedirectToAction("Index");
+                ViewBag.errorMessage = "Unable to extract Selected Product information";
+                return RedirectToAction("NewTempoProductEntry");
             }
-            TempProductStock tempProductStock = db.TempProductStocks.Find(id);
-            if (tempProductStock == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found 404 error Invalid  Url";
-                return RedirectToAction("Index");
-            }
-            ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code", tempProductStock.ProductCodeID);
-            ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", tempProductStock.UnitID);
-            return View(tempProductStock);
+            TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
+            return View();
         }
 
-        // POST: TempProductStocks/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
+
+        //Post: TempProduct information
+        [Authorize(Roles ="Super Admin, Admin, Store Manager")]
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ProductName,ProductCodeID,UnitID,ApplicationUserID")] TempProductStock tempProductStock)
+        public ActionResult TemProductInfo(TempProductInfo tempProductInfos)
         {
-            tempProductStock.ApplicationUserID = User.Identity.GetUserId();
-            if (ModelState.IsValid)
-            {
-                db.Entry(tempProductStock).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            ViewBag.ProductCodeID = new SelectList(db.ProductCodes, "ID", "Code", tempProductStock.ProductCodeID);
-            ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", tempProductStock.UnitID);
-            return View(tempProductStock);
-        }
+            //succsessMessage
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null)
+            { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errorMessage handler
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null)
+            { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-        // GET: TempProductStocks/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
+            if (TempData[User.Identity.GetUserId() + "SelectedList"] == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
-                return RedirectToAction("Index");
+                ViewBag.errorMessage = "Unable to extract Selected Product Item information";
+                return RedirectToAction("NewTempoProductEntry");
             }
-            TempProductStock tempProductStock = db.TempProductStocks.Find(id);
-            if (tempProductStock == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
-                return RedirectToAction("Index");
-            }
-            return View(tempProductStock);
-        }
 
-        // POST: TempProductStocks/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            TempProductStock tempProductStock = db.TempProductStocks.Find(id);
-            db.TempProductStocks.Remove(tempProductStock);
+            List<TempProductViewModel> productStock = new List<TempProductViewModel>();
+            productStock = (List<TempProductViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
+            TempData[User.Identity.GetUserId() + "SelectedList"] = productStock;
+
+            if (tempProductInfos.Date == null ||  tempProductInfos.Date > DateTime.Now)
+            {
+                ViewBag.errorMessage = "The Date you Provide is not valid";
+                return View(tempProductInfos);
+            }
+            tempProductInfos.ApplicationUserID = User.Identity.GetUserId();
+            db.TempProductInfos.Add(tempProductInfos);
             db.SaveChanges();
-            return RedirectToAction("Index");
-        }
+        
+            List<TempProductViewModel> insertedProduct = new List<TempProductViewModel>();
+            TempProductInfo tempProductInfo = db.TempProductInfos.Find(tempProductInfos.ID);
+            if (tempProductInfo !=null) {
+                foreach (TempProductViewModel items in productStock)
+                {
+                    try
+                    {
+                        try
+                        {
+                            TempProductStock Ps = (from t in db.TempProductStocks where items.TempProductStock.ItemID == t.ItemID && items.TempProductStock.PStoreID == t.PStoreID select t).First();
+                            db.Entry(Ps).State = EntityState.Modified;
+                            db.SaveChanges();
+                            items.TempProductStock.TempProductTotal += Ps.TempProductTotal + items.TempProductStock.Quantity;
+                        }
+                        catch 
+                        {
+                            items.TempProductStock.TempProductTotal += items.TempProductStock.Quantity;
+                        }
+                        items.TempProductStock.TempProductTotal += items.TempProductStock.Quantity;
+                        items.TempProductStock.TempProductInfoID = tempProductInfos.ID;
+                        db.TempProductStocks.Add(items.TempProductStock);
+                        db.SaveChanges();
 
+                        ProductAvialableOnStock PA = db.ProductAvialableOnStock.Find(items.TempProductStock.ItemID);
+                        if (PA == null)
+                        {
+                            PA = new ProductAvialableOnStock()
+
+                            {
+                                ID = items.TempProductStock.ItemID,
+                                ProductAvaliable = items.TempProductStock.Quantity
+                            };
+                            db.ProductAvialableOnStock.Add(PA);
+                            db.SaveChanges();
+                        }
+                    else
+                        {
+                            PA.ProductAvaliable += items.TempProductStock.Quantity;
+                            db.Entry(PA).State = EntityState.Modified;
+                            db.SaveChanges();
+                    }
+                        insertedProduct.Add(items);
+                    
+                    }
+                    catch 
+                    {
+                        List<TempProductStock> productStocks = (from s in db.TempProductStocks where s.TempProductInfoID == tempProductInfo.ID select s).ToList();
+                        foreach (var item in insertedProduct)
+                        {
+                            db.TempProductStocks.Remove(item.TempProductStock);
+                            db.SaveChanges();
+                            Item I = db.Items.Find(item.TempProductStock.ItemID);
+                            
+                            ProductAvialableOnStock AV = db.ProductAvialableOnStock.Find(item.TempProductStock.ItemID);
+                            AV.ProductAvaliable -= item.TempProductStock.Quantity;
+                            db.Entry(AV).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        db.TempProductInfos.Remove(tempProductInfo);
+                        db.SaveChanges();
+                        TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to register stock information";
+                        return RedirectToAction("TemporaryProductList");
+                    }
+                }
+                TempData[User.Identity.GetUserId() + "succsessMessage"] = "Product Stock information Saved";
+                return RedirectToAction("TemporaryProductList");
+            }
+            else
+            {
+                ViewBag.errorMessage = "Unable to lode Product Stock Information";
+            }
+
+            TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
+            return View();
+        }
+        
         protected override void Dispose(bool disposing)
         {
             if (disposing)

@@ -1,0 +1,241 @@
+﻿@model ComfySocks.Models.DeliveryInfo.Delivery
+@{
+    ViewBag.Title = "New Product Material Delivery Entry";
+}
+
+<div class="box box-body box-warning">
+    @using (Html.BeginForm())
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="form-horizontal">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @using (Html.BeginForm())
+                            {
+
+                                <table class="table table-striped table-hover" id="maintable">
+                                    <thead>
+                                        <tr style="background-color:#3d566e; color:#ecf0f1">
+                                            <th>
+                                                Code
+                                            </th>
+                                            <th>
+                                                Description
+                                            </th>
+                                            <th>
+                                                Item Type
+                                            </th>
+                                            <th>
+                                                Unit
+                                            </th>
+                                            <th>
+                                                Qty
+                                            </th>
+
+                                            <th>
+                                                Remark
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (ComfySocks.Models.Request.StoreRequest sr in ViewBag.StoreRequestID)
+                                        {
+                                            <tr>
+                                                <td>@sr.Item.Code</td>
+                                                <td>@sr.Item.Name</td>
+                                                <td>@sr.Item.ItemType.Name</td>
+                                                <td>@sr.Item.Unit.Name</td>
+                                                <td>@sr.Quantity</td>
+                                                <td>@sr.Remark</td>
+                                            </tr>
+                                        }
+
+                                    </tbody>
+                                    <tfoot>
+                                        <tr style="background-color:#3d566e; color:#ecf0f1">
+                                            <th>
+                                                Code
+                                            </th>
+                                            <th>
+                                                Description
+                                            </th>
+                                            <th>
+                                                Item Type
+                                            </th>
+                                            <th>
+                                                Unit
+                                            </th>
+                                            <th>
+                                                Qty
+                                            </th>
+
+                                            <th>
+                                                Remark
+                                            </th>
+                                        </tr>
+                                    </tfoot>
+
+                                </table>
+                            }
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+
+                            <table class="table table-striped">
+                                @{
+                                    ComfySocks.Models.ApplicationDbContext dbs = new ComfySocks.Models.ApplicationDbContext();
+                                    var srt = (from s in dbs.StoreRequest orderby s.ID select s).First();
+                                }
+                                <tr>
+                                    <td>
+                                        <input type="hidden" name="StoreRequestID" id="StoreRequestID" value="@srt.ID"  readonly />
+                                        <strong>Code</strong><br />
+                                        <input type="text" id="getCode" readonly class="form-control input-sm" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="StoreRequestID" id="StoreRequestID" value="@srt.ID" readonly />
+                                        <strong>Description</strong><br />
+                                        <input type="text" id="getDescription" readonly class="form-control input-sm" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="RequestID" id="StoreRequestID" value="@srt.ID" readonly  />
+                                        <strong>Item type</strong><br />
+                                        <input type="text" id="getItemType" readonly class="form-control input-sm" />
+                                    </td>
+
+                                    <td>
+                                        <div class="form-group">
+                                            <strong style="text-align:center"> Qty</strong><br />
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control btn-sm", autocomplete = "off" } })
+                                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <br />
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-10">
+                                                <input type="submit" value="AddToList" class="btn btn-sm btn-primary" style="float:right; margin-left:20px" />
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div style=" background-color:#34495e; color:white; padding:10px">Row Material Delivery Item</div>
+                    @********table here***********@
+                    <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                        @if (ViewBag.selectedDeliver != null)
+                        {
+                            <table class="table table-border table-striped" id="dtaTable">
+                                <thead>
+                                    <tr>
+                                        <th>ItemCode</th>
+                                        <th>Description</th>
+                                        <th>Unit</th>
+                                        <th>Quantity</th>
+                                        <th>Remining</th>
+                                        <th>Remark</th>
+                                    </tr>
+                                </thead>
+
+                                @foreach (ComfySocks.Models.DeliveryInfo.DeliveryVM d in ViewBag.selectedDeliver)
+                                {
+                                    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                                    //float TotalPrice = 0;
+
+                                    <tr>
+                                        <td>@d.ItemCode</td>
+                                        <td>@d.ItemDescription @d.Itemtype</td>
+                                        <td>@d.Unit</td>
+                                        <td>@d.Delivery.Quantity</td>
+                                        <td>@d.Remaining</td>
+                                        <td>@d.Remark</td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                    </div>
+                    <br />
+                    <div>
+                        @if (ViewBag.haveItem != null)
+                        {
+                            <a class="btn btn-primary pull-right" href="~/RowMaterialDelivery/NewRowMaterilDeliveryInfo">
+                                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                            </a>
+                        }
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    }
+
+    <div>
+        @Html.ActionLink("Back to List", "RowMaterialDeliveryList", new { id = ViewBag.id }, null)
+    </div>
+    <hr />
+</div>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+<script>
+    //On clicking table row
+    document.getElementById('maintable').onclick = function (event) {
+        event = event || window.event;
+        var target = event.target || event.srcElement;
+        while (target && target.nodeName != 'TR') {
+            target = target.parentElement;
+        }
+        var cells = target.cells;
+        if (!cells.length || target.parentNode.nodeName == 'THEAD') {
+            return;
+        }
+        //alert(cells[1].innerHTML);
+        $(function () {
+            $('#getCode').val($.trim(cells[0].innerHTML));
+            $('#getDescription').val($.trim(cells[1].innerHTML));
+            $('#getItemType').val($.trim(cells[2].innerHTML));
+        });
+    }
+
+</script>
+
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #847BAA;
+        color: #ecf0f1;
+        cursor: pointer;
+    }
+</style>

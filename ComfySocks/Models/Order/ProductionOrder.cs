@@ -21,9 +21,9 @@ namespace ComfySocks.Models.Order
         [Display(Name ="ItemCode")]
         public int ItemID { get; set; }
 
-        [Required]
-        [Display(Name ="Product Size")]
-        public ProductSize ProductSize{ get; set; }
+        //[Required]
+        //[Display(Name ="Product Size")]
+        //public ProductSize ProductSize{ get; set; }
 
         [Required]
         [Display(Name ="Product Order Quantity")]
@@ -37,7 +37,6 @@ namespace ComfySocks.Models.Order
 
         public float RemaningDelivery { get; set; }
         //reference
-        public virtual ProductCode ProductCode { get; set; }
         public virtual Item Item { get; set; }
         public virtual ProductionOrderInfo ProductionOrderInfo { get; set; }
     }

@@ -1,111 +1,117 @@
 ﻿@model ComfySocks.Models.SalesInfo.Sales
 @{
-    ViewBag.Title = "New Sales Entry";
+    ViewBag.Title = "Sales Entry";
 }
-@if (ViewBag.Customer != null)
-{
-    <div class="col-sm-8 box box-info">
-        <h4 style="text-align:center">Some information required first</h4>
-        <h5>@ViewBag.custumer</h5>
-    </div>
-}
-else
-{
-    <div class="box box-body box-warning">
-        @using (Html.BeginForm())
-        {
-            @Html.AntiForgeryToken()
 
-            <div class="form-horizontal">
-                @* error message display area *@
-                <div>
-                    <h4 class="text-danger"><strong>@ViewBag.errorMessage</strong></h4>
-                    <h4 class="text-danger"><strong>@ViewBag.succsessMessage</strong></h4>
-                </div>
-                <hr />
-                <div class="col-md-4">
-                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                    @*<div class="form-group">
-                        @Html.LabelFor(model => model.ProductCodeID, "Item Description", htmlAttributes: new { @class = "control-label col-md-4" })
-                        <div class="col-md-8">
-                            @Html.DropDownList("ProductCodeID", null, htmlAttributes: new { @class = "form-control" })
-                            @Html.ValidationMessageFor(model => model.ProductCodeID, "", new { @class = "text-danger" })
-                        </div>
-                    </div>*@
+<div class="box box-body box-primary">
+    @using (Html.BeginForm("NewSalesEntry", "Sales", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
 
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-4" })
-                        <div class="col-md-8">
-                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-4" })
-                        <div class="col-md-8">
-                            @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control" } })
-                            @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="AddToList" class="btn btn-default" />
-                        </div>
+        <div class="form-horizontal">
+            <hr />
+            <div class="col-md-4">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    @Html.LabelFor(model => model.TempProductStockID, "Product", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.DropDownList("TempProductStockID", null, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.TempProductStockID, "", new { @class = "text-danger" })
                     </div>
                 </div>
-                <div class="col-sm-8">
-                    <div style=" background-color:#34495e; color:white; padding:10px">Sales Item</div>
-                    @********table here***********@
-                    <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
-                        @if (ViewBag.sales != null)
-                        {
-                        <table class="table table-border table-striped" id="dtaTable">
-                            <thead>
-                                <tr>
-                                    <th>Item Description</th>
-                                    <th>Item Code</th>
-                                    <th>UOM</th>
-                                    <th>Quantity</th>
-                                    <th>UnitPrice</th>
-                                    <th>TotalPrice</th>
-                                    <th><i class="glyphicon glyphicon-trash"></i></th>
-                                </tr>
-                            </thead>
-                            @if (ViewBag.sales != null)
-                            {
-                                float totalPrice = 0;
-                                foreach (ComfySocks.Models.SalesInfo.Sales items in ViewBag.sales)
-                                {
-
-                                    <tr>
-                                        <td>Code @items.TempProductStock.ProductCode.Code</td>
-                                        <td>@items.TempProductStock.ProductCode.Code</td>
-                                        <td>@items.Quantity</td>
-                                        <td>@items.UnitPrice</td>
-                                        <td>@(totalPrice += (float)(items.UnitPrice * items.Quantity))</td>>
-                                        <td><a href="~/Sales/RemoveSelected?id= @items.TempProductStockID"><span class="fa fa-remove"></span></a></td>
-                                    </tr>
-                                }
-                            }
-
-                        </table>
-                        }
+                <div class="form-group">
+                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                     </div>
-                    <br />
-                    <div>
-                        <a class="btn btn-primary pull-right" href="~/Stocks/NewStockInformation">
-                            Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
-                        </a>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-8">
+                        @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="AddToList" id="btnAdd" class="btn btn-default" />
                     </div>
                 </div>
             </div>
-        }
-
-        <div>
-            @Html.ActionLink("Back to List", "SalesList")
         </div>
-        <hr />
+    }
+    <div class="col-sm-8">
+        <div style=" background-color:#34495e; color:white; padding:10px">Sales Item</div>
+        @********table here***********@
+        <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+            @if (ViewBag.salesitem != null)
+            {
+                <table class="table table-border table-striped" id="dtaTable">
+                    <thead>
+                        <tr>
+                            <th>Item Description</th>
+                            <th>Item Code</th>
+                            <th>UOM</th>
+                            <th>Quantity</th>
+                            <th>UnitPrice</th>
+                            <th>TotalPrice</th>
+                            <th><i class="glyphicon glyphicon-trash"></i></th>
+                        </tr>
+                    </thead>
+                    @foreach (ComfySocks.Models.SalesInfo.Sales s in ViewBag.Salesitem)
+                    {
+                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                        float totalPrice = 0;
+                    <tr>
+                        <td>@{var item = db.TempProductStocks.Find(s.TempProductStockID);}@item.ProductName</td>
+                        <td>@item.ProductCode.Code</td>
+                        <td>@item.Unit.Name</td>
+                        <td>@s.Quantity</td>
+                        <td>@s.UnitPrice</td>
+                        <td>@(totalPrice += (float)(s.Quantity * s.UnitPrice))</td>
+                        <td>@Html.ActionLink(" ", "RemoveSelected", new { id = s.TempProductStockID }, new { @class = "fa fa-remove" })</td>
+                    </tr>
+                    }
+                </table>
+            }
+        </div>
+        <br />
+        <div>
+            <a class="btn btn-primary pull-right" href="~/Sales/NewSalesInfo">
+                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+            </a>
+        </div>
     </div>
+    <div>
+        @Html.ActionLink("Back to List", "SalesList")
+    </div>
+    <hr />
+</div>
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
 
 }
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+
+

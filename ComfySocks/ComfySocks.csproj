@@ -252,18 +252,19 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\AdminLteController.cs" />
     <Compile Include="Controllers\CustomersController.cs" />
-    <Compile Include="Controllers\DeliveryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\IssueController.cs" />
     <Compile Include="Controllers\ItemSettingController.cs" />
     <Compile Include="Controllers\ItemTypesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
-    <Compile Include="Controllers\ProductCodesController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Controllers\RowMateialRequestController .cs" />
     <Compile Include="Controllers\ProductTransferController.cs" />
+    <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RequestController.cs" />
+    <Compile Include="Controllers\RowMaterialDeliveryController.cs" />
     <Compile Include="Controllers\SalesController.cs" />
+    <Compile Include="Controllers\SalesDeliveryController.cs" />
     <Compile Include="Controllers\StocksController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Controllers\SuppliersController.cs" />
@@ -274,9 +275,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202001160732484_IntialCreation.cs" />
-    <Compile Include="Migrations\202001160732484_IntialCreation.Designer.cs">
-      <DependentUpon>202001160732484_IntialCreation.cs</DependentUpon>
+    <Compile Include="Migrations\202001290306195_IntialModel.cs" />
+    <Compile Include="Migrations\202001290306195_IntialModel.Designer.cs">
+      <DependentUpon>202001290306195_IntialModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202001290717240_anychange.cs" />
+    <Compile Include="Migrations\202001290717240_anychange.Designer.cs">
+      <DependentUpon>202001290717240_anychange.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -284,14 +289,14 @@
     <Compile Include="Models\DeliveryInfo\DeliveryInformation.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InventoryModel\AvaliableOnStock.cs" />
+    <Compile Include="Models\InventoryModel\Stock.cs" />
     <Compile Include="Models\InventoryModel\StockInformation.cs" />
     <Compile Include="Models\InventoryModel\Store.cs" />
     <Compile Include="Models\InventoryModel\Supplier.cs" />
+    <Compile Include="Models\ProductInfo\Product.cs" />
     <Compile Include="Models\ProductStock\ProductAvialableOnStock.cs" />
-    <Compile Include="Models\ProductStock\ProductCode.cs" />
+    <Compile Include="Models\ProductStock\TempProductInfo.cs" />
     <Compile Include="Models\ProductStock\TempProductStock.cs" />
-    <Compile Include="Models\Issue\StoreIssue.cs" />
-    <Compile Include="Models\Issue\StoreIssueInfo.cs" />
     <Compile Include="Models\Items\Item.cs" />
     <Compile Include="Models\Items\ItemType.cs" />
     <Compile Include="Models\Items\Units.cs" />
@@ -302,9 +307,12 @@
     <Compile Include="Models\ProductInfo\ProductInformation.cs" />
     <Compile Include="Models\ProductTransferInfo\Transfer.cs" />
     <Compile Include="Models\ProductTransferInfo\TransferInformation.cs" />
+    <Compile Include="Models\Report\SalesReportVM.cs" />
     <Compile Include="Models\Repository\ProductMaterialRepository.cs" />
     <Compile Include="Models\Request\StoreRequest.cs" />
-    <Compile Include="Models\Request\StoreRequestInfo.cs" />
+    <Compile Include="Models\Request\StoreRequestInformation.cs" />
+    <Compile Include="Models\SalesDeliveryInfo\SalesDelivery.cs" />
+    <Compile Include="Models\SalesDeliveryInfo\SalesDeliveryInformation.cs" />
     <Compile Include="Models\SalesInfo\Sales.cs" />
     <Compile Include="Models\SalesInfo\SalesInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -1293,7 +1301,7 @@
     <Content Include="Views\Stores\Edit.cshtml" />
     <Content Include="Views\Stores\Index.cshtml" />
     <Content Include="Views\Request\NewRequestEntry.cshtml" />
-    <Content Include="Views\Issue\IssueList.cshtml" />
+    <Content Include="Views\Issue\RowMaterialDeliveryList.cshtml" />
     <Content Include="Views\Issue\NewIssueEntry.cshtml" />
     <Content Include="Views\Order\NewOrderEntry.cshtml" />
     <Content Include="Views\Request\NewStoreRequsteInfo.cshtml" />
@@ -1308,9 +1316,6 @@
     <Content Include="Views\TestArea\Index.cshtml" />
     <Content Include="Views\Order\OrderDetial.cshtml" />
     <Content Include="Views\Order\OrderHistory.cshtml" />
-    <Content Include="Views\Delivery\DeliveryDetail.cshtml" />
-    <Content Include="Views\Delivery\DeliveryList.cshtml" />
-    <Content Include="Views\Delivery\NewDeliveryEntry.cshtml" />
     <Content Include="Views\Sales\NewSalesEntry.cshtml" />
     <Content Include="Views\Sales\SalesList.cshtml" />
     <Content Include="Views\Sales\SalesDetail.cshtml" />
@@ -1324,16 +1329,22 @@
     <Content Include="Views\Issue\NewStoreIssueInfo.cshtml" />
     <Content Include="Views\ProductTransfer\TransferDetail.cshtml" />
     <Content Include="Views\Product\NewProductInfo.cshtml" />
-    <Content Include="Views\TempProductStocks\Create.cshtml" />
-    <Content Include="Views\TempProductStocks\Delete.cshtml" />
-    <Content Include="Views\TempProductStocks\Details.cshtml" />
-    <Content Include="Views\TempProductStocks\Edit.cshtml" />
-    <Content Include="Views\TempProductStocks\Index.cshtml" />
-    <Content Include="Views\ProductCodes\Create.cshtml" />
-    <Content Include="Views\ProductCodes\Delete.cshtml" />
-    <Content Include="Views\ProductCodes\Details.cshtml" />
-    <Content Include="Views\ProductCodes\Edit.cshtml" />
-    <Content Include="Views\ProductCodes\Index.cshtml" />
+    <Content Include="Views\RowMaterialDelivery\RowMaterialDeliveryList.cshtml" />
+    <Content Include="Views\RowMaterialDelivery\NewRowMaterialDelivery.cshtml" />
+    <Content Include="Views\RowMaterialDelivery\NewRowMaterilDeliveryInfo.cshtml" />
+    <Content Include="Views\Sales\NewSalesInfo.cshtml" />
+    <Content Include="Views\Report\StockReport.cshtml" />
+    <Content Include="Views\RowMaterialDelivery\RowMaterialDeliveryDetail.cshtml" />
+    <Content Include="Views\Report\SalesReport.cshtml" />
+    <Content Include="Views\SalesDelivery\SaleDeliveryList.cshtml" />
+    <Content Include="Views\SalesDelivery\NewSalesDelivery.cshtml" />
+    <Content Include="Views\SalesDelivery\SalesDeliveryDetail.cshtml" />
+    <Content Include="Views\SalesDelivery\SalesDeliveryInfo.cshtml" />
+    <Content Include="Views\TempProductStocks\NewTempoProductEntry.cshtml" />
+    <Content Include="Views\TempProductStocks\TemProductInfo.cshtml" />
+    <Content Include="Views\TempProductStocks\TemporaryProductList.cshtml" />
+    <Content Include="Views\RowMaterialRequest\RowMaterialRequestDetail.cshtml" />
+    <Content Include="Views\RowMaterialRequest\NewRowMaterialRequest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -1344,8 +1355,11 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202001160732484_IntialCreation.resx">
-      <DependentUpon>202001160732484_IntialCreation.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202001290306195_IntialModel.resx">
+      <DependentUpon>202001290306195_IntialModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202001290717240_anychange.resx">
+      <DependentUpon>202001290717240_anychange.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

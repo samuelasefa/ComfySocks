@@ -1,6 +1,8 @@
-﻿@model ComfySocks.Models.DeliveryInfo.DeliveryInformation
+﻿@model ComfySocks.Models.SalesInfo.SalesInformation
 
 @{
+    /**/
+
     ViewBag.Title = null;
 }
 
@@ -11,12 +13,28 @@
             <a href="~/Sales/NewSalesEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/Sales/SalesList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+    </div>
+    <div class="col-md-2">
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        {
+            <div class="row">
+
+                <div class="col-md-6">
+                    <a href="~/Sales/SaleApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                </div>
+                <div class="col-md-6" style="float:right">
+                    <a href="~/Sales/SaleRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                </div>
+            </div>
+        }
     </div>
 </div>
+
 <div class="box box-primary" id="printable">
     <div style="margin:40px">
         <div>
-            <img src='~/Images/logo.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
+            <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
         </div>
         <div class="row">
             <div class="col-md-8">
@@ -45,9 +63,9 @@
                 </tr>
             </thead>
             <tr>
-                <td>Date:</td>
-                <td>Fs No:</td>
-                <td>Invoice Number:</td>
+                <td>Date:@Html.DisplayFor(modelItem => Model.Date)</td>
+                <td>Fs No:@Html.DisplayFor(modelItem => Model.FsNo)</td>
+                <td>Invoice Number:@Html.DisplayFor(modelItem => Model.InvoiceNumber)</td>
             </tr>
             <tr>
                 <td>
@@ -57,58 +75,101 @@
                 </td>
             </tr>
             <tr>
-                <td>Customer Name:</td>
-                <td>TIN:</td>
+                <td>Customer Name:@Html.DisplayFor(modelItem => Model.Customer.FirstName) @Html.DisplayFor(modelItem => Model.Customer.LastName)</td>
+                <td>TIN:@Html.DisplayFor(modelItem => Model.Customer.TinNumber)</td>
             </tr>
             <tr>
-                <td>Address</td>
-                <td>City:</td>
-                <td>SubCity:</td>
+                <td><strong>Address</strong></td>
+                <td>City:@Html.DisplayFor(modelItem => Model.Customer.City)</td>
+                <td>SubCity:@Html.DisplayFor(modelItem => Model.Customer.SubCity)</td>
             </tr>
-            
+
         </table>
         <table class="table well table-bordered">
             <thead>
                 <tr>
                     <td>Item Description</td>
                     <td>Item Code</td>
-                    <td>UOM</td>
+                    <td>Unit</td>
                     <td>Quantity</td>
-                    <td>Unit Price</td>
-                    <td>Total Price</td>
+                    <td>Remark</td>
                 </tr>
             </thead>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            <tr style="float:right">
-                <td></td>
-            </tr>
-            <tr style="float:right">
-                <td></td>
-            </tr>
-            <tr style="float:right">
-                <td></td>
-            </tr>
-            </tr>
+            @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
+            {
+
+                <tr>
+                    <td>
+                        @sales.TempProductStock.ProductName
+                    </td>
+                    <td>@sales.TempProductStock.ProductCode.Code</td>
+                    <td>@sales.TempProductStock.Unit.Name</td>
+                    <td>
+                        @sales.Quantity
+                    </td>
+                    <td>
+                        @sales.UnitPrice
+                    </td>
+                </tr>
+
+            }
         </table>
+
+
+
+
+        @*<table class="table well table-bordered">
+        <thead>
+            <tr>
+                <td>Item Description</td>
+                <td>Item Code</td>
+                <td>UOM</td>
+                <td>Quantity</td>
+                <td>Unit Price</td>
+                <td>Total Price</td>
+            </tr>
+        </thead>
+        @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
+        {
+            float totalPrice = 0;
+            <tr>
+                <td>@sales.TempProductStock.ProductName</td>
+                <td>@sales.TempProductStock.ProductCode.Code</td>
+                <td>@sales.TempProductStock.Unit.Name</td>
+                <td>@sales.Quantity</td>
+                <td>@sales.UnitPrice</td>
+                <td>@(totalPrice = (float)sales.UnitPrice * (float)sales.Quantity)</td>
+            </tr>
+        }*@
+        @*<tr>
+            <td colspan="4"></td>
+            <td>Sub Total:</td>
+            <td>@Html.DisplayFor(modelItem => Model.SubTotal)</td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td>Tax(15%):</td>
+            <td>@Html.DisplayFor(modelItem => Model.Tax)</td>
+        </tr>
+        <tr>
+            <td colspan="4"></td>
+            <td>GrandTotal:</td>
+            <td>@Html.DisplayFor(modelItem => Model.GrandTotal)</td>
+        </tr>*@
+        @*</table>*@
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-3" style="float:left">
-                    Prepared by :
+                    Prepared by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
                 </div>
                 <div class="col-md-3" style="float:left">
-                    Approved by :
+                    Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)
                 </div>
                 <div class="col-md-3" style="float:left">
-                    Checked by :
+                    Checked by :@Html.DisplayFor(modelItem => Model.Checkedby)
                 </div>
                 <div class="col-md-3" style="float:left">
-                    Received by :
+                    Received by :@Html.DisplayFor(modelItem => Model.Reciviedby)
                 </div>
             </div>
             <br />

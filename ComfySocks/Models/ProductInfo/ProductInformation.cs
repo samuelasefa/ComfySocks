@@ -27,45 +27,15 @@ namespace ComfySocks.Models.ProductInfo
         public int StoreID { get; set; }
         [Display(Name = "Recived By")]
         public string ApplicationUserID { get; set; }
+        [Display(Name ="Deliverd  By")]
+        public string Deliverdby { get; set; }
 
 
         //reference
         public virtual Store Store { get; set; }
         public virtual ICollection<Product> Products { get; set; }
-        public virtual Supplier Supplier { get; set; }
         public virtual ApplicationUser ApplicationUser { get; set; }
 
     }
-    [Table("Product")]
-    public partial class Product
-    {
-        public int ID { get; set; }
-        [Required]
-        public int TempProductStockID { get; set; }
-        public int ProductInfoID { get; set; }
-        
-        [Required]
-        public float Quantity { get; set; }
-        public string Remark { get; set; }
-
-        [Required]
-        [Display(Name = "To Store")]
-        public int StoreID { get; set; }
-
-        public float Total { get; set; }
-
-        public virtual ProductInformation ProductInformation { get; set; }
-        public virtual Store Store { get; set; }
-        public virtual TempProductStock TempProductStock { get; set; }
-    }
-    public class ProductViewModel
-    {
-        public int ID { get; set; }
-        public string ProductName { get; set; }
-        public int Code { get; set; }
-        public int BatchNo { get; set; }
-        public string Unit { get; set; }
-
-        public virtual Product Product { get; set; }
-    }
+ 
 }

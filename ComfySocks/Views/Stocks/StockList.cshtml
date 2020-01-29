@@ -1,7 +1,7 @@
-﻿@model IEnumerable<ComfySocks.Models.InventoryModel.StockReferance>
+﻿@model IEnumerable<ComfySocks.Models.InventoryModel.StockInformation>
 
 @{
-    ViewBag.Title = "Stock List";
+    ViewBag.Title = "Purchase Item List";
 }
 
 <div class="box box-body box-primary">
@@ -9,7 +9,7 @@
         @Html.ActionLink("Create New", "NewPurchaseEntry")
     </p>
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style=" background-color:#34495e; color:white";>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
@@ -23,7 +23,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot>
+        <tfoot  style=" background-color:#34495e; color:white";>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
@@ -61,6 +61,8 @@
 
 <script>
     $(document).ready(function () {
-        $("#dtaTable").DataTable({})
+        $("#dtaTable").DataTable({
+            "lengthMenu": [[7, 14, 25, 50, -1], [7, 14, 25, 50, "All"]],
+        })
     })
 </script>

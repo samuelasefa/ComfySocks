@@ -1,7 +1,29 @@
 ﻿@model ComfySocks.Models.ProductInfo.ProductInformation
 
-@{
-    ViewBag.Title = null;
+
+@if (ViewBag.errorList != null)
+{
+    @*<div class="danger">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Item </td>
+                        <td>Selected Quantity</td>
+                        <td>Error Detail</td>
+                    </tr>
+                </thead>
+
+                @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
+                {
+                    <tr>
+                        <td>@error.StoreOrder.Item</td>
+                        <td>@error.StoreOrder.Quantity</td>
+                        <td>@error.Error</td>
+
+                    </tr>
+                }
+            </table>
+        </div>*@
 }
 
 <div class="row">
@@ -11,21 +33,23 @@
             <a href="~/Product/NewProductEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/Product/ProductList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+
     </div>
-    <div class="col-md-2">
+    @*<div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
             <div class="row">
 
                 <div class="col-md-6">
-                    <a href="#">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
                 </div>
                 <div class="col-md-6" style="float:right">
-                    <a href="#">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
                 </div>
             </div>
         }
-    </div>
+    </div>*@
 </div>
 <div class="box box-primary" id="printable">
     <div style="margin:40px">
@@ -34,7 +58,7 @@
         </div>
         <div class="row">
             <div class="col-md-8">
-                <h3 style="text-align:center;text-decoration:underline">Finished Good Reciving Voucher</h3>
+                <h3 style="align-content:center;text-decoration:underline">Finished Good Reciving Voucher</h3>
             </div>
             <div class="col-md-4" style="float:right">
                 Date: @Html.DisplayFor(modelItem => Model.Date)<br />
@@ -50,7 +74,7 @@
             </tr>
             <tr>
                 <td>
-                    To:@Html.DisplayFor(modelItem => Model.Store.Name)
+                    To: @Html.DisplayFor(modelItem => Model.Store.Name)
                 </td>
             </tr>
         </table>
@@ -66,13 +90,16 @@
             </thead>
             @foreach (ComfySocks.Models.ProductInfo.Product product in Model.Products)
             {
+
                 <tr>
                     <td>
                         @product.TempProductStock.ProductName
                     </td>
                     <td>@product.TempProductStock.ProductCode.Code</td>
                     <td>@product.TempProductStock.Unit.Name</td>
-                    <td>@product.Quantity</td>
+                    <td>
+                        @product.Quantity
+                    </td>
                     <td>
                         @product.Remark
                     </td>
@@ -82,14 +109,11 @@
         </table>
         <div id="footer">
             <div class="row" style="margin-top:10%">
-                <div class="col-md-4" style="float:left">
-                    Delivered by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
+                <div class="col-md-8" style="float:left">
+                    Requested by : @Model.ApplicationUser.FullName
                 </div>
-                <div class="col-md-4" style="float:left">
-                    Received by :
-                </div>
-                <div class="col-md-4" style="float:left">
-                    Approved by :
+                <div class="col-md-4" style="float:right">
+                    Deliverd by : @Model.Deliverdby
                 </div>
             </div>
             <br />

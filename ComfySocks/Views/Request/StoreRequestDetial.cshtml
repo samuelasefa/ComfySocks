@@ -1,4 +1,4 @@
-﻿@model ComfySocks.Models.Request.StoreRequestInfo
+﻿@model ComfySocks.Models.Request.StoreRequestInformation
 
 
 @if (ViewBag.errorList != null)
@@ -33,19 +33,24 @@
             <a href="~/Request/NewRequestEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/Request/StoreRequestionList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+
     </div>
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-         <div class="row">
-             
-          <div class="col-md-6">
-             <a href="~/Request/RequestApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
-          </div>
-          <div class="col-md-6" style="float:right">
-              <a href="~/Request/RequestRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-          </div>
-         </div>
+            if (Model.Status == "Submmited")
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="~/Request/RequestApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    </div>
+                    <div class="col-md-6" style="float:right">
+                        <a href="~/Request/RequestRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    </div>
+                </div>
+            }
+
         }
     </div>
 </div>
@@ -149,3 +154,27 @@
 
 </script>
 
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}

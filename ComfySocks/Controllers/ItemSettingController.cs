@@ -24,6 +24,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
             var items = db.Items.Include(i => i.ItemType).Include(i => i.Unit);
+          
 
             if (items.ToList().Count > 0)
             {
@@ -83,6 +84,7 @@ namespace ComfySocks.Controllers
                     ViewBag.RequiredItems = true;
                 }
             }
+
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name");
             ViewBag.UnitID = new SelectList(db.Units, "ID", "Name");
             return View();
@@ -100,7 +102,12 @@ namespace ComfySocks.Controllers
            item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
+                if (item.StoreType == StoreType.ProductMaterial) {
+                    //item.Code += Pm + item.Code;
+                }
+
                 if ((from c in db.Items where c.Code == item.Code select c).Count() == 0) {
+                    
                     db.Items.Add(item);
                     db.SaveChanges();
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ComfySocks.Models.Request.StoreRequestInfo>
+﻿@model IEnumerable<ComfySocks.Models.Request.StoreRequestInformation>
 
 @{
     ViewBag.Title = "Store Requestion List";
@@ -12,9 +12,7 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Remark</th>
+                <th>SR-No</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -22,9 +20,7 @@
         <tfoot>
             <tr>
                 <th>Date</th>
-                <th>Item</th>
-                <th>Quantity</th>
-                <th>Remark</th>
+                <th>SR-No</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -33,15 +29,15 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Date)</td>
-                @foreach (ComfySocks.Models.Request.StoreRequest storeRequest in item.StoreRequest)
-                {
-                    <td>@storeRequest.Item.Name @storeRequest.Item.ItemType.Name</td>
-                    <td>@storeRequest.Quantity</td>
-                    <td>@storeRequest.Remark</td>
-                }
+                <td>@Html.DisplayFor(modelItem => item.StoreRequestNumber)</td>
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "StoreRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+
+                    @if (item.Status == "Approved")
+                    {
+                        @Html.ActionLink("Delivery", "NewRowMaterialDelivery","RowMaterialDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                    }
                 </td>
             </tr>
         }

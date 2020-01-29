@@ -18,7 +18,7 @@ namespace ComfySocks.Models.InventoryModel
         public string No { get; set; }
 
         //referance
-        public virtual ICollection<StockReferance> StockReferances { get; set; }
+        public virtual ICollection<StockInformation> StockInformation { get; set; }
 
 
     }

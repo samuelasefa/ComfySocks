@@ -17,12 +17,16 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Suppliers
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Index()
         {
             return View(db.Suppliers.ToList());
         }
 
         // GET: Suppliers/Details/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -40,6 +44,8 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Suppliers/Create
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Create()
         {
             return View();
@@ -50,6 +56,8 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Create([Bind(Include = "ID,Name,No")] Supplier supplier)
         {
             if (ModelState.IsValid)
@@ -67,6 +75,8 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Suppliers/Edit/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -88,6 +98,8 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Edit([Bind(Include = "ID,Name,No")] Supplier supplier)
         {
             if (ModelState.IsValid)
@@ -103,6 +115,8 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Suppliers/Delete/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -120,6 +134,8 @@ namespace ComfySocks.Controllers
         }
 
         // POST: Suppliers/Delete/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

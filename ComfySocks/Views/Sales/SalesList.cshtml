@@ -1,4 +1,59 @@
-﻿
+﻿@model IEnumerable<ComfySocks.Models.SalesInfo.SalesInformation>
+
 @{
-    ViewBag.Title = "SalesList";
+                /**/
+
+                ViewBag.Title = "Sales List";
 }
+
+<div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "NewSalesEntry")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>FS-No</th>
+                <th>Tin Number</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>FS-No</th>
+                <th>Tin Number</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.Date)</td>
+            <td>@Html.DisplayFor(modelItem => item.Customer.FirstName) @Html.DisplayFor(modelItem => item.Customer.LastName)</td>
+            <td>@Html.DisplayFor(modelItem => item.FsNo)</td>
+            <td>@Html.DisplayFor(modelItem => item.Customer.TinNumber)</td>
+            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+            <td>
+                @Html.ActionLink("View ", "SalesDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+
+                @if (item.Status == "Approved")
+                {
+                    @Html.ActionLink("Delivery", "NewSalesDelivery", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                }
+            </td>
+        </tr>
+        }
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>
