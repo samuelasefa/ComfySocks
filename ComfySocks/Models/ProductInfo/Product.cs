@@ -1,4 +1,5 @@
 ﻿using ComfySocks.Models.ProductStock;
+using ComfySocks.Models.ProductTransferInfo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -13,7 +14,7 @@ namespace ComfySocks.Models.ProductInfo
     {
         public int ID { get; set; }
         [Required]
-        public int TempProductStockID { get; set; }
+        public int TransferProductID { get; set; }
         public int ProductInformationID { get; set; }
 
         [Required]
@@ -26,7 +27,7 @@ namespace ComfySocks.Models.ProductInfo
         public float PPTotal { get; set; }
 
         public virtual ProductInformation ProductInformation { get; set; }
-        public virtual TempProductStock TempProductStock { get; set; }
+        public virtual Transfer Transfer { get; set; }
     }
     public class ProductViewModel
     {

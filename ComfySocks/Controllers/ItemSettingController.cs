@@ -17,7 +17,7 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ItemSetting
-        [Authorize(Roles ="Super Admin, Admin, StoreManager")]
+        [Authorize(Roles ="Super Admin, Admin, Store Manager")]
         public ActionResult Index()
         { //Succsess and error message goes upon here
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -38,7 +38,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemSetting/Details/5
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -56,7 +56,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemSetting/Create
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create()
         {
             //error Message display
@@ -95,24 +95,20 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles ="Super Admin, Admin")]
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create(Item item)
         {
            item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                if (item.StoreType == StoreType.ProductMaterial) {
-                    //item.Code += Pm + item.Code;
-                }
+                    if ((from c in db.Items where c.Code == item.Code select c).Count() == 0)
+                    {
 
-                if ((from c in db.Items where c.Code == item.Code select c).Count() == 0) {
-                    
-                    db.Items.Add(item);
-                    db.SaveChanges();
-                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
-                    return RedirectToAction("Create");
-                }
+                        db.Items.Add(item);
+                        db.SaveChanges();
+                        TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
+                        return RedirectToAction("Create");
+                    }
                 ViewBag.errorMessage = "Duplicate item Code";
             }
 
@@ -122,7 +118,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemSetting/Edit/5
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -144,7 +140,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Edit(Item item)
         {
             item.ApplicationUserID = User.Identity.GetUserId();
@@ -160,7 +156,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemSetting/Delete/5
-        [Authorize(Roles = "Super Admin, Admin, StoreManager")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -183,8 +179,20 @@ namespace ComfySocks.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Item item = db.Items.Find(id);
-            db.Items.Remove(item);
-            db.SaveChanges();
+
+            if (item == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Item to remove";
+            }
+            if ((from i in db.Items where i.ItemTypeID == id select i).Count() > 0) {
+                ViewBag.errorMessage = "You can't remove item information related item is found!!";
+            }
+            else
+            {
+                db.Items.Remove(item);
+                db.SaveChanges();
+                TempData[User.Identity.GetUserId() + "successMessage"] = "Item is Removed";
+            }
             return RedirectToAction("Index");
         }
 

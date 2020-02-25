@@ -1,153 +1,143 @@
-﻿@model IEnumerable<ComfySocks.Models.Report.SalesReportVM>
-@{
-    ViewBag.Title = null;
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-<div class="box box-body box-success">
-    <div style="float:right"><a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a></div>
-    <h2 style="text-align:center; color:aqua">Sales Report</h2>
-</div>
+﻿@model IEnumerable<ComfySocks.Models.Items.Item>
 
-<div class="box box-body box-primary" id="printable" >
-    
+@{
+
+    ViewBag.Title = "Sales Report";
+}
+
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
+@*<link href="~/Scripts/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />*@
+<div class="box box-success box-body">
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead>
             <tr>
                 <th>
-                    @Html.DisplayNameFor(model => model.ID)
+                    ID #
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ProductName)
+                    Description
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ItemCode)
+                    Item Code
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Unit)
+                    Unit
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.UnitPrice)
+                    Quantity
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.TotalPrice)
+                    UnitPrice
                 </th>
                 <th>
-                    LogicalRRQ
+                    TotalPrice
                 </th>
-                <th>
-                    LogicalPA
-                </th>
-                <th>
-                    PhysicalPPA
-                </th>
-                <th>
-                    PhysicalPRRQ
-                </th>
-                <th>Action</th>
             </tr>
         </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ID)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Unit.Name)
+                    </td>
+                    <td>
+                        @{ var items = db.Sales.First();}
+                        @items.Quantity
+                    </td>
+                    <td>
+                        @items.UnitPrice
+                    </td>
+                    <td>
+                        @(items.Quantity * items.UnitPrice)
+                    </td>
+                </tr>
+
+            }
+        </tbody>
         <tfoot>
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ItemCode)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Unit)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.UnitPrice)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.TotalPrice)
-                </th>
-                <th>
-                    LogicalRRQ
-                </th>
-                <th>
-                    LogicalPA
-                </th>
-                <th>
-                    PhysicalPPA
-                </th>
-                <th>
-                    PhysicalPRRQ
-                </th>
-                <th>Action</th>
+                <th colspan="6" class="text-right">Total:</th>
+                <th colspan="2"></th>
             </tr>
         </tfoot>
-
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ProductName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ItemCode)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Unit)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.UnitPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalPrice)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LogicalRecentlyReducedQuantityID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.LogicalProductAvalaiableID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhysicalProductAvalaiableID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.PhysicalRecentlyReducedQuantityID)
-                </td>
-                <td><a class="btn-sm btn btn-info" href="~/Product/ProductDetail?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a></td>
-
-            </tr>
-        }
-
     </table>
 
+
 </div>
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+@*<script src="~/Scripts/DataTables/DataTables-1.10.9/js/jquery.dataTables.min.js"></script>*@
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.flash.min.js"></script>
+<script src="~/Scripts/DataTables/JSZip-2.5.0/jszip.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.html5.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.print.js"></script>
 
 <script>
+    $("#dtaTable").DataTable({
+        "dom": 'Bfrtip',
+        "buttons": [
+            {
+                extend: 'copy',
+                footer: true,
+                className: 'copyButton',
+                text: '<i class="fa fa-clone"></i> Copy'
+            },
+            {
+                extend: 'excel',
+                text: '<i class="fa fa-file-excel-o"></i> Excel'
+            },
+            {
+                extend: 'pdf',
+                text: '<i class="fa fa-file-pdf-o"></i> Pdf'
+            },
+            {
+                extend: 'print',
+                text: '<i class="fa fa-print"></i> Print'
+            }
+        ],
+        "footerCallback": function (row, data, start, end, display) {
+            var api = this.api(), data;
 
-    function Print() {
-        var utc = "<h4>Report date</h4>" + new Date().toJSON().slice(0, 10).replace(/-/g, '/');
-        var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
+            // Remove the formatting to get integer data for summation
+            var intVal = function (i) {
+                return typeof i === 'string' ?
+                    i.replace(/[\$,]/g, '') * 1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
 
-        var footstr = "</body><html>";
-        var dis = "<h3>Salse Report</h3>";
+            // Total over all pages
+            total = api
+                .column(5)
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
 
-        var newstr = document.getElementById('printable').innerHTML;
-        var oldstr = document.body.innerHTML;
-        document.body.innerHTML = dis + utc + headstr + newstr + footstr;
-        window.print();
+            // Total over this page
+            pageTotal = api
+                .column(5, { page: 'current' })
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
 
-        document.body.innerHTML = oldstr;
-
-
-        return false;
-    }
-
-    $(document).ready(function ()
-    {
-        $("#dtaTable").DataTable({})
-    })
-
-
+            // Update footer
+            $(api.column(5).footer()).html(
+                '$' + pageTotal + ' ( $' + total + ' total)'
+            );
+        }
+    });
 </script>

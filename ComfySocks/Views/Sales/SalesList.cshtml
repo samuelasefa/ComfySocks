@@ -6,12 +6,12 @@
                 ViewBag.Title = "Sales List";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     <p>
         @Html.ActionLink("Create New", "NewSalesEntry")
     </p>
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>Date</th>
                 <th>Customer</th>
@@ -21,7 +21,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot>
+        <tfoot style="background-color:#00CCD2; color:white">
             <tr>
                 <th>Date</th>
                 <th>Customer</th>
@@ -44,7 +44,7 @@
 
                 @if (item.Status == "Approved")
                 {
-                    @Html.ActionLink("Delivery", "NewSalesDelivery", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                    @Html.ActionLink("Delivery", "SalesDeliveryList", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
                 }
             </td>
         </tr>

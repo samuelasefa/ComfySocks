@@ -17,7 +17,7 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ItemTypes
-        [Authorize(Roles="Super Admin, Admin")]
+        [Authorize(Roles="Super Admin, Admin, Store Manager")]
         public ActionResult Index()
         {
             //error Message display
@@ -35,7 +35,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemTypes/Details/
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Details(int? id)
         {
@@ -58,7 +58,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemTypes/Create
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Create()
         {
@@ -74,7 +74,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create([Bind(Include = "ID,Name,ApplicationUserID")] ItemType itemType)
         {
 
@@ -97,7 +97,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemTypes/Edit/5
-        [Authorize(Roles="Super Admin, Admin")]
+        [Authorize(Roles="Super Admin, Admin, Store Manager")]
         
         public ActionResult Edit(int? id)
         {
@@ -124,7 +124,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Edit([Bind(Include = "ID,Name,ApplicationUserID")] ItemType itemType)
         {
@@ -147,7 +147,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemTypes/Delete/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Delete(int? id)
         {
@@ -170,7 +170,7 @@ namespace ComfySocks.Controllers
         }
 
         // POST: ItemTypes/Delete/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

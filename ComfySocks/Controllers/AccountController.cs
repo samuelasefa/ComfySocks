@@ -59,7 +59,12 @@ namespace ComfySocks.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
+            
             ViewBag.ReturnUrl = returnUrl;
+            if (User.Identity.GetUserId() != null)
+            {
+                return RedirectToAction("Unautorize", "Home", null);
+            }
             return View();
         }
 
@@ -217,7 +222,7 @@ namespace ComfySocks.Controllers
                     TempData[User.Identity.GetUserId() + "SuccsessMessage"] = "New User Created";
                     return RedirectToAction("UserList", "Account");
                 }
-                ViewBag.Role = new SelectList(db.Roles, "Name", "Name");
+                ViewBag.Role = new SelectList(db.Roles, "ID", "Name");
                 AddErrors(result);
             }
 

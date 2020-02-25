@@ -3,7 +3,9 @@
 @{
     ViewBag.Title = null;
 }
-
+@{
+    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+}
 <div class="row">
     <div class="col-md-10">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
@@ -11,23 +13,27 @@
             <a href="~/Order/NewOrderEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/Order/OrderHistory" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
     </div>
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-            <div class="row">
+            if (Model.Status == "Submmited")
+            {
+                <div class="row">
 
-                <div class="col-md-6">
-                    <a href="#">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    <div class="col-md-6">
+                        <a href="~/Order/OrderApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    </div>
+                    <div class="col-md-6" style="float:right">
+                        <a href="~/Order/OrderRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    </div>
                 </div>
-                <div class="col-md-6" style="float:right">
-                    <a href="#">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-                </div>
-            </div>
+            }
         }
     </div>
 </div>
-<div class="box box-primary" id="printable" style="margin-bottom:20px">
+<div class="box box-info" id="printable" style="margin-bottom:20px">
     <div style="margin:40px">
         <div>
              <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -37,7 +43,7 @@
                 <h3 style="text-align:center;text-decoration:underline">Production Order</h3>
             </div>
             <div class="col-md-4" style="float:right">
-                Date: @Html.DisplayFor(modelItem => Model.Date)<br />
+                Date:@Html.DisplayFor(modelItem => Model.Date)<br />
                 @Html.DisplayFor(modelItem => Model.OrderNumber)
             </div>
         </div>
@@ -45,12 +51,12 @@
         <table class="table">
             <tr>
                 <td>
-                    To:_______________________
+                    From: @Html.DisplayFor(modelItem => Model.From)
                 </td>
             </tr>
             <tr>
                 <td>
-                    From:_____________________
+                    To: @Html.DisplayFor(modelItem => Model.To)
                 </td>
             </tr>
         </table>
@@ -68,28 +74,30 @@
             <tr>
                 <td><strong style="text-decoration:underline">2)Description of Production Order: </strong></td>
             </tr>
+            <tr>
+                <th>Order No.</th>
+                <th>Product Code</th>
+                <th>Product Size</th>
+                <th>Product Order Quantity</th>
+                <th>Expected Delivery Date</th>
+            </tr>
             @foreach (ComfySocks.Models.Order.ProductionOrder po in Model.ProductionOrders)
             {
-                <tr>
-                    <td>
-                        2.1 Product Code:-@po.Item.Code
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        2.2 Product Size:-@po.ProductSize
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        2.3 Product Order Quantity:-@po.Quantity
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        2.4  Expacted Delivery Date:-@po.Date
-                    </td>
-                </tr>
+            <tr>
+                <td>@po.ID</td>
+                <td>
+                    @po.Item.Code
+                </td>
+                <td>
+                    @po.ProductSize
+                </td>
+                <td>
+                    @po.Quantity
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => po.Date)
+                </td>
+            </tr>
             }
 
         </table>
@@ -123,6 +131,11 @@
         return false;
     }
 
-
+    //datepicker
+    $(function () {
+        $(".datepicker").datepicker({
+            format: 'MM-dd-yyyy'
+        });
+    });
 </script>
 

@@ -26,7 +26,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stores/Details/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Details(int? id)
         {
@@ -43,7 +43,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stores/Create
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Create()
         {
@@ -55,23 +55,27 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Create([Bind(Include = "ID,Name,Location,ApplicationUserID")] Store store)
         {
             store.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                db.Stores.Add(store);
-                db.SaveChanges();
-                TempData[User.Identity.GetUserId() + "succsessMessage"] = "New Store Created!";
-                return RedirectToAction("Index");
+                if ((from s in db.Stores where s.Name == store.Name || s.Location == store.Location select s).Count() == 0)
+                {
+                    db.Stores.Add(store);
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New Store Created!";
+                    return RedirectToAction("Index");
+                }
+                ViewBag.errorMessage = "Duplicate Store Name or Location";
             }
             return View(store);
         }
 
         // GET: Stores/Edit/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Edit(int? id)
         {
@@ -92,23 +96,26 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Edit([Bind(Include = "ID,Name,Location,ApplicationUserID")] Store store)
         {
             store.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                db.Entry(store).State = EntityState.Modified;
-                db.SaveChanges();
-                TempData[User.Identity.GetUserId() + "succsessMessage"] = "Store Is Edited Succesfully!!";
-                return RedirectToAction("Index");
+                if ((from s in db.Stores where s.Name == store.Name || s.Location == store.Location select s).Count()==0){
+                    db.Entry(store).State = EntityState.Modified;
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "Store Is Edited Succesfully!!";
+                    return RedirectToAction("Index");
+                }
+                ViewBag.errorMessage = "Duplicate update is found";
             }
             return View(store);
         }
 
         // GET: Stores/Delete/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Delete(int? id)
         {
@@ -125,7 +132,7 @@ namespace ComfySocks.Controllers
         }
 
         // POST: Stores/Delete/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]

@@ -1,45 +1,109 @@
 ﻿@model IEnumerable<ComfySocks.Models.ProductStock.TempProductInfo>
 
 @{
-    ViewBag.Title = "TemporaryProductList";
+    ViewBag.Title = "Temporary Product List";
 }
 
-<h2>TemporaryProductList</h2>
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Date)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Reciviedby)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Approvedby)
-        </th>
-        <th></th>
-    </tr>
+<div class="box box-primary box-body">
+    <p>
+        @Html.ActionLink("Create New", "NewTempoProductEntry")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead style=" background-color:#34495e; color:white" ;>
+            <tr>
+                <th>
+                    Date
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Reciviedby)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>Action</th>
+            </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Reciviedby)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Approvedby)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
+        </thead>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Reciviedby)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a class="btn-sm btn btn-info" href="~/TempProductStocks/TempProductStockDetails?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({});
+    })
+    function ItemSelected(id, Code) {
+        document.getElementById("ItemID").value = id, Code;
+    }
+
+    //datatabale
+    $("#maintable").DataTable({
+        "info": false,
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        "lengthChange": false,
+    });
+</script>
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
 }
 
-</table>
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}

@@ -4,7 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
@@ -41,3 +41,43 @@
         @Html.ActionLink("Back to List", "Index")
     </div>
 </div>
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}

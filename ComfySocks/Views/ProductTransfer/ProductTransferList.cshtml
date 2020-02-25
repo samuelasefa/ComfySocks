@@ -1,4 +1,99 @@
-﻿
+﻿@model IEnumerable<ComfySocks.Models.ProductTransferInfo.TransferInformation>
 @{
-    ViewBag.Title = "Product Transfer List";
+    ViewBag.Title = "Transfered Product List";
 }
+
+<div class="box box-info box-body">
+    <p>
+        @Html.ActionLink("Create New", "NewTransferEntry", new { @id = ViewBag.ID })
+    </p>
+
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead style=" background-color:#00CCD2; color:white" ;>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Date)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.ApplicationUserID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Status)
+                </th>
+                <th>Action</th>
+            </tr>
+
+        </thead>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.ActionLink("View ", "TransferDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+
+                </td>
+            </tr>
+        }
+
+    </table>
+
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({});
+    })
+</script>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+

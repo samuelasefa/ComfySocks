@@ -1,0 +1,46 @@
+﻿@model IEnumerable<ComfySocks.Models.OfficeRequest.OfficeMaterialRequestInformation>
+
+@{
+    ViewBag.Title = "Office Material Requestion List";
+}
+
+<div class="box box-body box-primary">
+    <p>
+        @Html.ActionLink("Create New", "NewOfficeMaterialRequest")
+    </p>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead style="background-color:#00CCD2; color:white">
+            <tr>
+                <th>Date</th>
+                <th>SR-No</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tfoot style="background-color:#00CCD2; color:white">
+            <tr>
+                <th>Date</th>
+                <th>SR-No</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </tfoot>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.StoreRequestNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @Html.ActionLink("View ", "OfficeMaterialRequestDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                </td>
+            </tr>
+        }
+    </table>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({})
+    })
+</script>

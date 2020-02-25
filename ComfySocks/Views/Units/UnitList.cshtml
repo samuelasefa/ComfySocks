@@ -4,26 +4,25 @@
     ViewBag.Title = "Unit List";
 }
 
-<div class="box box-primary box-body">
-    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
-    {
+<div class="box box-info box-body">
         <p>
             @Html.ActionLink("Create New", "Create")
         </p>
-    }
         <table class="table">
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.ID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
-                {
-                    <th>Action</th>
-                }
-            </tr>
+            <thead>
+                <tr style="background-color:#00CCD2; color:white">
+                    <th>
+                        @Html.DisplayNameFor(model => model.ID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
             @if (Model.Count() == 0)
             {
                 <div class="jumbotron">

@@ -1,18 +1,22 @@
-﻿using ComfySocks.Models.DeliveryInfo;
-using ComfySocks.Models.Items;
+﻿using ComfySocks.Models.Items;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace ComfySocks.Models.Request
 {
     public partial class StoreRequest
     {
         public int ID { get; set; }
+       
         public int StoreRequestInformationID { get; set; }
+        [Required]
+        [Display(Name = "Item")]
         public int ItemID { get; set; }
+        
         public float Quantity { get; set; }
         public string Remark { get; set; }
         public bool Deliverd { get; set; }
@@ -20,7 +24,6 @@ namespace ComfySocks.Models.Request
 
         public float RemaningDelivery { get; set; }
         //references
-        public virtual ICollection<Delivery> Deliveries { get; set; }
         public virtual Item Item { get; set; }
         public virtual StoreRequestInformation StoreRequestInformation { get; set; }
     }

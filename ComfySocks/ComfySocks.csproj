@@ -44,6 +44,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <IncludeIisSettings>true</IncludeIisSettings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AdminLte, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -97,6 +98,12 @@
     <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.1\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.4.1\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.SignalR.SystemWeb, Version=2.4.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.4.1\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
       <Private>True</Private>
@@ -136,6 +143,7 @@
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.1\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
@@ -256,37 +264,44 @@
     <Compile Include="Controllers\ItemSettingController.cs" />
     <Compile Include="Controllers\ItemTypesController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\PurchaseRequestController.cs" />
+    <Compile Include="Controllers\OfficeIssueController.cs" />
+    <Compile Include="Controllers\RowIssueController.cs" />
+    <Compile Include="Controllers\SalesDeliveryController.cs" />
+    <Compile Include="Controllers\StockAvailableController.cs" />
+    <Compile Include="Controllers\ProductStocksController.cs" />
+    <Compile Include="Controllers\StocksController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
-    <Compile Include="Controllers\RowMateialRequestController .cs" />
+    <Compile Include="Controllers\OfficeMaterialRequestController.cs" />
     <Compile Include="Controllers\ProductTransferController.cs" />
     <Compile Include="Controllers\ReportController.cs" />
     <Compile Include="Controllers\RequestController.cs" />
-    <Compile Include="Controllers\RowMaterialDeliveryController.cs" />
     <Compile Include="Controllers\SalesController.cs" />
-    <Compile Include="Controllers\SalesDeliveryController.cs" />
-    <Compile Include="Controllers\StocksController.cs" />
     <Compile Include="Controllers\StoresController.cs" />
     <Compile Include="Controllers\SuppliersController.cs" />
-    <Compile Include="Controllers\TempProductStocksController.cs" />
     <Compile Include="Controllers\TestAreaController.cs" />
     <Compile Include="Controllers\UnitsController.cs" />
     <Compile Include="GlimpseSecurityPolicy.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202001290306195_IntialModel.cs" />
-    <Compile Include="Migrations\202001290306195_IntialModel.Designer.cs">
-      <DependentUpon>202001290306195_IntialModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202001290717240_anychange.cs" />
-    <Compile Include="Migrations\202001290717240_anychange.Designer.cs">
-      <DependentUpon>202001290717240_anychange.cs</DependentUpon>
+    <Compile Include="Migrations\202002250706179_IntialModel.cs" />
+    <Compile Include="Migrations\202002250706179_IntialModel.Designer.cs">
+      <DependentUpon>202002250706179_IntialModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\DeliveryInfo\Delivery.cs" />
-    <Compile Include="Models\DeliveryInfo\DeliveryInformation.cs" />
+    <Compile Include="Models\OfficeRequest\OfficeMaterialRequest.cs" />
+    <Compile Include="Models\OfficeRequest\OfficeMaterialRequestInformation.cs" />
+    <Compile Include="Models\PurchaseRequest\Purchase.cs" />
+    <Compile Include="Models\PurchaseRequest\PurchaseInformation.cs" />
+    <Compile Include="Models\OfficeIssueInfo\OfficeIssue.cs" />
+    <Compile Include="Models\OfficeIssueInfo\OfficeIssueInformation.cs" />
+    <Compile Include="Models\RowIssueInfo\RowIssue.cs" />
+    <Compile Include="Models\RowIssueInfo\RowIssueInformation.cs" />
+    <Compile Include="Models\SalesDeliveryInfo\SalesDelivery.cs" />
+    <Compile Include="Models\SalesDeliveryInfo\SalesDeliveryInformation.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\InventoryModel\AvaliableOnStock.cs" />
     <Compile Include="Models\InventoryModel\Stock.cs" />
@@ -295,8 +310,8 @@
     <Compile Include="Models\InventoryModel\Supplier.cs" />
     <Compile Include="Models\ProductInfo\Product.cs" />
     <Compile Include="Models\ProductStock\ProductAvialableOnStock.cs" />
-    <Compile Include="Models\ProductStock\TempProductInfo.cs" />
-    <Compile Include="Models\ProductStock\TempProductStock.cs" />
+    <Compile Include="Models\ProductStock\ProStock.cs" />
+    <Compile Include="Models\ProductStock\ProStockInformation.cs" />
     <Compile Include="Models\Items\Item.cs" />
     <Compile Include="Models\Items\ItemType.cs" />
     <Compile Include="Models\Items\Units.cs" />
@@ -305,21 +320,26 @@
     <Compile Include="Models\Order\ProductionOrder.cs" />
     <Compile Include="Models\Order\ProductionOrderInfo.cs" />
     <Compile Include="Models\ProductInfo\ProductInformation.cs" />
+    <Compile Include="Models\ProductTransferInfo\ProductlogicalAvaliable.cs" />
     <Compile Include="Models\ProductTransferInfo\Transfer.cs" />
     <Compile Include="Models\ProductTransferInfo\TransferInformation.cs" />
     <Compile Include="Models\Report\SalesReportVM.cs" />
     <Compile Include="Models\Repository\ProductMaterialRepository.cs" />
     <Compile Include="Models\Request\StoreRequest.cs" />
     <Compile Include="Models\Request\StoreRequestInformation.cs" />
-    <Compile Include="Models\SalesDeliveryInfo\SalesDelivery.cs" />
-    <Compile Include="Models\SalesDeliveryInfo\SalesDeliveryInformation.cs" />
     <Compile Include="Models\SalesInfo\Sales.cs" />
     <Compile Include="Models\SalesInfo\SalesInformation.cs" />
+    <Compile Include="NotificationComponent.cs" />
+    <Compile Include="NotificationHub.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Repository\RowMaterialRepositery.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\ComfySocks.mdf" />
+    <Content Include="App_Data\ComfySocks_log.ldf">
+      <DependentUpon>ComfySocks.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\AdminLTE\AdminLTE.css" />
     <Content Include="Content\AdminLTE\AdminLTE.min.css" />
     <Content Include="Content\AdminLTE\img\avatar.png" />
@@ -513,13 +533,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Images\a3.png" />
-    <Content Include="Images\a8.png" />
-    <Content Include="Images\blur-celebration-christmas-688011.jpg" />
-    <Content Include="Images\brown-close-up-color-267345 %281%29.jpg" />
-    <Content Include="Images\little.jpg" />
-    <Content Include="Images\print logo.jpg" />
-    <Content Include="Images\s1.jpg" />
+    <Content Include="Images\ENINFrontPage.PNG" />
     <Content Include="Scripts\AdminLTE\app.js" />
     <Content Include="Scripts\AdminLTE\app.min.js" />
     <Content Include="Scripts\AdminLTE\demo.js" />
@@ -1080,85 +1094,19 @@
     <Content Include="Content\TableTools\media\images\printer.psd" />
     <Content Include="Content\TableTools\media\ZeroClipboard\ZeroClipboard.as" />
     <Content Include="Content\TableTools\media\ZeroClipboard\ZeroClipboard.fla" />
+    <Content Include="libman.json" />
+    <Content Include="Content\font-awesome-4.5.0\fonts\Bauhaus Medium.otf" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
     <None Include="Scripts\jquery-3.3.1.intellisense.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.js" />
     <Content Include="Scripts\bootstrap-datetimepicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="Scripts\datatables.min.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.bootstrap.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.bootstrap.min.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.dataTables.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.dataTables.min.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.foundation.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.foundation.min.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.jqueryui.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\css\autoFill.jqueryui.min.css" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.bootstrap.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.bootstrap.min.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.foundation.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.foundation.min.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.jqueryui.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\autoFill.jqueryui.min.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\dataTables.autoFill.js" />
-    <Content Include="Scripts\DataTables\AutoFill-2.0.0\js\dataTables.autoFill.min.js" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.bootstrap.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.bootstrap.min.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.dataTables.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.dataTables.min.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.foundation.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.foundation.min.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.jqueryui.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\css\colReorder.jqueryui.min.css" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\js\dataTables.colReorder.js" />
-    <Content Include="Scripts\DataTables\ColReorder-1.2.0\js\dataTables.colReorder.min.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.bootstrap.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.bootstrap.min.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.foundation.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.foundation.min.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.jqueryui.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\dataTables.jqueryui.min.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\jquery.dataTables.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\jquery.dataTables.min.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\css\jquery.dataTables_themeroller.css" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\images\sort_asc.png" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\images\sort_asc_disabled.png" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\images\sort_both.png" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\images\sort_desc.png" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\images\sort_desc_disabled.png" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.bootstrap.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.bootstrap.min.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.foundation.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.foundation.min.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.jqueryui.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\dataTables.jqueryui.min.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\jquery.dataTables.js" />
-    <Content Include="Scripts\DataTables\DataTables-1.10.9\js\jquery.dataTables.min.js" />
     <Content Include="Scripts\DataTables\datatables.css" />
     <Content Include="Scripts\DataTables\datatables.js" />
     <Content Include="Scripts\DataTables\datatables.min.css" />
     <Content Include="Scripts\DataTables\datatables.min.js" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.bootstrap.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.bootstrap.min.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.dataTables.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.dataTables.min.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.foundation.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.foundation.min.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.jqueryui.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\css\responsive.jqueryui.min.css" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\js\dataTables.responsive.js" />
-    <Content Include="Scripts\DataTables\Responsive-1.0.7\js\dataTables.responsive.min.js" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.bootstrap.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.bootstrap.min.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.dataTables.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.dataTables.min.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.foundation.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.foundation.min.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.jqueryui.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\css\select.jqueryui.min.css" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\js\dataTables.select.js" />
-    <Content Include="Scripts\DataTables\Select-1.0.1\js\dataTables.select.min.js" />
-    <Content Include="Scripts\DataTables\TableTools.js" />
     <Content Include="Scripts\Highcharts-4.0.1\js\adapters\standalone-framework.js" />
     <Content Include="Scripts\Highcharts-4.0.1\js\adapters\standalone-framework.src.js" />
     <Content Include="Scripts\Highcharts-4.0.1\js\highcharts-3d.js" />
@@ -1198,6 +1146,8 @@
     <Content Include="Scripts\jquery-3.3.1.slim.min.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.js" />
     <Content Include="Scripts\jquery-ui-1.11.4.min.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.1.js" />
+    <Content Include="Scripts\jquery.signalR-2.4.1.min.js" />
     <Content Include="Scripts\jquery.steps.js" />
     <Content Include="Scripts\jquery.steps.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -1235,7 +1185,7 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
+    <Content Include="Views\Home\Unautorize.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -1276,11 +1226,6 @@
     <Content Include="Views\ItemSetting\Details.cshtml" />
     <Content Include="Views\ItemSetting\Edit.cshtml" />
     <Content Include="Views\ItemSetting\Index.cshtml" />
-    <Content Include="Views\StoreTypes\Create.cshtml" />
-    <Content Include="Views\StoreTypes\Delete.cshtml" />
-    <Content Include="Views\StoreTypes\Details.cshtml" />
-    <Content Include="Views\StoreTypes\Edit.cshtml" />
-    <Content Include="Views\StoreTypes\Index.cshtml" />
     <Content Include="Views\ItemTypes\Create.cshtml" />
     <Content Include="Views\ItemTypes\Delete.cshtml" />
     <Content Include="Views\ItemTypes\Details.cshtml" />
@@ -1301,8 +1246,6 @@
     <Content Include="Views\Stores\Edit.cshtml" />
     <Content Include="Views\Stores\Index.cshtml" />
     <Content Include="Views\Request\NewRequestEntry.cshtml" />
-    <Content Include="Views\Issue\RowMaterialDeliveryList.cshtml" />
-    <Content Include="Views\Issue\NewIssueEntry.cshtml" />
     <Content Include="Views\Order\NewOrderEntry.cshtml" />
     <Content Include="Views\Request\NewStoreRequsteInfo.cshtml" />
     <Content Include="Views\Request\StoreRequestDetial.cshtml" />
@@ -1319,47 +1262,54 @@
     <Content Include="Views\Sales\NewSalesEntry.cshtml" />
     <Content Include="Views\Sales\SalesList.cshtml" />
     <Content Include="Views\Sales\SalesDetail.cshtml" />
-    <Content Include="Views\Issue\IssueDetail.cshtml" />
-    <Content Include="Views\Product\NewProductEntry.cshtml" />
     <Content Include="Views\Product\ProductList.cshtml" />
-    <Content Include="Views\Product\ProductDetail.cshtml" />
     <Content Include="Views\ProductTransfer\ProductTransferList.cshtml" />
     <Content Include="Views\ProductTransfer\NewTransferEntry.cshtml" />
     <Content Include="Views\ProductTransfer\NewTransferInfo.cshtml" />
-    <Content Include="Views\Issue\NewStoreIssueInfo.cshtml" />
     <Content Include="Views\ProductTransfer\TransferDetail.cshtml" />
-    <Content Include="Views\Product\NewProductInfo.cshtml" />
-    <Content Include="Views\RowMaterialDelivery\RowMaterialDeliveryList.cshtml" />
-    <Content Include="Views\RowMaterialDelivery\NewRowMaterialDelivery.cshtml" />
-    <Content Include="Views\RowMaterialDelivery\NewRowMaterilDeliveryInfo.cshtml" />
     <Content Include="Views\Sales\NewSalesInfo.cshtml" />
     <Content Include="Views\Report\StockReport.cshtml" />
-    <Content Include="Views\RowMaterialDelivery\RowMaterialDeliveryDetail.cshtml" />
     <Content Include="Views\Report\SalesReport.cshtml" />
-    <Content Include="Views\SalesDelivery\SaleDeliveryList.cshtml" />
-    <Content Include="Views\SalesDelivery\NewSalesDelivery.cshtml" />
-    <Content Include="Views\SalesDelivery\SalesDeliveryDetail.cshtml" />
-    <Content Include="Views\SalesDelivery\SalesDeliveryInfo.cshtml" />
     <Content Include="Views\TempProductStocks\NewTempoProductEntry.cshtml" />
     <Content Include="Views\TempProductStocks\TemProductInfo.cshtml" />
     <Content Include="Views\TempProductStocks\TemporaryProductList.cshtml" />
-    <Content Include="Views\RowMaterialRequest\RowMaterialRequestDetail.cshtml" />
-    <Content Include="Views\RowMaterialRequest\NewRowMaterialRequest.cshtml" />
+    <Content Include="Views\OfficeMaterialRequest\OfficeMaterialRequestionList.cshtml" />
+    <Content Include="Views\OfficeMaterialRequest\NewOfficeMaterialRequest.cshtml" />
+    <Content Include="Views\TempProductStocks\TempProductStockDetails.cshtml" />
+    <Content Include="Views\OfficeMaterialRequest\OfficeMaterialRequestDetail.cshtml" />
+    <Content Include="Views\OfficeMaterialRequest\NewOfficeMaterialInfo.cshtml" />
+    <Content Include="Views\StockAvailable\StockAvailable.cshtml" />
+    <Content Include="Views\Product\ProductDetail.cshtml" />
+    <Content Include="Views\ProductStocks\NewProductEntry.cshtml" />
+    <Content Include="Views\ProductStocks\NewProductStockInformation.cshtml" />
+    <Content Include="Views\ProductStocks\ProductStockDetails.cshtml" />
+    <Content Include="Views\ProductStocks\ProductStockList.cshtml" />
+    <Content Include="Views\SalesDelivery\NewSalesDelivery.cshtml" />
+    <Content Include="Views\SalesDelivery\NewSalesDeliveryInfo.cshtml" />
+    <Content Include="Views\SalesDelivery\SalesDeliveryList.cshtml" />
+    <Content Include="Views\Shared\_Login.cshtml" />
+    <Content Include="Views\PurchaseRequest\PurchaseRequsetList.cshtml" />
+    <Content Include="Views\PurchaseRequest\NewPurchaseRequestEntry.cshtml" />
+    <Content Include="Views\PurchaseRequest\NewPurchaseRequestInfo.cshtml" />
+    <Content Include="Views\RowIssue\RowIssueList.cshtml" />
+    <Content Include="Views\RowIssue\NewRowIssueEntry.cshtml" />
+    <Content Include="Views\RowIssue\NewRowIssueInfo.cshtml" />
+    <Content Include="Views\RowIssue\RowIssueDetial.cshtml" />
+    <Content Include="Views\OfficeIssue\OfficeIssueDetial.cshtml" />
+    <Content Include="Views\OfficeIssue\NewOfficeIssueInfo.cshtml" />
+    <Content Include="Views\OfficeIssue\NewOfficeIssueEntry.cshtml" />
+    <Content Include="Views\OfficeIssue\OfficeIssueList.cshtml" />
+    <Content Include="Views\PurchaseRequest\PurchaseRequestDetail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
     <Content Include="Scripts\jquery-3.3.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.3.1.min.map" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\202001290306195_IntialModel.resx">
-      <DependentUpon>202001290306195_IntialModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202001290717240_anychange.resx">
-      <DependentUpon>202001290717240_anychange.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202002250706179_IntialModel.resx">
+      <DependentUpon>202002250706179_IntialModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

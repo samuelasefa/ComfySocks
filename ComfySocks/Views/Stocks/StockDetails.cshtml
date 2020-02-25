@@ -25,7 +25,7 @@
         </div>
     }*@
 </div>
-<div class="box box-primary" id="printable">
+<div class="box box-info" id="printable">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -56,16 +56,27 @@
         <table class="table well table-bordered">
             <thead>
                 <tr>
+                    <td>No.</td>
                     <td>Item Description</td>
                     <td>Item Code</td>
                     <td>Unit</td>
                     <td>Quantity</td>
+                    <td>Unit Price</td>
+                    <td>Total Price</td>
                 </tr>
             </thead>
+            @{
+                double VAT = 0;
+                float totalPrice = 0;
+                float GrandTotal = 0;
+                int i = 1;
+
+            }
             @foreach (ComfySocks.Models.InventoryModel.Stock stock in Model.Stocks)
             {
 
                 <tr>
+                    <td>@Html.Raw(i++)</td>
                     <td>
                         @stock.Item.Name @stock.Item.ItemType.Name
                     </td>
@@ -74,14 +85,34 @@
                     <td>
                         @stock.Quantity
                     </td>
+                    <td>@stock.UnitPrice</td>
+                    <td>@(stock.UnitPrice * stock.Quantity)</td>
+                    <td class="hidden">@(totalPrice += (float)(stock.UnitPrice * stock.Quantity))</td>
+                    <td class="hidden">@(VAT= stock.StockInformation.Tax)</td>
+                    <td class="hidden">@(GrandTotal= stock.StockInformation.GrandTotal))</td>
                 </tr>
 
             }
+                <tr>
+                    <td colspan="5"></td>
+                    <td>Total:</td>
+                    <td>@totalPrice</td>
+                </tr>
+                <tr>
+                    <td colspan="5"></td>
+                    <td>VAT:</td>
+                    <td>@VAT</td>
+                </tr>
+                <tr>
+                    <td colspan="5"></td>
+                    <td>GrandTotal:</td>
+                    <td>@GrandTotal</td>
+                </tr>
         </table>
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-4" style="float:left">
-                    Requested by : @Model.ApplicationUser.UserName
+                    Deliverd by : @Model.ApplicationUser.UserName
                 </div>
                 <div class="col-md-4">
                     Received by : @Model.Reciviedby

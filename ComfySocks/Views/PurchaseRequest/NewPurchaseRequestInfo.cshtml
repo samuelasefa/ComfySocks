@@ -1,0 +1,131 @@
+﻿@model ComfySocks.Models.PurchaseRequest.PurchaseInformation
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal panel col-sm-offset-3 col-sm-6">
+    <h4>Purchase</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.To, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Production", autocomplete = "off" } })
+            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.StoreID, "From", htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.DropDownList("StoreID", null, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.StoreID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Comfy" } })
+            @Html.ValidationMessageFor(model => model.StoreName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Checkedby, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.Checkedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
+            @Html.ValidationMessageFor(model => model.Checkedby, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Approvedby, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.Approvedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
+            @Html.ValidationMessageFor(model => model.Approvedby, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-2">
+            <label class="text-info">Request Type</label>
+        </div>
+        <div class="col-md-10">
+            <label class="checkbox-inline">
+                @Html.CheckBox("Normal", true)
+                Normal
+            </label>
+            <label class="checkbox-inline">
+                @Html.CheckBox("Urgent", false)
+                Urgent
+            </label>
+            <label class="checkbox-inline">
+                @Html.CheckBox("VeryUrgent", false)
+                Very Urgent
+            </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+    <hr />
+    <div>
+        @Html.ActionLink("Back to List", "NewPurchaseRequestEntry")
+    </div>
+</div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+<script>
+    $(function () {
+        $(".datepicker").datepicker({
+            format: 'MM-dd-yyyy'
+        });
+    });
+</script>

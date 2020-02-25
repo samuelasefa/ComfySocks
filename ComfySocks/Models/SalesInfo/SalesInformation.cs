@@ -12,9 +12,9 @@ namespace ComfySocks.Models.SalesInfo
     public partial class SalesInformation
     {
         public int ID { get; set; }
-        [DisplayFormat(DataFormatString = "{0:mm-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
-        public int FsNo { get; set; }
+        public string FsNo { get; set; }
         public int InvoiceNumber { get; set; }
         [Display(Name ="Customer")]
         public int CustomerID { get; set; }

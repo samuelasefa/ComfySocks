@@ -4,7 +4,7 @@
     ViewBag.Title = "List Of Supplier";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
     {
         <p>
@@ -12,7 +12,7 @@
         </p>
     }
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.ID)

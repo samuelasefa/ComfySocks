@@ -4,90 +4,112 @@
     ViewBag.Title = "Production Order";
 }
 
-<div class="box box-body box-warning">
-    @using (Html.BeginForm())
+<div class="box box-body box-info">
+
+    @if (ViewBag.RequiredItems != null)
     {
-        @Html.AntiForgeryToken()
-
-        <div class="form-horizontal">
-            <hr />
-            <div class="col-md-4">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ItemID, "Product Code", htmlAttributes: new { @class = "control-label col-md-5" })
-                    <div class="col-md-7">
-                        @Html.DropDownList("ItemID", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.ProductSize, htmlAttributes: new { @class = "control-label col-md-5" })
-                    <div class="col-md-7">
-                        @Html.EnumDropDownListFor(model => model.ProductSize, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.ProductSize, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-5" })
-                    <div class="col-md-7">
-                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-5" })
-                    <div class="col-md-7">
-                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
-                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="AddToList" class="btn btn-default" />
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-8">
-                <div style=" background-color:#34495e; color:white; padding:10px">Production Order</div>
-                @********table here***********@
-                <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
-                    @if (ViewBag.productionOrders != null)
-                    {
-                        <table class="table table-border table-striped" id="dtaTable">
-                            <thead>
-                                <tr>
-                                    <th>Product Code</th>
-                                    <th>Product Size</th>
-                                    <th>Quantity</th>
-                                    <th>Delivery Date</th>
-                                    <th><i class="glyphicon glyphicon-trash"></i></th>
-                                </tr>
-                            </thead>
-                            @foreach (ComfySocks.Models.Order.ProductionOrder p in ViewBag.ProductionOrders)
-                            {
-                                ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                            <tr>
-                                <td>@{var item = db.Items.Find(p.ItemID);}@item.Code</td>
-                                <td>@p.ProductSize</td>
-                                <td>@p.Quantity</td>
-                                <td>@p.Date</td>
-                                <td>@Html.ActionLink(" ", "RemoveSelected", new { id = p.ID }, new {@class ="fa fa-remove" })</td>
-                            </tr>
-                            }
-                        </table>
-                    }
-                </div>
-                <br />
-                <div>
-                    <a class="btn btn-primary pull-right" href="~/Order/NewOrderInfo">
-                        Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
-                    </a>
-                </div>
-            </div>
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red"><strong>Before starting you have to set some information about?</strong></h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.customer
+                </li>
+                <li style="color:orange">
+                    @ViewBag.productCode
+                </li>
+            </ul>
         </div>
     }
+    else
+    {
+        using (Html.BeginForm("NewOrderEntry", "Order", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+
+            <div class="form-horizontal">
+                <hr />
+                <div class="col-md-4">
+                    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ItemID, "Product Code", htmlAttributes: new { @class = "control-label col-md-5" })
+                        <div class="col-md-7">
+                            @Html.DropDownList("ItemID", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.ProductSize, htmlAttributes: new { @class = "control-label col-md-5" })
+                        <div class="col-md-7">
+                            @Html.EnumDropDownListFor(model => model.ProductSize, "--Selecte Size--", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ProductSize, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-5" })
+                        <div class="col-md-7">
+                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-5" })
+                        <div class="col-md-7">
+                            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
+                            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-10">
+                            <input type="submit" value="AddToList" class="btn btn-default" />
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-8">
+                    <div style=" background-color:#00CCD2; color:white; padding:10px">Production Order</div>
+                    @********table here***********@
+                    <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                        @if (ViewBag.productionOrders != null)
+                        {
+                            <table class="table table-border table-striped" id="dtaTable">
+                                <thead>
+                                    <tr>
+                                        <th>Product Code</th>
+                                        <th>Product Size</th>
+                                        <th>Quantity</th>
+                                        <th>Delivery Date</th>
+                                        <th><i class="glyphicon glyphicon-trash"></i></th>
+                                    </tr>
+                                </thead>
+                                @foreach (ComfySocks.Models.Order.ProductionOrderVM p in ViewBag.productionOrders)
+                                {
+                                    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                                    <tr>
+                                        <td>@p.ProductCode</td>
+                                        <td>@p.ProductionOrder.ProductSize</td>
+                                        <td>@p.ProductionOrder.Quantity</td>
+                                        <td>@Html.DisplayFor(modelItem => p.ProductionOrder.Date)</td>
+                                        <td>@Html.ActionLink(" ", "RemoveSelected", new { id = p.ProductionOrder.ItemID }, new { @class = "fa fa-remove" })</td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                    </div>
+                    <br />
+                    @if (ViewBag.haveItem == true)
+                    {
+                        <div>
+                            <a class="btn btn-primary pull-right" href="~/Order/NewOrderInfo">
+                                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
 
     <div>
         @Html.ActionLink("Back to List", "OrderHistory")

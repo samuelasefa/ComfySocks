@@ -1,59 +1,42 @@
-﻿@model IEnumerable<ComfySocks.Models.ProductInfo.ProductInformation>
-
+﻿@model IEnumerable<ComfySocks.Models.ProductTransferInfo.TransferInformation>
 @{
     ViewBag.Title = "Product List";
 }
 
-<div class="box box-body box-primary">
-    <p>
-        @Html.ActionLink("Create New", "NewProductEntry")
-    </p>
+<div class="box box-info box-body">
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style=" background-color:#00CCD2; color:white" ;>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.ProductNumber)
+                    @Html.DisplayNameFor(model => model.ApplicationUserID)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.Deliverdby)
+                    @Html.DisplayNameFor(model => model.Status)
                 </th>
                 <th>Action</th>
             </tr>
-        </thead>
-        <tfoot>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Date)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ProductNumber)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Deliverdby)
-                </th>
-                <th>Action</th>
-            </tr>
-        </tfoot>
 
+        </thead>
         @foreach (var item in Model)
         {
-            ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ProductNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Deliverdby)
-            </td>
-            <td><a class="btn-sm btn btn-info" href="~/Product/ProductDetail?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a></td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.ActionLink("View", "ProductDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
 
-        </tr>
+                </td>
+            </tr>
         }
 
     </table>
@@ -62,8 +45,6 @@
 
 <script>
     $(document).ready(function () {
-        $("#dtaTable").DataTable({})
+        $("#dtaTable").DataTable({});
     })
 </script>
-
-

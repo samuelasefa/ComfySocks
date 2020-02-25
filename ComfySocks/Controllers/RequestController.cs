@@ -22,7 +22,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var storeRequestInfo = (from request in db.StoreRequestInformation orderby request.ID descending select request).ToList();
+            var storeRequestInfo = (from request in db.StoreRequestInformation orderby request.ID ascending select request).ToList();
 
             return View(storeRequestInfo);
         }
@@ -42,7 +42,8 @@ namespace ComfySocks.Controllers
                 }
                 
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.ProductMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+                
             return View();
         }
 
@@ -74,7 +75,7 @@ namespace ComfySocks.Controllers
                         {
                             sr.StoreRequest.Quantity += storeRequest.Quantity;
                             found = true;
-                            ViewBag.succsessMessage = "Item is Added Congrates!!!";
+                            ViewBag.infoMessage = "Item is Added !!!";
                             break;
                         }
                         else if (AvalableQuantity(sr.StoreRequest.ItemID) == -2)
@@ -125,7 +126,7 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.ProductMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
 
             return View();
         }
@@ -136,12 +137,12 @@ namespace ComfySocks.Controllers
             List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
             selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
 
-            foreach (StoreRequestVM sr in selectedStoreRequests)
+            foreach (StoreRequestVM s in selectedStoreRequests)
             {
-                if (sr.StoreRequest.ID == id)
+                if (s.StoreRequest.ID == id)
                 {
                 }
-                selectedStoreRequests.Remove(sr);
+                selectedStoreRequests.Remove(s);
                 break;
             }
             TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
@@ -149,9 +150,8 @@ namespace ComfySocks.Controllers
             if (selectedStoreRequests.Count > 0)
             {
                 ViewBag.haveItem = true;
-               
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.ProductMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
             return View("NewRequestEntry");
         }
        
@@ -285,7 +285,12 @@ namespace ComfySocks.Controllers
             bool pass = true;
             foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
             {
+                //StoreRequest request = (from sr in db.StoreRequest where sr.ItemID == storeRequest.ItemID select sr).First();
+                //request.Quantity += storeRequest.Quantity;
+                //db.Entry(request).State = EntityState.Modified;
+                //db.SaveChanges();
                 Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
+                AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(stock.ItemID);
                 if (stock == null)
                 {
                     StoreRequstVMForError storeRequstVMForError = new StoreRequstVMForError()
@@ -296,7 +301,7 @@ namespace ComfySocks.Controllers
                     ViewBag.errorMessage = "Some error found. see error detail for more information";
                     ErrorList.Add(storeRequstVMForError);
                 }
-                else if(stock.Total < storeRequest.Quantity)
+                else if(avaliableOnStock.Avaliable < storeRequest.Quantity)
                 {
                     StoreRequstVMForError storeRequstVMError = new StoreRequstVMForError()
                     {
@@ -304,7 +309,7 @@ namespace ComfySocks.Controllers
                         Error = "The Avaliable stock in "+ StoreRequestInformation.Store.Name + "store is less than requested Quantity" + stock.Total
                     };
                     pass = false;
-                    ViewBag.errorMessage = "Some error found2. see error in detail for more information";
+                    ViewBag.errorMessage = "The Avaliable stock in " + StoreRequestInformation.Store.Name + " is less than requested Quantity" + stock.Total;
                     ErrorList.Add(storeRequstVMError);
                 }
             }
@@ -313,7 +318,7 @@ namespace ComfySocks.Controllers
                 foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
                 {
                     Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
-                    stock.Total -= (float)storeRequest.Quantity;
+                    //stock.Total -= (float)storeRequest.Quantity;
                     db.Entry(stock).State = EntityState.Modified;
                     db.SaveChanges();
                     AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(storeRequest.ItemID);

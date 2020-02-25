@@ -1,6 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
 
-@using ComfySocks.Models.DeliveryInfo;
 @*
     This partial controls the left menu of the AdminLTE dashboard and is called automatically by _AdminLteLayout
        This is where you can add, modify, or remove navigation options in your app
@@ -22,7 +21,6 @@
         </div>
         <!-- sidebar menu: : style can be found in sidebar.less -->
         <ul class="sidebar-menu">
-            <li class="header">MAIN NAVIGATION</li>
             <li class="treeview-menu">
                 <a href="~/Home/Index">
                     <i class="fa fa-home"></i> <span>Home</span> <i class="fa fa-angle-left pull-right"></i>
@@ -36,53 +34,78 @@
             <li class="treeview">
                 <a href="#">
                     <i class="fa  fa-list"></i>
-                    <span>Item</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    <li><a href="~/ItemSetting/Create"><i class="fa fa-circle-o"></i>New Item</a></li>
-                    <li><a href="~/ItemSetting/Index"><i class="fa fa-circle-o"></i>Item Information</a></li>
-                </ul>
-            </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-list-alt"></i>
                     <span>Inventory</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/Stocks/StockList"><i class="fa fa-circle-o"></i>Stock Information</a></li>
-                    <li><a href="~/Product/ProductList"><i class="fa fa-circle-o"></i>Product Information</a></li>
-                    <li><a href="~/Stocks/NewPurchaseEntry"><i class="fa fa-circle-o"></i>New Materil Entry</a></li>
-                    <li><a href="~/Product/NewProductEntry"><i class="fa fa-circle-o"></i>New Product Entry</a></li>
+                    <li>
+                        <a href="#">
+                            <i class="fa  fa-circle-o"></i>
+                            <span>Item</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="~/ItemSetting/Index"><i class="fa fa-circle-o"></i>Item List</a></li>
+                            <li><a href="~/ItemSetting/Create"><i class="fa fa-circle-o"></i>New Item</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa  fa-circle-o"></i>
+                            <span>Stock</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="~/Stocks/StockList"><i class="fa fa-circle-o"></i>Row Material</a></li>
+                            <li><a href="~/Product/ProductList"><i class="fa fa-circle-o"></i>Finishe Good Reciving</a></li>
+                            <li><a href="~/PurchaseRequest/PurchaseRequsetList"><i class="fa fa-circle-o"></i>Purchase Request</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa  fa-circle-o"></i>
+                            <span>Store Issue</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="~/RowIssue/RowIssueList"><i class="fa fa-circle-o"></i>Row Material</a></li>
+                           @* <li><a href="~/OfficeIssue/OfficeIssueList"><i class="fa fa-circle-o"></i>Office Material</a></li>*@
+                        </ul>
+                    </li>
                 </ul>
             </li>
+
             <li class="treeview">
                 <a href="#">
-                    <i class="fa  fa-product-hunt"></i>
-                    <span>Request</span>
+                    <i class="fa fa-shopping-bag"></i>
+                    <span>Purchase</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/Request/NewRequestEntry"><i class="fa fa-circle-o"></i>Product Material Request</a></li>
-                    <li><a href="~/RowMaterialRequest/NewRowMaterialRequest"><i class="fa fa-circle-o"></i>Row Material Request</a></li>
-                    <li><a href="~/Request/StoreRequestionList"><i class="fa fa-circle-o"></i>Product Material Request List</a></li>
-                    <li><a href="~/Request/StoreRequestionList"><i class="fa fa-circle-o"></i>Row Material Request List</a></li>
-
-
+                    <li><a href="~/Stocks/StockList"><i class="fa fa-circle-o"></i>Purchase Item</a></li>
                 </ul>
             </li>
+
             <li class="treeview">
                 <a href="#">
-                    <i class="fa  fa-shopping-cart"></i>
+                    <i class="fa  fa-product-hunt"></i>
                     <span>Production</span>
                     <i class="fa fa-angle-left pull-right"></i>
                 </a>
                 <ul class="treeview-menu">
-                    <li><a href="~/TempProductStocks/NewTempoProductEntry"><i class="fa fa-circle-o"></i>Product Stock</a></li>
-                    <li><a href="~/ProductTransfer/NewTransferEntry"><i class="fa fa-circle-o"></i>Finished Product Transfer</a></li>
-                    <li><a href="~/ProductTransfer/ProductTransferList"><i class="fa fa-circle-o"></i>Product Transfering List</a></li>
-
+                    <li><a href="~/ProductStocks/NewProductEntry"><i class="fa fa-circle-o"></i>New Product</a></li>
+                    <li><a href="~/ProductTransfer/ProductTransferList"><i class="fa fa-circle-o"></i>Finshed Product Transfer</a></li>
+                    <li>
+                        <a href="#">
+                            <i class="fa  fa-circle-o"></i>
+                            <span>Store Requestion</span>
+                            <i class="fa fa-angle-left pull-right"></i>
+                        </a>
+                        <ul class="treeview-menu">
+                            <li><a href="~/Request/StoreRequestionList"><i class="fa fa-circle-o"></i>Row Material</a></li>
+                            <li><a href="~/OfficeMaterialRequest/OfficeMaterialRequestionList"><i class="fa fa-circle-o"></i>Office Material</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </li>
             <li class="treeview">
@@ -96,7 +119,7 @@
                     <li><a href="~/Order/OrderHistory"><i class="fa fa-circle-o"></i> Order History</a></li>
                 </ul>
             </li>
-            
+
             <li class="treeview">
                 <a href="#">
                     <i class="fa fa-money"></i> <span>Sales</span>
@@ -107,24 +130,7 @@
                     <li><a href="~/Sales/SalesList"><i class="fa fa-circle-o"></i> Sales List</a></li>
                 </ul>
             </li>
-            <li class="treeview">
-                <a href="#">
-                    <i class="fa fa-send-o"></i> <span>Delivery</span>
-                    <i class="fa fa-angle-left pull-right"></i>
-                </a>
-                <ul class="treeview-menu">
-                    @*<li>@Html.ActionLink("Row Material Delivery List", "RowMaterialDeliveryList", new { id = ViewBag.id }, new { @class = "fa fa-circle-o" }, null)</li>*@
-                    @{
-                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                        var item = db.Deliveries.ToList();
-                        <li><a href="~/RowMaterialDelivery/RowMaterialDeliveryList
-                               "><i class="fa fa-circle-o"></i>New RowMaterial Delivery</a></li>
-
-                    }
-                </ul>
-            </li>
-            
-            <li class="treeview">
+            <li class="treeview">   
                 <a href="#">
                     <i class="fa fa-edit"></i> <span>Reports</span>
                     <i class="fa fa-angle-left pull-right"></i>
@@ -149,3 +155,11 @@
     </section>
     <!-- /.sidebar -->
 </aside>
+
+<style>
+    body {
+        margin:0px;
+        border:0px;
+    }
+    
+</style>

@@ -1,0 +1,167 @@
+﻿@model ComfySocks.Models.PurchaseRequest.PurchaseInformation
+
+@{
+    ViewBag.Title = null;
+}
+
+<div class="row">
+    <div class="col-md-10">
+        <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/PurchaseRequest/PurchaseRequestList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+    </div>
+
+</div>
+<div class="box box-info" id="printable">
+    <div style="margin:40px">
+        <div>
+            <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <h3 style="text-align:center;text-decoration:underline">Purchase Requestion</h3>
+            </div>
+            <div class="col-md-4" style="float:right">
+                Date: @Html.DisplayFor(modelItem => Model.Date)<br />
+                @Html.DisplayFor(modelItem => Model.PRNo) <br />
+                Request Type:
+            </div>
+        </div>
+
+        <table class="table">
+            <tr>
+                <td>
+                    To:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    From: @Html.DisplayFor(modelItem => Model.Store.Name)
+                </td>
+                <td>
+                    StoreName:
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    ItemType:___________________________
+                </td>
+            </tr>
+        </table>
+        <table class="table well table-bordered">
+            @{
+                var i = 1;
+             }
+            <thead>
+                <tr>
+                    <td>Item No</td>
+                    <td>Description</td>
+                    <td>Part No/Size</td>
+                    <td>Unit</td>
+                    <td>Quantity</td>
+                    <td>SR.No</td>
+                    <td>Remark</td>
+                </tr>
+            </thead>
+            @foreach (ComfySocks.Models.PurchaseRequest.Purchase p in Model.Purchase)
+            {
+                <tr>
+                    <td>@Html.Raw(i++)</td>
+                    <td>@p.Item.Name</td>
+                    <td></td>
+                    <td>@p.Item.Unit.Name</td>
+                    <td>@p.Quantity</td>
+                    <td></td>
+                    <td>@p.Remark</td>
+                </tr>
+            }
+        </table>
+        <div id="footer">
+            <div class="row" style="margin-top:10%">
+                <div class="col-md-4" style="float:left">
+                    Prepared by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
+                </div>
+                <div class="col-md-4" style="float:left">
+                    Checked by :@Html.DisplayFor(modelItem => Model.Checkedby)
+                </div>
+                <div class="col-md-4" style="float:left">
+                    Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)
+                </div>
+            </div>
+            <br />
+
+            <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+    function Print() {
+        var height = document.getElementById("printable").clientHeight;
+        var pages = 1000 - (height % 950);
+        document.getElementById("footer").style.marginTop = pages + "px";
+        //document.getElementById("logo-img").style.width = 100 + "vw";
+        print2()
+    }
+    function print2() {
+        var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+        var headstr = "<html><head><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}.divFooter {position: fixed;bottom: 0;}td{background-color:aquamarine}</style ><html></head><body>";
+
+        var footstr = "</body><html>";
+
+        var newstr = document.getElementById('printable').innerHTML;
+        var oldstr = document.body.innerHTML;
+        document.body.innerHTML = headstr + newstr + footstr;
+        window.print();
+        document.body.innerHTML = oldstr;
+        document.getElementById("footer").style.marginTop = 0 + "px";
+        return false;
+    }
+
+
+</script>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}

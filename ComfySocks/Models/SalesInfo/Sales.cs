@@ -14,7 +14,7 @@ namespace ComfySocks.Models.SalesInfo
     {
         public int ID { get; set; }
         [Display(Name ="Item")]
-        public int TempProductStockID { get; set; }
+        public int ItemID { get; set; }
         public int SalesInformationID { get; set; }
         public float Quantity { get; set; }
         public float UnitPrice { get; set; }
@@ -24,10 +24,18 @@ namespace ComfySocks.Models.SalesInfo
         public int ApplicationUserID { get; set; }
         //reference
         public virtual ApplicationUser ApplicationUser{ get; set; }
-        public virtual TempProductStock TempProductStock { get; set; }
+        public virtual Item Item { get; set; }
         public virtual SalesInformation SalesInformation { get; set; }
+        //
     }
+    public class SalesVM
+    {
+        public string TypeOfProduct { get; set; }
+        public string Code { get; set; }
+        public string Unit { get; set; }
 
+        public Sales Sales { get; set; }
+    }
     public class SalesVMForError
     {
         public Sales Sales { get; set; }

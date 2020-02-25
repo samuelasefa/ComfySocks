@@ -1,9 +1,9 @@
 ﻿@model ComfySocks.Models.ProductTransferInfo.TransferInformation
 
 @{
-                /**/
+    /**/
 
-                ViewBag.Title = null;
+    ViewBag.Title = null;
 }
 
 <div class="row">
@@ -13,23 +13,28 @@
             <a href="~/ProductTransfer/NewTransferEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
+        <a href="~/ProductTransfer/ProductTransferList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+
     </div>
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-            <div class="row">
+            if (Model.Status == "Transfering")
+            {
+                <div class="row">
 
-                <div class="col-md-6">
-                    <a href="#">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    <div class="col-md-6">
+                        <a href="~/ProductTransfer/TransferApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    </div>
+                    <div class="col-md-6" style="float:right">
+                        <a href="~/ProductTransfer/TransferRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    </div>
                 </div>
-                <div class="col-md-6" style="float:right">
-                    <a href="#">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-                </div>
-            </div>
+            }
         }
     </div>
 </div>
-<div class="box box-primary" id="printable">
+<div class="box box-info" id="printable">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -52,7 +57,7 @@
             </tr>
             <tr>
                 <td>
-                    To:
+                    To: @Html.DisplayFor(modelItem => Model.Store.Name)
                 </td>
             </tr>
         </table>
@@ -66,39 +71,27 @@
                     <td>Remark</td>
                 </tr>
             </thead>
-            @*@foreach ()
-                {
-
-                    <tr>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                    </tr>
-
-                }*@
+            @foreach (ComfySocks.Models.ProductTransferInfo.Transfer transfer in Model.Transfers)
+            {
+                <tr>
+                    <td>@transfer.Item.Name</td>
+                    <td>@transfer.Item.Code</td>
+                    <td>@transfer.Item.Unit.Name</td>
+                    <td>@transfer.Quantity</td>
+                    <td>@transfer.Remark</td>
+                </tr>
+            }
         </table>
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-4" style="float:left">
-                    Delivered by :
+                    Delivered by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
                 </div>
                 <div class="col-md-4" style="float:left">
-                    Received by :
+                    Received by :@Html.DisplayFor(modelItem => Model.Recivedby)
                 </div>
                 <div class="col-md-4" style="float:left">
-                    Approved by :
-                </div>
-            </div>
-            <div class="row" style="margin-top:10%">
-                <div class="col-md-4" style="float:left">
-                    Signiture :_____________________
-                </div>
-                <div class="col-md-4" style="float:left">
-                    Signiture :_____________________
-                </div>
-                <div class="col-md-4" style="float:left">
-                    Signiture :_____________________
+                    Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)
                 </div>
             </div>
             <br />
@@ -132,7 +125,57 @@
         document.getElementById("footer").style.marginTop = 0 + "px";
         return false;
     }
-
-
 </script>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #847BAA;
+        color: #ecf0f1;
+        cursor: pointer;
+    }
+</style>
 

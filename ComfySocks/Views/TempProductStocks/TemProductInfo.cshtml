@@ -15,7 +15,7 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Eg:mm-dd-yyyy", autocomplete = "off" } })
+                    @Html.EditorFor(model => model.Date, "{0:dd/MM/yyyy}", new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Eg:mm-dd-yyyy", autocomplete = "off" } })
                     @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -27,15 +27,6 @@
                     @Html.ValidationMessageFor(model => model.Reciviedby, "", new { @class = "text-danger" })
                 </div>
             </div>
-
-            <div class="form-group">
-                @Html.LabelFor(model => model.Approvedby, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
-                    @Html.EditorFor(model => model.Approvedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Smith" } })
-                    @Html.ValidationMessageFor(model => model.Approvedby, "", new { @class = "text-danger" })
-                </div>
-            </div>
-
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-10">
                     <input type="submit" value="Add to Stock" class="btn btn-primary" />

@@ -2,29 +2,6 @@
 
 
 @if (ViewBag.errorList != null)
-{
-    @*<div class="danger">
-            <table>
-                <thead>
-                    <tr>
-                        <td>Item </td>
-                        <td>Selected Quantity</td>
-                        <td>Error Detail</td>
-                    </tr>
-                </thead>
-
-                @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
-                {
-                    <tr>
-                        <td>@error.StoreOrder.Item</td>
-                        <td>@error.StoreOrder.Quantity</td>
-                        <td>@error.Error</td>
-
-                    </tr>
-                }
-            </table>
-        </div>*@
-}
 
 <div class="row">
     <div class="col-md-10">
@@ -54,7 +31,7 @@
         }
     </div>
 </div>
-<div class="box box-primary" id="printable">
+<div class="box box-info" id="printable">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />

@@ -1,18 +1,15 @@
 ﻿@model IEnumerable<ComfySocks.Models.Items.Item>
 
 @{
-    ViewBag.Title = "Item Information";
+    ViewBag.Title = "Items List";
 }
 
-<div class="box box-body box-primary">
-    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-    {
+<div class="box box-body box-info">
         <p>
             @Html.ActionLink("Create New", "Create")
         </p>
-    }
-    <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+    <table class="table table-bordered table-responsive" id="dtaTable">
+        <thead style="background-color:#00CCD2; color: white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.StoreType)
@@ -37,7 +34,40 @@
                 }
             </tr>
         </thead>
-        <tfoot>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StoreType)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.ItemType.Name)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Code)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Unit.Name)
+                    </td>
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                        </td>
+                    }
+
+                </tr>
+            }
+        </tbody>
+        <tfoot style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.StoreType)
@@ -61,44 +91,46 @@
                 }
             </tr>
         </tfoot>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StoreType)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ItemType.Name)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.Code)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Unit.Name)
-                </td>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                {
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-                    </td>
-                }
-
-            </tr>
-        }
-
     </table>
 
 </div>
-
+@*<script src="~/Scripts/DataTables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>*@
 <script>
-    $("#dtaTable").DataTable({
-    });
+        $(document).ready(function() {
+            var groupColumn = 0;
+            var table = $('#dtaTable').DataTable({
+                "columnDefs": [
+                    { "visible": false, "targets": groupColumn }
+                ],
+                "order": [[groupColumn, 'asc']],
+                "displayLength": 5,
+                "drawCallback": function (settings) {
+                    var api = this.api();
+                    var rows = api.rows({ page: 'current' }).nodes();
+                    var last = null;
+
+                    api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                        if (last !== group) {
+                            $(rows).eq(i).before(
+                                '<tr class="group text-light" style="background-color:#ECFEFE; color:#000000; text-style:bold"><td colspan="5">' + group + '</td></tr>'
+                            );
+
+                            last = group;
+                        }
+                    });
+                }
+            });
+
+            // Order by the grouping
+            $('#dtaTable tbody').on('click', 'tr.group', function () {
+                var currentOrder = table.order()[0];
+                if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                    table.order([groupColumn, 'desc']).draw();
+                }
+                else {
+                    table.order([groupColumn, 'asc']).draw();
+                }
+            });
+        } );
 </script>
 

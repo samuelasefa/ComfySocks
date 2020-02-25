@@ -15,6 +15,5 @@ namespace ComfySocks.Models.ProductStock
         public float RecentlyReducedProduct { get; set; }
 
         //reference
-       
     }
 }

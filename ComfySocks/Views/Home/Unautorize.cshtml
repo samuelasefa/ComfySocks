@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = null;
+}
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+<h1 style="color:cornflowerblue; text-align:center; margin-top:20vh" >If you Think this is not right Contact your administrator</h1>
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}

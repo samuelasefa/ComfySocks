@@ -17,12 +17,10 @@ namespace ComfySocks.Models.Items
         [Required]
         [Display(Name="Unit Name")]
         public string Name { get; set; }
-        
         public string ApplicationUserID { get; set; }
 
         //reference
         public virtual ApplicationUser ApplicationUser { get; set; }
-        public virtual ICollection<TempProductStock> TempProductStock { get; set; }
         public virtual ICollection<Item> Item { get; set; }
     }
 }

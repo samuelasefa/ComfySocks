@@ -3,101 +3,225 @@
     ViewBag.Title = "Sales Entry";
 }
 
-<div class="box box-body box-primary">
-    @using (Html.BeginForm("NewSalesEntry", "Sales", FormMethod.Post))
-    {
-        @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <hr />
-            <div class="col-md-4">
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                <div class="form-group">
-                    @Html.LabelFor(model => model.TempProductStockID, "Product", htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.DropDownList("TempProductStockID", null, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.TempProductStockID, "", new { @class = "text-danger" })
+<div class="box box-info box-body">
+    @if (ViewBag.RequiredItems != null)
+    {
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red">
+                <strong>Before starting you have to set some information about?</strong>
+            </h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.item
+                </li>
+                <li style="color:orange">
+                    @ViewBag.store
+                </li>
+            </ul>
+        </div>
+    }
+
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <table class="table table-striped table-hover" id="maintable">
+                                <thead>
+                                    <tr style="background-color:#00CCD2; color:white">
+
+                                        <th>
+                                            Code
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Unit
+                                        </th>
+                                        <th>
+                                            Quantity
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (ComfySocks.Models.ProductTransferInfo.Transfer T in ViewBag.TransferID)
+                                    {
+                                    <tr onclick="ItemSelected('@T.ItemID','@T.Item.Code')">
+                                        <td>@T.Item.Code</td>
+                                        <td>@T.Item.Name</td>
+                                        <td>@T.Item.Unit.Name</td>
+                                        <td>@T.Quantity</td>
+                                    </tr>
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color:#00CCD2; color:white">
+
+                                        <th>
+                                            Code
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Unit
+                                        </th>
+                                        <th>
+                                            Quantity
+                                        </th>
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-4" })
-                    <div class="col-md-8">
-                        @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="AddToList" id="btnAdd" class="btn btn-default" />
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("NewSalesEntry", "Sales", FormMethod.Post))
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Product</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Quantity</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Unit Price</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        &nbsp;
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <div class="col-md-offset-1 col-md-12">
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:28px; float:right" />
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
-        </div>
-    }
-    <div class="col-sm-8">
-        <div style=" background-color:#34495e; color:white; padding:10px">Sales Item</div>
-        @********table here***********@
-        <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
-            @if (ViewBag.salesitem != null)
-            {
-                <table class="table table-border table-striped" id="dtaTable">
-                    <thead>
-                        <tr>
-                            <th>Item Description</th>
-                            <th>Item Code</th>
-                            <th>UOM</th>
-                            <th>Quantity</th>
-                            <th>UnitPrice</th>
-                            <th>TotalPrice</th>
-                            <th><i class="glyphicon glyphicon-trash"></i></th>
-                        </tr>
-                    </thead>
-                    @foreach (ComfySocks.Models.SalesInfo.Sales s in ViewBag.Salesitem)
+            <div class="col-sm-6">
+                <div style="background-color:#00CCD2; color:white; padding:10px">Sales Product Item</div>
+                @********table here***********@
+                <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                    @if (ViewBag.selectedSales != null)
                     {
-                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
                         float totalPrice = 0;
-                    <tr>
-                        <td>@{var item = db.TempProductStocks.Find(s.TempProductStockID);}@item.ProductName</td>
-                        <td>@item.ProductCode.Code</td>
-                        <td>@item.Unit.Name</td>
-                        <td>@s.Quantity</td>
-                        <td>@s.UnitPrice</td>
-                        <td>@(totalPrice += (float)(s.Quantity * s.UnitPrice))</td>
-                        <td>@Html.ActionLink(" ", "RemoveSelected", new { id = s.TempProductStockID }, new { @class = "fa fa-remove" })</td>
-                    </tr>
+                    <table class="table table-border table-striped" id="dtaTable">
+                        <thead>
+                            <tr>
+                                <th>ItemCode</th>
+                                <th>Description</th>
+                                <th>Unit</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total Price</th>
+                                <th>
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </th>
+                            </tr>
+                        </thead>
+                        @foreach (ComfySocks.Models.SalesInfo.SalesVM items in ViewBag.selectedSales)
+                        {
+                            <tr>
+                                <td>@items.Code</td>
+                                <td>@items.TypeOfProduct</td>
+                                <td>@items.Unit</td>
+                                <td>@items.Sales.Quantity</td>
+                                <td>@items.Sales.UnitPrice</td>
+                                <td>@(items.Sales.UnitPrice * items.Sales.Quantity)</td>
+                                <td hidden>@(totalPrice += (float)(items.Sales.UnitPrice * items.Sales.Quantity))</td>
+                                <td><a href="~/Sales/RemoveSelected?id=@items.Sales.ItemID"><span class="fa fa-remove"></span></a></td>
+                            </tr>
+                        }
+                        
+                        <tr>
+                            <td colspan="5"></td>
+                            <td>Total:</td>
+                            <td>@totalPrice</td>
+                        </tr>
+                        
+                    </table>
                     }
-                </table>
-            }
+                </div>
+                <br />
+
+                <div>
+                    @if (ViewBag.selectedSales != null)
+                    {
+
+                        <a class="btn btn-primary pull-right" href="~/Sales/NewSalesInfo">
+                            Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
         </div>
-        <br />
-        <div>
-            <a class="btn btn-primary pull-right" href="~/Sales/NewSalesInfo">
-                Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
-            </a>
-        </div>
-    </div>
+
+    }
+    <hr />
     <div>
         @Html.ActionLink("Back to List", "SalesList")
     </div>
-    <hr />
+
 </div>
+
 <script src="~/Scripts/sweetalert.js"></script>
 <script src="~/Scripts/sweetalert.min.js"></script>
 <link href="~/Scripts/sweetalert.css" rel="stylesheet" />
 
+<script>
+    function ItemSelected(id, Code) {
+        document.getElementById("ItemID").value = id, Code;
+    }
+
+    //datatabale
+    $("#maintable").DataTable({
+        "info": false,
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        "lengthChange": false,
+    });
+</script>
 
 @if (ViewBag.errorMessage != null)
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
                     return false;
                 }
     </script>
@@ -107,11 +231,37 @@
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
                     return false;
                 }
     </script>
 }
 
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+
+    <style>
+        .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+            background-color: #ECFEFE;
+            color: #000000;
+            cursor: pointer;
+        }
+    </style>
 
 

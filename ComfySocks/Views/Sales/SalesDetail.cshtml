@@ -18,20 +18,23 @@
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-            <div class="row">
+            if (Model.Status == "Submmited")
+            {
+                <div class="row">
 
-                <div class="col-md-6">
-                    <a href="~/Sales/SaleApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    <div class="col-md-6">
+                        <a href="~/Sales/SaleApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    </div>
+                    <div class="col-md-6" style="float:right">
+                        <a href="~/Sales/SalesRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    </div>
                 </div>
-                <div class="col-md-6" style="float:right">
-                    <a href="~/Sales/SaleRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-                </div>
-            </div>
+            }
         }
     </div>
 </div>
 
-<div class="box box-primary" id="printable">
+<div class="box box-info" id="printable">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -64,7 +67,7 @@
             </thead>
             <tr>
                 <td>Date:@Html.DisplayFor(modelItem => Model.Date)</td>
-                <td>Fs No:@Html.DisplayFor(modelItem => Model.FsNo)</td>
+                <td>@Html.DisplayFor(modelItem => Model.FsNo)</td>
                 <td>Invoice Number:@Html.DisplayFor(modelItem => Model.InvoiceNumber)</td>
             </tr>
             <tr>
@@ -92,71 +95,58 @@
                     <td>Item Code</td>
                     <td>Unit</td>
                     <td>Quantity</td>
-                    <td>Remark</td>
+                    <td>Unit Price</td>
+                    <td>Total Price</td>
                 </tr>
             </thead>
+            @{
+                
+                float totalPrice = 0;
+                float Tax = 0;
+                float GrandTotal = 0;
+            }
             @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
             {
+            <tr>
+                <td>
+                    @sales.Item.Name
+                </td>
+                <td>@sales.Item.Code</td>
+                <td>@sales.Item.Unit.Name</td>
+                <td>
+                    @sales.Quantity
+                </td>
+                <td>
+                    @sales.UnitPrice
+                </td>
+                <th>
+                    @(sales.Quantity * sales.UnitPrice)
+                </th>
+                <td class="hidden">
+                    @(totalPrice += (float)(sales.UnitPrice * sales.Quantity))
+                </td>
+                <td hidden>@(Tax = sales.SalesInformation.Tax)</td>
+                <td hidden>@(GrandTotal = sales.SalesInformation.GrandTotal)</td>
 
-                <tr>
-                    <td>
-                        @sales.TempProductStock.ProductName
-                    </td>
-                    <td>@sales.TempProductStock.ProductCode.Code</td>
-                    <td>@sales.TempProductStock.Unit.Name</td>
-                    <td>
-                        @sales.Quantity
-                    </td>
-                    <td>
-                        @sales.UnitPrice
-                    </td>
-                </tr>
-
+            </tr>
             }
+            <tr>
+                <td colspan="4"></td>
+                <td>Total:</td>
+                <td>@totalPrice</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>TAX(15%):</td>
+                <td>@Tax</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>GrandTotal:</td>
+                <td>@GrandTotal</td>
+            </tr>
+
         </table>
-
-
-
-
-        @*<table class="table well table-bordered">
-        <thead>
-            <tr>
-                <td>Item Description</td>
-                <td>Item Code</td>
-                <td>UOM</td>
-                <td>Quantity</td>
-                <td>Unit Price</td>
-                <td>Total Price</td>
-            </tr>
-        </thead>
-        @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
-        {
-            float totalPrice = 0;
-            <tr>
-                <td>@sales.TempProductStock.ProductName</td>
-                <td>@sales.TempProductStock.ProductCode.Code</td>
-                <td>@sales.TempProductStock.Unit.Name</td>
-                <td>@sales.Quantity</td>
-                <td>@sales.UnitPrice</td>
-                <td>@(totalPrice = (float)sales.UnitPrice * (float)sales.Quantity)</td>
-            </tr>
-        }*@
-        @*<tr>
-            <td colspan="4"></td>
-            <td>Sub Total:</td>
-            <td>@Html.DisplayFor(modelItem => Model.SubTotal)</td>
-        </tr>
-        <tr>
-            <td colspan="4"></td>
-            <td>Tax(15%):</td>
-            <td>@Html.DisplayFor(modelItem => Model.Tax)</td>
-        </tr>
-        <tr>
-            <td colspan="4"></td>
-            <td>GrandTotal:</td>
-            <td>@Html.DisplayFor(modelItem => Model.GrandTotal)</td>
-        </tr>*@
-        @*</table>*@
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-3" style="float:left">

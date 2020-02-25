@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<ComfySocks.Models.InventoryModel.StockInformation>
 
 @{
-    ViewBag.Title = "Purchase Item List";
+    ViewBag.Title = "Row Material List";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     <p>
         @Html.ActionLink("Create New", "NewPurchaseEntry")
     </p>
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead style=" background-color:#34495e; color:white";>
+        <thead style="background-color:#00CCD2; color:#ecf0f1";>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
@@ -23,7 +23,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot  style=" background-color:#34495e; color:white";>
+        <tfoot  style="background-color:#00CCD2; color:#ecf0f1";>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)

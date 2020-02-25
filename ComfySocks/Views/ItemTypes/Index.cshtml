@@ -5,15 +5,12 @@
 }
 
 
-<div class="box box-body box-primary">
-    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-    {
+<div class="box box-body box-info">
         <p>
             @Html.ActionLink("Create New", "Create")
         </p>
-    }
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead style="">
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.ID)
@@ -27,7 +24,7 @@
                 }
                 </tr>
         </thead>
-        <tfoot>
+        <tfoot  style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.ID)

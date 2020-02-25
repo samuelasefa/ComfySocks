@@ -4,31 +4,33 @@
     ViewBag.Title = "Customer";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     <p>
         @Html.ActionLink("Create New", "Create")
     </p>
-    <table class="table">
-        <tr>
+    <table class="table table-bordered table-striped" id="dtaTable">
+        <thead style="background-color:#00CCD2; color:white">
+            <tr>
 
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TinNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.City)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SubCity)
-            </th>
-            <th></th>
-        </tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FirstName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.LastName)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TinNumber)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.City)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SubCity)
+                </th>
+                <th>Action</th>
+            </tr>
 
+        </thead>
         @foreach (var item in Model)
         {
         <tr>
@@ -59,3 +61,9 @@
     </table>
 
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable({});
+    })
+</script>

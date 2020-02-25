@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
     {
         <p>
@@ -17,22 +17,23 @@
         </div>
     }
     <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.ID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Location)
-            </th>
-            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-            {
-                <th>Action</th>
-            }
-        </tr>
-
+        <thead style="background-color:#00CCD2;color:white">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.ID)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Location)
+                </th>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <th>Action</th>
+                }
+            </tr>
+        </thead>
         @foreach (var item in Model)
         {
         <tr>

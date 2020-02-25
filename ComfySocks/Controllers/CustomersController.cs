@@ -12,19 +12,20 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class CustomersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Customers
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Sales, Production")]
         public ActionResult Index()
         {
             return View(db.Customers.ToList());
         }
 
         // GET: Customers/Details/5
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Sales, Production")]
         public ActionResult Details(int? id)
         {
             
@@ -44,7 +45,7 @@ namespace ComfySocks.Controllers
 
         // GET: Customers/Create
         [Authorize(Roles = "Super Admin, Admin")]
-
+        [Authorize(Roles = "Super Admin, Admin, Sales, Production")]
         public ActionResult Create()
         {
             return View();

@@ -18,7 +18,7 @@ namespace ComfySocks.Models.ProductInfo
         public int ID { get; set; }
 
         [Required]
-        [DisplayFormat(DataFormatString = "{0:mm-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name = "Product No.")]

@@ -4,12 +4,12 @@
     ViewBag.Title = "Production Order List";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     <p>
         @Html.ActionLink("Create New", "NewOrderEntry")
     </p>
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
@@ -20,37 +20,31 @@
                 <th>
                     Order Number
                 </th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
 
         </thead>
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Date)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Customer.FirstName)
-                </td>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Customer.FirstName)
+            </td>
 
-                <td>
-                    @Html.DisplayFor(modelItem => item.OrderNumber)
-                </td>
-                <td>
-                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                    {
-                        @Html.ActionLink("Edit", "Delivery", new { id = item.ID }) 
-                    }
-                    @Html.ActionLink("| Details", "OrderDetial", new { id = item.ID })
-
-                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                    {
-                        @Html.ActionLink("| Delete", "Delete", new { id = item.ID })
-
-                    }
-                </td>
-            </tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OrderNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                <a class="btn-sm btn btn-info" href="~/Order/OrderDetial?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
+            </td>
+        </tr>
         }
 
     </table>

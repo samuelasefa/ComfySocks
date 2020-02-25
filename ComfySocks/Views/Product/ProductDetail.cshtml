@@ -1,80 +1,65 @@
-﻿@model ComfySocks.Models.ProductInfo.ProductInformation
+﻿@model ComfySocks.Models.ProductTransferInfo.TransferInformation
 
+@{
+    /**/
 
-@if (ViewBag.errorList != null)
-{
-    @*<div class="danger">
-            <table>
-                <thead>
-                    <tr>
-                        <td>Item </td>
-                        <td>Selected Quantity</td>
-                        <td>Error Detail</td>
-                    </tr>
-                </thead>
-
-                @foreach (ComfySocks.Models.StoreRequestInfo.StoreOrderVMForError error in ViewBag.errorList)
-                {
-                    <tr>
-                        <td>@error.StoreOrder.Item</td>
-                        <td>@error.StoreOrder.Quantity</td>
-                        <td>@error.Error</td>
-
-                    </tr>
-                }
-            </table>
-        </div>*@
+    ViewBag.Title = null;
 }
 
 <div class="row">
     <div class="col-md-10">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
-        {
-            <a href="~/Product/NewProductEntry">New <span class="glyphicon glyphicon-plus"></span></a>
-        }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
         <a href="~/Product/ProductList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
 
     </div>
-    @*<div class="col-md-2">
+    <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-            <div class="row">
-
-                <div class="col-md-6">
-                    <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+            if (Model.Status == "Transferd")
+            {
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                    </div>
+                    <div class="col-md-6" style="float:right">
+                        <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                    </div>
                 </div>
-                <div class="col-md-6" style="float:right">
-                    <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-                </div>
-            </div>
+            }
         }
-    </div>*@
+    </div>
+
 </div>
-<div class="box box-primary" id="printable">
+<div class="box box-info" id="printable">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
         </div>
         <div class="row">
             <div class="col-md-8">
-                <h3 style="align-content:center;text-decoration:underline">Finished Good Reciving Voucher</h3>
+                <h3 style="text-align:center;text-decoration:underline">Finished Good Reciving Voucher</h3>
             </div>
             <div class="col-md-4" style="float:right">
                 Date: @Html.DisplayFor(modelItem => Model.Date)<br />
-                @Html.DisplayFor(modelItem => Model.ProductNumber)
+                @Html.DisplayFor(modelItem => Model.FPTNo)
             </div>
         </div>
 
         <table class="table">
             <tr>
                 <td>
-                    From:@Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
+                    From:
                 </td>
             </tr>
             <tr>
                 <td>
                     To: @Html.DisplayFor(modelItem => Model.Store.Name)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    FPTNo:___________________
                 </td>
             </tr>
         </table>
@@ -88,32 +73,27 @@
                     <td>Remark</td>
                 </tr>
             </thead>
-            @foreach (ComfySocks.Models.ProductInfo.Product product in Model.Products)
+            @foreach (ComfySocks.Models.ProductTransferInfo.Transfer transfer in Model.Transfers)
             {
-
                 <tr>
-                    <td>
-                        @product.TempProductStock.ProductName
-                    </td>
-                    <td>@product.TempProductStock.ProductCode.Code</td>
-                    <td>@product.TempProductStock.Unit.Name</td>
-                    <td>
-                        @product.Quantity
-                    </td>
-                    <td>
-                        @product.Remark
-                    </td>
+                    <td>@transfer.Item.Name</td>
+                    <td>@transfer.Item.Code</td>
+                    <td>@transfer.Item.Unit.Name</td>
+                    <td>@transfer.Quantity</td>
+                    <td>@transfer.Remark</td>
                 </tr>
-
             }
         </table>
         <div id="footer">
             <div class="row" style="margin-top:10%">
-                <div class="col-md-8" style="float:left">
-                    Requested by : @Model.ApplicationUser.FullName
+                <div class="col-md-4" style="float:left">
+                    Delivered by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
                 </div>
-                <div class="col-md-4" style="float:right">
-                    Deliverd by : @Model.Deliverdby
+                <div class="col-md-4" style="float:left">
+                    Received by :@Html.DisplayFor(modelItem => Model.Recivedby)
+                </div>
+                <div class="col-md-4" style="float:left">
+                    Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)
                 </div>
             </div>
             <br />
@@ -151,3 +131,46 @@
 
 </script>
 
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}

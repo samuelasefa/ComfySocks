@@ -93,7 +93,7 @@
 
 
 
-<body class="skin-purple" style="margin-top:-50px">
+<body class="skin-blue" style="margin-top:-50px">
 
     @* loader*@
    @*
@@ -108,7 +108,7 @@
         <!-- Left side column. contains the logo and sidebar -->
         @Html.Partial("_AdminLteLeftMenu")
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper" style="background-color:#bdc3c7">
+        <div class="content-wrapper" style="background-color:#FFFFFF; padding-top:50px">
             <!-- Content Header (Page header) -->
        
             <section class="content-header" style=" margin-top:-20px;">
@@ -169,3 +169,28 @@
     <noscript><h3>Please, enable JavaScript.</h3></noscript>
 </body>
 </html>
+<style>
+    .skin-blue .main-header .navbar {
+        background-color: #00CCD2;
+    }
+    .skin-blue .main-sidebar {
+        background: linear-gradient(#ECFEFE, #FFFFFF);
+        position:fixed;
+    }
+    .skin-blue .main-header .navbar .sidebar-toggle:hover {
+        background-color: #00CCD2;
+    }
+    .skin-blue .sidebar-menu > li > a:hover,
+    .skin-blue .sidebar-menu > li.active > a {
+        color: #ffffff;
+        background: rgba(138, 240, 243, 0.9019607843137255);
+        border-left-color: #3c8dbc;
+    }
+    .skin-blue .sidebar-menu > li > .treeview-menu {
+        background: #ECFEFE;
+    }
+    .skin-blue .treeview-menu > li.active > a,
+    .skin-blue .treeview-menu > li > a:hover {
+        color: #000000;
+    }
+</style>

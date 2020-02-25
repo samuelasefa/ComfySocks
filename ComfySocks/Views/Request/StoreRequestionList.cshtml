@@ -1,15 +1,15 @@
 ﻿@model IEnumerable<ComfySocks.Models.Request.StoreRequestInformation>
 
 @{
-    ViewBag.Title = "Store Requestion List";
+    ViewBag.Title = "Row Material Requestion List";
 }
 
-<div class="box box-body box-primary">
+<div class="box box-body box-info">
     <p>
         @Html.ActionLink("Create New", "NewRequestEntry")
     </p>
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead>
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>Date</th>
                 <th>SR-No</th>
@@ -17,7 +17,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot>
+        <tfoot style="background-color:#00CCD2; color:white">
             <tr>
                 <th>Date</th>
                 <th>SR-No</th>
@@ -33,11 +33,6 @@
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "StoreRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
-
-                    @if (item.Status == "Approved")
-                    {
-                        @Html.ActionLink("Delivery", "NewRowMaterialDelivery","RowMaterialDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
-                    }
                 </td>
             </tr>
         }

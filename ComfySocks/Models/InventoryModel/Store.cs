@@ -1,5 +1,6 @@
 ﻿using ComfySocks.Models.ProductInfo;
 using ComfySocks.Models.ProductStock;
+using ComfySocks.Models.PurchaseRequest;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -25,8 +26,8 @@ namespace ComfySocks.Models.InventoryModel
         public virtual ApplicationUser ApplicationUser { get; set; }
 
         //Collection
+        public virtual ICollection<PurchaseInformation> PurchaseInformation { get; set; }
         public virtual ICollection<ProductInformation> ProductInformation { get; set; }
         public virtual ICollection<Stock> Stocks { get; set; }
-        public virtual  ICollection<TempProductStock> TempProductStock { get; set; }
     }
 }

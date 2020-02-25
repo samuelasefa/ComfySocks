@@ -14,6 +14,7 @@ namespace ComfySocks.Models.InventoryModel
         [Required]
         [Display(Name ="Supplier's Name")]
         public string Name { get; set; }
+
         [Display(Name ="Supplier's Invoice No.")]
         public string No { get; set; }
 

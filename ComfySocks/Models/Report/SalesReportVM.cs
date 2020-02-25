@@ -11,7 +11,7 @@ namespace ComfySocks.Models.Report
     {
         public int ID { get; set; }
         public string ProductName { get; set; }
-        public int ItemCode { get; set; }
+        public string ItemCode { get; set; }
         public string Unit  { get; set; }
         public float UnitPrice { get; set; }
         public float TotalPrice { get; set; }

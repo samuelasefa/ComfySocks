@@ -14,6 +14,7 @@ namespace ComfySocks
         {
             ConfigureAuth(app);
             CreateUserandRoles();
+            app.MapSignalR();
         }
 
         private void CreateUserandRoles()

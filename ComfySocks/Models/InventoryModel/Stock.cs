@@ -18,6 +18,8 @@ namespace ComfySocks.Models.InventoryModel
 
         public int StockInformationID { get; set; }
 
+        [Display(Name ="Unit Price")]
+        public float UnitPrice { get; set; }
         [Required]
         public float Quantity { get; set; }
         [Required]
