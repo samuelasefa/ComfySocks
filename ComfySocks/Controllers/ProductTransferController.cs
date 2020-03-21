@@ -2,7 +2,6 @@
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
 using ComfySocks.Models.Order;
-using ComfySocks.Models.ProductStock;
 using ComfySocks.Models.ProductTransferInfo;
 using ComfySocks.Models.Repository;
 using Microsoft.AspNet.Identity;
@@ -15,11 +14,11 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles = "Super Admin, Production, Store Manager")]
     public class ProductTransferController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: ProductTransfer
-        [Authorize(Roles ="Super Admin, Admin, Production")]
         public ActionResult ProductTransferList()
         {
             //errormessage display
@@ -31,13 +30,11 @@ namespace ComfySocks.Controllers
         }
 
         // controller of Finshed product transfer
-        [Authorize(Roles = "Super Admin, Admin, Production")]
         public ActionResult NewTransferEntry()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-            
-            ViewBag.TempProductStockID = (from t in db.ProStock where t.ProStockInformation.Status =="Approved" orderby t.ID select t).ToList();
+            ViewBag.TransferID = (from t in db.Items where t.StoreType == StoreType.ProductItem orderby t.ID select t).ToList();
             return View();
         }
 
@@ -56,7 +53,7 @@ namespace ComfySocks.Controllers
             }
             transfer.TransferInformationID = 1;
 
-               var item = db.ProStock.Find(transfer.ItemID);
+               var item = db.Transfers.Find(transfer.ItemID);
 
             if (ModelState.IsValid)
             {
@@ -65,43 +62,27 @@ namespace ComfySocks.Controllers
                 {
                     if (t.Transfer.ItemID == transfer.ItemID)
                     {
-                        if (ProductAvalableQuantity(t.Transfer.ItemID) > 0 && (t.Transfer.Quantity + transfer.Quantity) <= ProductAvalableQuantity(t.Transfer.ItemID))
-                        {
-                            t.Transfer.Quantity += transfer.Quantity;
-                            found = true;
-                            ViewBag.infoMessage = "Product Item is Added!";
-                            break;
-                        }
-                        else if (ProductAvalableQuantity(t.Transfer.ItemID) == -2)
-                        {
-                            ViewBag.errorMessage = "Unable to load product information!.";
-                            found = true;
-                        }
-                        else {
-                            ViewBag.errorMessage = "Low Stock previously " + t.Transfer.Quantity + " Selected Only " + ProductAvalableQuantity(t.Transfer.ItemID) + " avaliable!.";
-                            found = true;
-                        }
+                        t.Transfer.Quantity += transfer.Quantity;
+                        found = true;
+                        ViewBag.infoMessage = "Product Transfer Item is Added!";
+                        break;
                     }
                 }
                 if (!found)
                 {
-                    if (ProductAvalableQuantity(transfer.ItemID) > 0 && (transfer.Quantity) <= ProductAvalableQuantity(transfer.ItemID))
+                    Item I = db.Items.Find(transfer.ItemID);
+
+                    if (I == null)
                     {
+                        ViewBag.errorMessage = "Unable to find Item";
+                    }
+                    else {
                         TransferVM transferVM = new TransferVM();
-                        Item I = db.Items.Find(transfer.ItemID);
                         transferVM.TypeOfProduct = I.Name;
                         transferVM.Code = I.Code;
                         transferVM.Unit = I.Unit.Name;
                         transferVM.Transfer = transfer;
                         selectedTransfer.Add(transferVM);
-                    }
-                    else if (ProductAvalableQuantity(transfer.ItemID) == -2)
-                    {
-                        ViewBag.errorMessage = "Unable to load Product Information!";
-                    }
-                    else
-                    {
-                        ViewBag.errorMessage = "Only " + ProductAvalableQuantity(transfer.ItemID) + "Avaliable";
                     }
                 }
             }
@@ -114,7 +95,7 @@ namespace ComfySocks.Controllers
             if (selectedTransfer.Count() > 0 ) {
                 ViewBag.haveItem = true;
             }
-            ViewBag.TempProductStockID = (from t in db.ProStock where t.ProStockInformation.Status == "Approved" orderby t.ID select t).ToList();
+            ViewBag.TransferID = (from t in db.Items where t.StoreType == StoreType.ProductItem orderby t.ID select t).ToList();
             return View(transfer);
         }
 
@@ -122,7 +103,7 @@ namespace ComfySocks.Controllers
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-            ViewBag.TempProductStockID = (from t in db.ProStock where t.ProStockInformation.Status == "Approved" orderby t.ID select t).ToList();
+            ViewBag.TransferID = (from t in db.Items where t.StoreType == StoreType.ProductItem orderby t.ID select t).ToList();
 
 
             List<TransferVM> selectedTransfer = new List<TransferVM>();
@@ -197,11 +178,11 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from s in db.TransferInformation orderby s.ID orderby s.ID descending select s.ID).First();
-                transferInformation.FPTNo = "FPTNo-" + (LastId + 1);
+                transferInformation.FPTNo = "No:-" + (LastId + 1).ToString("D4");
             }
             catch
             {
-                transferInformation.FPTNo = "FPTNo-1";
+                transferInformation.FPTNo = "No:-" +1.ToString("D4");
             }
             transferInformation.Date = DateTime.Now;
             bool pass = true;
@@ -240,7 +221,6 @@ namespace ComfySocks.Controllers
             }
             return View();
         }
-        [Authorize(Roles ="Super Admin, Admin, Production")]
         public ActionResult TransferDetail(int? id)
         {
             //errormessage display
@@ -260,21 +240,6 @@ namespace ComfySocks.Controllers
             }
             return View(TI);
         }
-        
-        //Product Avaliable quantity
-
-        private float ProductAvalableQuantity(int item)
-        {
-            ProductAvialableOnStock productAvialable = db.ProductAvialableOnStock.Find(item);
-
-            if (productAvialable != null) {
-
-                return productAvialable.ProductAvaliable;
-            }
-            return -2;
-        }
-
-
         //Transfer approval
         public ActionResult TransferApproved(int? id)
         {
@@ -297,8 +262,8 @@ namespace ComfySocks.Controllers
             bool pass = true;
 
             foreach (Transfer transfer in transferInformation.Transfers) {
-                ProStock proStock   = (from t in db.ProStock where t.ItemID == transfer.ItemID select t).First();
-                if (proStock == null)
+                Item items = (from t in db.Items where t.ID == transfer.ItemID select t).First();
+                if (items == null)
                 {
                     TransferViewModelForError transferViewModelForError = new TransferViewModelForError()
                     {
@@ -308,42 +273,15 @@ namespace ComfySocks.Controllers
                     ViewBag.errorMessage = "Some error found. see error details for more information";
                     ErrorList.Add(transferViewModelForError);
                 }
-                else if(proStock.Total < transfer.Quantity) {
-                    TransferViewModelForError transferViewModelForError = new TransferViewModelForError()
-                    {
-                        Transfer = transfer,
-                        Error = "The Avaliable Product in" + transferInformation.Store.Name + "store is less than transfering" + transfer.Quantity
-                    };
-                    pass = false;
-                    ViewBag.errorMessage = "Check item is saved on the database or not.";
-                    ErrorList.Add(transferViewModelForError);
-                }
             }
             if (pass)
             {
                 foreach (Transfer transfer in transferInformation.Transfers)
                 {
-                    ProStock proStock = (from t in db.ProStock where t.ItemID == transfer.ItemID select t).First();
-                    proStock.Total -= (float)transfer.Quantity;
+                    Item items= (from t in db.Items where t.ID == transfer.ItemID select t).First();
                     transfer.Total += (float)transfer.Quantity;
                     transfer.PPT += (float)transfer.Quantity;
-                    db.Entry(proStock).State = EntityState.Modified;
-                    db.SaveChanges();
-                   
-                    ProductAvialableOnStock productAvialable = db.ProductAvialableOnStock.Find(transfer.ItemID);
-                    Item pa = db.Items.Find(productAvialable.ID);
-                    float deference = productAvialable.RecentlyReducedProduct - transfer.Quantity;
-
-                    if (deference > 0)
-                    {
-                        productAvialable.RecentlyReducedProduct -= (float)transfer.Quantity;
-                    }
-                    else
-                    {
-                        productAvialable.RecentlyReducedProduct = 0;
-                        productAvialable.ProductAvaliable += deference;
-                    }
-                    db.Entry(productAvialable).State = EntityState.Modified;
+                    db.Entry(transfer).State = EntityState.Modified;
                     db.SaveChanges();
                     ProductlogicalAvaliable productlogical = db.ProductlogicalAvaliables.Find(transfer.ItemID);
                     ProductMaterialRepository productMaterial = db.ProductMaterialRepositories.Find(transfer.ItemID);
@@ -408,48 +346,19 @@ namespace ComfySocks.Controllers
 
             foreach (Transfer transfer in transferInformation.Transfers)
             {
-                ProStock proStock = (from t in db.ProStock where t.ItemID == transfer.ItemID select t).First();
-                if (proStock == null)
+                if (pass)
                 {
-                    TransferViewModelForError transferViewModelForError = new TransferViewModelForError()
-                    {
-                        Transfer = transfer,
-                        Error = "Unable to load Product Information Posible reason is no information registerd about the item"
-                    }; pass = false;
-                    ViewBag.errorMessage = "Some error found. see error details for more information";
-                    ErrorList.Add(transferViewModelForError);
-                }
-                else if (proStock.Total < transfer.Quantity)
-                {
-                    TransferViewModelForError transferViewModelForError = new TransferViewModelForError()
-                    {
-                        Transfer = transfer,
-                        Error = "The Avaliable Product in" + transferInformation.Store.Name + "store is less than transfering" + transfer.Quantity
-                    };
-                    pass = false;
-                    ViewBag.errorMessage = "Check item is saved on the database or not.";
-                    ErrorList.Add(transferViewModelForError);
-                }
-            }
-            if (pass)
-            {
-                foreach (Transfer transfer in transferInformation.Transfers)
-                {
-                    ProStock proStock = (from t in db.ProStock where t.ItemID == transfer.ItemID select t).First();
-                    db.Entry(proStock).State = EntityState.Modified;
+                    transferInformation.Status = "Rejected";
+                    transferInformation.Approvedby = User.Identity.GetUserName();
+                    db.Entry(transferInformation).State = EntityState.Modified;
                     db.SaveChanges();
+                    ViewBag.successMessage = "Successfully Rejected!!";
                 }
-                transferInformation.Status = "Rejected";
-                transferInformation.Approvedby = User.Identity.GetUserName();
-                db.Entry(transferInformation).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.successMessage = "Successfully Rejected!!";
+                else
+                {
+                    ViewBag.errorList = ErrorList;
+                }
             }
-            else
-            {
-                ViewBag.errorList = ErrorList;
-            }
-
             return View("TransferDetail", transferInformation);
         }
 

@@ -12,11 +12,11 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles = "Super Admin, Production, Store Manager, Finance")]
     public class RequestController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Request
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult StoreRequestionList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -26,7 +26,6 @@ namespace ComfySocks.Controllers
 
             return View(storeRequestInfo);
         }
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewRequestEntry()
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
@@ -39,6 +38,7 @@ namespace ComfySocks.Controllers
                 if (stock.Count() == 0)
                 {
                     ViewBag.stock = "Register Stock Information Frist";
+                    ViewBag.RequiredItem = true;
                 }
                 
             }
@@ -46,9 +46,8 @@ namespace ComfySocks.Controllers
                 
             return View();
         }
-
+       
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewRequestEntry(StoreRequest storeRequest)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -126,12 +125,12 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
+
             ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
 
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult Remove(int id = 0)
         {
             List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
@@ -154,14 +153,6 @@ namespace ComfySocks.Controllers
             ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
             return View("NewRequestEntry");
         }
-       
-        
-        /// <summary>
-        /// submitteng the requested form to controller and database
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult NewStoreRequsteInfo()
         {
@@ -184,7 +175,6 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Super Admin, Admin, Production,")]
         public ActionResult NewStoreRequsteInfo(StoreRequestInformation StoreRequestInformation)
         {   
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -206,11 +196,11 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from sr in db.StoreRequestInformation orderby sr.ID descending select sr.ID).First();
-                StoreRequestInformation.StoreRequestNumber = "SR.No:-" + (LastId + 1);
+                StoreRequestInformation.StoreRequestNumber = "No:-" + (LastId + 1).ToString("D4");
             }
             catch
             {
-                StoreRequestInformation.StoreRequestNumber = "SR.No-1";
+                StoreRequestInformation.StoreRequestNumber = "No:-"+ 1.ToString("D4");
             }
             StoreRequestInformation.Date = DateTime.Now;
             bool pass = true;
@@ -250,7 +240,6 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult StoreRequestDetial(int? id)
         {
             if (id == null)
@@ -268,7 +257,6 @@ namespace ComfySocks.Controllers
 
 
         //Request is approved 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult RequestApproved(int? id)
         {
             if (id == null)

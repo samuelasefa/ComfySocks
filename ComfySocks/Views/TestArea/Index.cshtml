@@ -4,7 +4,7 @@
 
 <br />
 <div align="center">
-    @if (ViewBag.Message != null)
+    @*@if (ViewBag.Message != null)
     {
         <span class="success sweet-alert"> @ViewBag.Message</span>
     }
@@ -15,8 +15,15 @@
             <input type="file" id="fileUpload" class="btn btn-primary" name="FileUpload" /><br />
             <input type="submit" class="btn btn-primary" name="UploadNewEmployee" id="fileUploadExcel" value="POST" />
         }
+    </div>*@
+    
+    <div>
+        @{ 
+            int i = 1;
+            string s = i.ToString().PadLeft(5, '0');
+        }
+        @Html.Raw(s)
     </div>
-
 
 </div>
 <script src="~/Scripts/sweetalert.js"></script>
@@ -37,3 +44,7 @@
     });
 
 </script> 
+
+<p>
+
+</p>

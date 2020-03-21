@@ -5,9 +5,18 @@
 }
 
 <div class="box box-body box-info">
+    @if (User.IsInRole("Store Manager") || User.IsInRole("Super Admin"))
+    {
         <p>
             @Html.ActionLink("Create New", "Create")
         </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "Create")
+        </p>
+    }
     <table class="table table-bordered table-responsive" id="dtaTable">
         <thead style="background-color:#00CCD2; color: white">
             <tr>

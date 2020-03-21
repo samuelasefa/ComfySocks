@@ -1,7 +1,7 @@
 ﻿using ComfySocks.Models;
+using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
 using ComfySocks.Models.ProductInfo;
-using ComfySocks.Models.ProductStock;
 using ComfySocks.Models.ProductTransferInfo;
 using ComfySocks.Models.SalesInfo;
 using Microsoft.AspNet.Identity;
@@ -13,56 +13,39 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles ="Super Admin, Admin")]
     public class SalesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-
-        [Authorize(Roles = "Super Admin, Admin")]
+        // GET: Request
         public ActionResult SalesList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var saleslist = db.SalesInformation.Include(J => J.Customer);
-            return View(saleslist);
-        }
+            var salesinfo = (from sales in db.SalesInformation orderby sales.ID ascending select sales).Include(J => J.Customer).ToList();
 
-        //sales :Detail
-        [Authorize(Roles = "Super Admin, Admin")]
-
-        public ActionResult SalesDetail(int? id)
-        {
-            if (id == null) {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Inavalid Navigation is detected!!";
-                return RedirectToAction("SalesList");
-            }
-            SalesInformation salesInformation = db.SalesInformation.Find(id);
-            if (salesInformation == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable To load sales information";
-                return RedirectToAction("SalesList");
-            }
-            return View(salesInformation);
+            return View(salesinfo);
         }
-        // New  SALES
-        [Authorize(Roles ="Super Admin, Admin, Sales")]
         public ActionResult NewSalesEntry()
         {
-            //display if error mesage send from other controler
+            if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-            //display if succsess mesage send from other controler
-            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            //precondition for New 
-            ViewBag.customer = "";
-            if (db.Customers.ToList().Count == 0) {
-                ViewBag.custumer = "Register Customer frist";
+            //Frist required Item /1 Material is in the stock or not
+            {
+                ViewBag.customer = "";
+                if (db.Customers.ToList().Count == 0)
+                {
+                    ViewBag.custumer = "Register Customer frist";
+                }
+
             }
-            ViewBag.TransferID = (from p in db.Transfers where p.TransferInformation.Status == "Recivied" orderby p.ID descending select p).ToList();
+            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
+
             return View();
         }
 
-        [System.Web.Mvc.HttpPost]
-        [Authorize(Roles = "Super Admin, Admin, Sales")]
+        [HttpPost]
         public ActionResult NewSalesEntry(Sales sales)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -70,61 +53,61 @@ namespace ComfySocks.Controllers
 
             List<SalesVM> selectedSales = new List<SalesVM>();
             bool found = false;
+
             if (TempData[User.Identity.GetUserId() + "selectedSales"] != null)
             {
                 selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
             }
             sales.SalesInformationID = 1;
-            sales.RemaningDelivery += (float)sales.Quantity;
-            float totalPrice = 0;
-
-            var item = db.ProStock.Find(sales.ItemID);
+            sales.RemaningDelivery = (float)sales.Quantity;
 
             if (ModelState.IsValid)
             {
-
-                foreach (SalesVM t in selectedSales)
+                foreach (SalesVM s in selectedSales)
                 {
-                    if (t.Sales.ItemID == sales.ItemID)
+                    if (s.Sales.ItemID == sales.ItemID)
                     {
-                        if (ProductTransferdAvaliable(t.Sales.ItemID) > 0 && (t.Sales.Quantity + sales.Quantity) <= ProductTransferdAvaliable(t.Sales.ItemID))
+                        if (AvalableQuantity(s.Sales.ItemID) > 0 && (s.Sales.Quantity + sales.Quantity) <= AvalableQuantity(s.Sales.ItemID))
                         {
-                            t.Sales.Quantity += sales.Quantity;
+                            s.Sales.Quantity += sales.Quantity;
                             found = true;
-                            ViewBag.infoMessage = "Product Item is Added!";
+                            ViewBag.infoMessage = "Item is Added !!!";
                             break;
                         }
-                        else if (ProductTransferdAvaliable(t.Sales.ItemID) == -2)
+                        else if (AvalableQuantity(s.Sales.ItemID) == -2)
                         {
-                            ViewBag.errorMessage = "Unable to load product information!.";
+                            ViewBag.errorMessage = "Unable to load Item Information!.";
                             found = true;
                         }
                         else
                         {
-                            ViewBag.errorMessage = "Low Stock previously " + t.Sales.Quantity + " Selected Only " + ProductTransferdAvaliable(t.Sales.ItemID) + " avaliable!.";
+                            ViewBag.errorMessage = "Low Stock previously " + s.Sales.Quantity + " Selected Only " + AvalableQuantity(s.Sales.ItemID) + " avaliable!.";
                             found = true;
                         }
                     }
                 }
-                if (!found)
+
+                if (found == false)
                 {
-                    if (ProductTransferdAvaliable(sales.ItemID) > 0 && (sales.Quantity) <= ProductTransferdAvaliable(sales.ItemID))
+                    if (AvalableQuantity(sales.ItemID) > 0 && (sales.Quantity) <= AvalableQuantity(sales.ItemID))
                     {
                         SalesVM salesVM = new SalesVM();
-                        Item I = db.Items.Find(sales.ItemID);
-                        salesVM.TypeOfProduct = I.Name;
-                        salesVM.Code = I.Code;
-                        salesVM.Unit = I.Unit.Name;
+
+                        Item item = db.Items.Find(sales.ItemID);
+                        salesVM.TypeOfProduct = item.Name;
+                        salesVM.Code = item.Code;
+                        salesVM.Unit = item.Unit.Name;
                         salesVM.Sales = sales;
                         selectedSales.Add(salesVM);
+
                     }
-                    else if (ProductTransferdAvaliable(sales.ItemID) == -2)
+                    else if (AvalableQuantity(sales.ItemID) == -2)
                     {
-                        ViewBag.errorMessage = "Unable to load Product Information!";
+                        ViewBag.errorMessage = "Unable to lode Item Information!.";
                     }
                     else
                     {
-                        ViewBag.errorMessage = "Only " + ProductTransferdAvaliable(sales.ItemID) + "Avaliable";
+                        ViewBag.errorMessage = "Only " + AvalableQuantity(sales.ItemID) + " avalable!.";
                     }
                 }
             }
@@ -132,76 +115,93 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.errorMessage = "State is not valid";
             }
-            ViewBag.selectedSales = selectedSales;
             TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
-            TempData[User.Identity.GetUserId() + "totalPrice"] = totalPrice;
-
-            if (selectedSales.Count() > 0)
+            ViewBag.selectedSales = selectedSales;
+            if (selectedSales.Count > 0)
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.TransferID = (from p in db.Transfers where p.TransferInformation.Status == "Recivied" orderby p.ID descending select p).ToList();
+            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
 
-            return View(sales);
+            return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin, Sales")]
+        public ActionResult Remove(int id)
+        {
+            if (TempData[User.Identity.GetUserId() + "selectedSales"] == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Selected Sales. try again.";
+                return RedirectToAction("NewSalesEntry");
+            }
+            List<SalesVM> selectedSales = new List<SalesVM>();
+            selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
+            foreach (SalesVM s in selectedSales)
+            {
+                if (s.Sales.ItemID == id)
+                {
+                    selectedSales.Remove(s);
+                    ViewBag.succsessMessage = "Sale Item is Successfully Removed";
+                    break;
+                }
+            }
+            if (selectedSales.Count > 0)
+                ViewBag.haveItem = true;
+            ViewBag.selectedSales = selectedSales;
+            TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
+            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
+            return View("NewSalesEntry");
+        }
         public ActionResult NewSalesInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             List<SalesVM> selectedSales = new List<SalesVM>();
-
-
             if (TempData[User.Identity.GetUserId() + "selectedSales"] != null)
             {
                 selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
                 TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
 
             }
-            else { 
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load selected sales information!! try again";
+            else
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Sales request";
                 return RedirectToAction("NewSalesEntry");
             }
-            TempData[User.Identity.GetUserId() + "selectedSales"] = TempData[User.Identity.GetUserId() + "selectedSales"];
-            TempData[User.Identity.GetUserId() + "totalPrice"] = TempData[User.Identity.GetUserId() + "totalPrice"];
             ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
-
         public ActionResult NewSalesInfo(SalesInformation salesInformation)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            List<SalesVM> selectedSales = new List<SalesVM>();
             ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
-            if (TempData[User.Identity.GetUserId() + "selectedSales"] != null) {
+
+            List<SalesVM> selectedSales = new List<SalesVM>();
+
+            if (TempData[User.Identity.GetUserId() + "selectedSales"] != null)
+            {
                 selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
-                TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
             }
             else
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load selected sales information!! try again";
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected sales";
                 return RedirectToAction("NewSalesEntry");
             }
-
             salesInformation.ApplicationUserID = User.Identity.GetUserId();
-
             try
             {
                 int LastId = (from sr in db.SalesInformation orderby sr.ID descending select sr.ID).First();
-                salesInformation.FsNo = "FS.No:-" + (LastId + 1);
+                salesInformation.FsNo = "No:-" + (LastId + 1).ToString("D10");
             }
-            catch 
+            catch
             {
-                salesInformation.FsNo = "FS.No:-1";
+                salesInformation.FsNo = "No:-" + 1.ToString("D10");
             }
-            salesInformation.Date = DateTime.Now;
             float totalPrice = 0;
+            salesInformation.Date = DateTime.Now;
             bool pass = true;
             if (ModelState.IsValid)
             {
@@ -228,11 +228,6 @@ namespace ComfySocks.Controllers
                             db.Sales.Add(s.Sales);
                             db.SaveChanges();
                             totalPrice += (float)s.Sales.Quantity * (float)s.Sales.UnitPrice;
-                            //ProductlogicalAvaliable PV = db.ProductlogicalAvaliables.Find(s.Sales.ItemID);
-                            //PV.LogicalProductAvaliable -= (float)s.Sales.Quantity;
-                            //PV.RecentlyReduced += (float)s.Sales.Quantity;
-                            //db.Entry(PV).State = EntityState.Modified;
-                            //db.SaveChanges();
                             double Tax = 1.15;
                             SalesInformation si = db.SalesInformation.Find(salesInformation.ID);
                             si.SubTotal = totalPrice;
@@ -241,108 +236,102 @@ namespace ComfySocks.Controllers
                             db.Entry(si).State = EntityState.Modified;
                             db.SaveChanges();
                         }
+                        ViewBag.succsessMessage = "Sales is Succesfully Submited!!";
+                        return RedirectToAction("SalesDetail", new { id = salesInformation.ID });
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-
-                        throw;
+                        ViewBag.errorMessage = "Unable to preform the request you need View error detail" + e;
                     }
                 }
             }
-            return View(salesInformation);
+            return View();
         }
 
-        [Authorize(Roles = "Salse,Super Admin,Admin,")]
-        public ActionResult RemoveSelected(int id)
+        public ActionResult SalesDetail(int? id)
         {
-            if (TempData[User.Identity.GetUserId() + "selectedSales"] == null)
+            if (id == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find selected orders. try again.";
-                return RedirectToAction("NewSalesEntry");
-            }
-            List<SalesVM> selectedSales = new List<SalesVM>();
-            selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
-            float totalPrice = (float)TempData[User.Identity.GetUserId() + "totalPrice"];
-            foreach (var s in selectedSales)
-            {
-                if (s.Sales.ItemID == id)
-                {
-                    selectedSales.Remove(s);
-                    ViewBag.succsessMessage = "Sales successfully Removed";
-                    break;
-                }
-            }
-            if (selectedSales.Count > 0)
-                ViewBag.haveItem = true;
-            ViewBag.selectedSales = selectedSales;
-            TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
-            TempData[User.Identity.GetUserId() + "totalPrice"] = totalPrice;
-            ViewBag.TransferID = (from p in db.Transfers where p.TransferInformation.Status == "Transferd" orderby p.ID descending select p).ToList();
-            return View("NewSalesEntry");
-        }
-
-        //sales approval
-        [Authorize(Roles = "Super Admin, Admin")]
-        public ActionResult SaleApproved(int? id)
-        {
-            if (id == null) {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation detected!!";
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation detected! Try agian";
                 return RedirectToAction("SalesList");
             }
             SalesInformation salesInformation = db.SalesInformation.Find(id);
             if (salesInformation == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Load Sales item from Stock";
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load Store Request Information";
                 return RedirectToAction("SalesList");
             }
+            return View(salesInformation);
+        }
 
+
+        //Request is approved 
+        public ActionResult SaleApproved(int? id)
+        {
+            if (id == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected!. Try again";
+                return RedirectToAction("SalesList");
+            }
+            SalesInformation salesInformation = db.SalesInformation.Find(id);
+            if (salesInformation == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Reterive Store Request Information";
+                return RedirectToAction("SalesList");
+            }
             List<SalesVMForError> ErrorList = new List<SalesVMForError>();
             bool pass = true;
-
             foreach (Sales sales in salesInformation.Sales)
             {
-                Transfer transfer = (from p in db.Transfers where p.ItemID == sales.ItemID orderby p.ID descending select p).First();
-                if (transfer == null)
+                //StoreRequest request = (from sr in db.StoreRequest where sr.ItemID == storeRequest.ItemID select sr).First();
+                //request.Quantity += storeRequest.Quantity;
+                //db.Entry(request).State = EntityState.Modified;
+                //db.SaveChanges();
+                //Stock stock = (from s in db.Stocks where s.ItemID == sales.ItemID select s).First();
+                ProductlogicalAvaliable productlogicalAvaliable = db.ProductlogicalAvaliables.Find(sales.ItemID);
+                if (sales == null)
                 {
-                    SalesVMForError salesVMForError = new SalesVMForError()
+                    SalesVMForError storeRequstVMForError = new SalesVMForError()
                     {
                         Sales = sales,
-                        Error = "Unable to load store Information. Posiable No Information registered about the product"
+                        Error = "Unable to load store Information Posible reason is no information registed about the item"
                     }; pass = false;
-                    ViewBag.errorMessage = "Some error found see error detail for more information";
-                    ErrorList.Add(salesVMForError);
+                    ViewBag.errorMessage = "Some error found. see error detail for more information";
+                    ErrorList.Add(storeRequstVMForError);
                 }
-                else if(transfer.Total < sales.Quantity) {
-                    SalesVMForError salesVMForError = new SalesVMForError()
+                else if (productlogicalAvaliable.LogicalProductAvaliable < sales.Quantity)
+                {
+                    SalesVMForError storeRequstVMError = new SalesVMForError()
                     {
                         Sales = sales,
-                        Error = "The avalable on product in store is less than requested quantity" + transfer.Total
-                }; pass = false;
-                ViewBag.errorMessage = "Some error found see error detail for more information";
-                ErrorList.Add(salesVMForError);
-                }   
+                        Error = "The Avaliable stock in Comfy store is less than requested Quantity" + productlogicalAvaliable.LogicalProductAvaliable
+                    };
+                    pass = false;
+                    ViewBag.errorMessage = "The Avaliable stock in Comfy  is less than requested Quantity" + productlogicalAvaliable.LogicalProductAvaliable;
+                    ErrorList.Add(storeRequstVMError);
+                }
             }
             if (pass)
             {
                 foreach (Sales sales in salesInformation.Sales)
                 {
-                    Transfer transfer = (from p in db.Transfers where p.ItemID == sales.ItemID orderby p.ID descending select p).First();
-                    transfer.Total -= (float)sales.Quantity;
+                    Transfer transfer = (from s in db.Transfers where s.ItemID == sales.ItemID select s).First();
+                    //stock.Total -= (float)storeRequest.Quantity;
                     db.Entry(transfer).State = EntityState.Modified;
                     db.SaveChanges();
-
                     ProductlogicalAvaliable productlogicalAvaliable = db.ProductlogicalAvaliables.Find(sales.ItemID);
-                    Item I = db.Items.Find(productlogicalAvaliable.ID);
+                    Item i = db.Items.Find(productlogicalAvaliable.ID);
+                    float deference = productlogicalAvaliable.RecentlyReduced - sales.Quantity;
 
-                    float deference = productlogicalAvaliable.LogicalProductAvaliable - sales.Quantity;
                     if (deference > 0)
                     {
                         productlogicalAvaliable.RecentlyReduced -= (float)sales.Quantity;
                     }
                     else
                     {
-                        productlogicalAvaliable.RecentlyReduced= 0;
-                        productlogicalAvaliable.RecentlyReduced += deference;
+                        productlogicalAvaliable.RecentlyReduced = 0;
+                        productlogicalAvaliable.LogicalProductAvaliable += deference;
+
                     }
                     db.Entry(productlogicalAvaliable).State = EntityState.Modified;
                     db.SaveChanges();
@@ -351,16 +340,16 @@ namespace ComfySocks.Controllers
                 salesInformation.Approvedby = User.Identity.GetUserName();
                 db.Entry(salesInformation).State = EntityState.Modified;
                 db.SaveChanges();
-                ViewBag.succsessMessage = "Product Sale is Approved!!";
+                ViewBag.succsessMessage = "Sales is approved!!.";
             }
-            else {
-                ViewBag.errorList = ErrorList;
-            }
-        return View("SalesDetail", salesInformation);
-        }
 
-        //sales Rejection
-        [Authorize(Roles = "Super Admin, Admin")]
+            else
+            {
+                ViewBag.erroList = ErrorList;
+            }
+
+            return View("SalesDetail", salesInformation);
+        }
 
         public ActionResult SalesRejected(int? id)
         {
@@ -381,69 +370,42 @@ namespace ComfySocks.Controllers
 
             foreach (Sales sales in salesInformation.Sales)
             {
-                Transfer transfer = (from p in db.Transfers where p.ItemID == sales.ItemID orderby p.ID descending select p).First();
-                if (transfer == null)
+                if (pass)
                 {
-                    SalesVMForError salesVMForError = new SalesVMForError()
-                    {
-                        Sales = sales,
-                        Error = "Unable to load store Information. Posiable No Information registered about the product"
-                    }; pass = false;
-                    ViewBag.errorMessage = "Some error found see error detail for more information";
-                    ErrorList.Add(salesVMForError);
-                }
-                else if (transfer.Total < sales.Quantity)
-                {
-                    SalesVMForError salesVMForError = new SalesVMForError()
-                    {
-                        Sales = sales,
-                        Error = "The avalable on product in store is less than requested quantity" + transfer.Total
-                    }; pass = false;
-                    ViewBag.errorMessage = "Some error found see error detail for more information";
-                    ErrorList.Add(salesVMForError);
-                }
-            }
-            if (pass)
-            {
-                foreach (Sales sales in salesInformation.Sales)
-                {
-                    Transfer transfer = (from p in db.Transfers where p.ItemID == sales.ItemID orderby p.ID descending select p).First();
-                    transfer.Total = (float)sales.Quantity;
-                    db.Entry(transfer).State = EntityState.Modified;
+                    salesInformation.Status = "Rejected";
+                    salesInformation.Approvedby = User.Identity.GetUserName();
+                    db.Entry(salesInformation).State = EntityState.Modified;
                     db.SaveChanges();
+                    ViewBag.succsessMessage = "Sale is Rejected!!";
                 }
-                salesInformation.Status = "Rejected";
-                salesInformation.Approvedby = User.Identity.GetUserName();
-                db.Entry(salesInformation).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.succsessMessage = "Sale is Rejected!!";
+                else
+                {
+                    ViewBag.errorList = ErrorList;
+                }
             }
-            else
-            {
-                ViewBag.errorList = ErrorList;
-            }
+            
             return View("SalesDetail", salesInformation);
         }
-
-        private float ProductTransferdAvaliable(int item)
+       
+        //to check avaliable on stock 
+        float AvalableQuantity(int item)
         {
-            ProductlogicalAvaliable productlogical = db.ProductlogicalAvaliables.Find(item);
-
-            if (productlogical != null)
+            ProductlogicalAvaliable avalable = db.ProductlogicalAvaliables.Find(item);
+            if (avalable != null)
             {
-
-                return productlogical.LogicalProductAvaliable;
+                return avalable.LogicalProductAvaliable;
             }
             return -2;
         }
+
         protected override void Dispose(bool disposing)
         {
-            if (disposing) {
+            if (disposing)
+            {
                 db.Dispose();
             }
             base.Dispose(disposing);
         }
-
 
     }
 }

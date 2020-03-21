@@ -1,6 +1,5 @@
 ﻿using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductStock;
 using ComfySocks.Models.SalesInfo;
 using System;
 using System.Collections.Generic;

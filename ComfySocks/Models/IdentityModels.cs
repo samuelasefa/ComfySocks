@@ -1,26 +1,26 @@
-﻿using System.Collections;
+﻿using ComfySocks.Models.InventoryModel;
+using ComfySocks.Models.Items;
+using ComfySocks.Models.OfficeIssueInfo;
+using ComfySocks.Models.OfficeRequest;
+using ComfySocks.Models.Order;
+using ComfySocks.Models.ProductInfo;
+using ComfySocks.Models.ProductTransferInfo;
+using ComfySocks.Models.PurchaseRequestInfo;
+using ComfySocks.Models.Repository;
+using ComfySocks.Models.Request;
+using ComfySocks.Models.RowDeliveryInfo;
+using ComfySocks.Models.RowIssueInfo;
+using ComfySocks.Models.SalesDeliveryInfo;
+using ComfySocks.Models.SalesInfo;
+using ComfySocks.Repository;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using ComfySocks.Models.InventoryModel;
-using ComfySocks.Models.Items;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using ComfySocks.Models.Request;
-using ComfySocks.Models.Order;
-using ComfySocks.Models.ProductInfo;
-using ComfySocks.Models.ProductTransferInfo;
-using ComfySocks.Models.SalesInfo;
-using ComfySocks.Models.ProductStock;
-using ComfySocks.Repository;
-using ComfySocks.Models.Repository;
-using ComfySocks.Models.SalesDeliveryInfo;
-using ComfySocks.Models.OfficeRequest;
-using ComfySocks.Models.PurchaseRequest;
-using ComfySocks.Models.RowIssueInfo;
-using ComfySocks.Models.OfficeIssueInfo;
 
 namespace ComfySocks.Models
 {
@@ -30,6 +30,8 @@ namespace ComfySocks.Models
         public string FullName { get; internal set; }
         public bool IsActive { get; internal set; }
 
+        public virtual ICollection<RowDelivery> RowDeliveries { get; set; }
+        public virtual ICollection<RowDeliveryInformation> RowDeliveryInformation { get; set; }
         public virtual ICollection<StoreType> StoreTypes { get; set; }
         public virtual ICollection<ItemType> ItemTypes{ get; set; }
         public virtual ICollection<Item> Items { get; set; }
@@ -37,8 +39,6 @@ namespace ComfySocks.Models
         public virtual ICollection<AvaliableOnStock> AvaliableOnStocks { get; set; }
         public virtual ICollection<StoreRequest> StoreRequests { get; set; }
         public virtual ICollection<OfficeMaterialRequest> OfficeMaterialRequest { get; set; }
-        public virtual ICollection<ProStock> ProStocks { get; set; }
-        public virtual ICollection<ProStockInformation> ProStockInformation { get; set; }
         public virtual ICollection<StoreRequestInformation> StoreRequestInformation { get; set; }
         public virtual ICollection<ProductionOrder> ProductioOrders{ get; set; }
         public virtual ICollection<ProductionOrderInfo> ProductionOrderInfos{ get; set; }
@@ -48,7 +48,6 @@ namespace ComfySocks.Models
         public virtual ICollection<TransferInformation> TransferInformation { get; set; }
         public virtual ICollection<Sales> Sales { get; set; }
         public virtual ICollection<SalesInformation> SalesInformation { get; set; }
-        public virtual ICollection<ProductAvialableOnStock> ProductAvialableOnStock { get; set; }
         public virtual ICollection<ProductlogicalAvaliable> ProductlogicalAvaliables { get; set; }
         public virtual ICollection<RowMaterialRepositery> RowMaterialRepositery { get; set; }
         public virtual ICollection<ProductMaterialRepository> ProductMaterialRepositories { get; set; }
@@ -56,12 +55,12 @@ namespace ComfySocks.Models
         public virtual ICollection<OfficeMaterialRequestInformation> OfficeMaterialRequestInformation { get; set; }
         public virtual ICollection<SalesDelivery> SalesDeliveries { get; set; }
         public virtual ICollection<SalesDeliveryInformation> SalesDeliveryInformation { get; set; }
-        public virtual ICollection<Purchase> Purchases { get; set; }
-        public virtual ICollection<PurchaseInformation> PurchaseInformation { get; set; }
         public virtual ICollection<RowIssue> RowIssues { get; set; }
         public virtual ICollection<RowIssueInformation> RowIssueInformation { get; set; }
         public virtual ICollection<OfficeIssue> OfficeIssues { get; set; }
         public virtual ICollection<OfficeIssueInformation> OfficeInformation { get; set; }
+        public virtual ICollection<PurchaseRequest> PurchaseRequests { get; set; }
+        public virtual ICollection<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -152,13 +151,10 @@ namespace ComfySocks.Models
         public DbSet<TransferInformation> TransferInformation{ get; set; }
         public DbSet<Sales> Sales { get; set; }
         public DbSet<SalesInformation> SalesInformation { get; set; }
-        public DbSet<ProStock> ProStock { get; set; }
-        public DbSet<ProductAvialableOnStock> ProductAvialableOnStock { get; set; }
         public DbSet<ProductlogicalAvaliable> ProductlogicalAvaliables { get; set; }
         public DbSet<RowMaterialRepositery> RowMaterialRepositeries { get; set; }
         public DbSet<ProductMaterialRepository> ProductMaterialRepositories { get; set; }
         public DbSet<Stock> Stocks { get; set; }
-        public DbSet<ProStockInformation> ProStockInformation { get; set; }
         public DbSet<StockInformation> StockInformation { get; set; }
         public DbSet<OfficeMaterialRequest> OfficeMaterialRequest { get; set; }
         public DbSet<OfficeMaterialRequestInformation> OfficeMaterialRequestInformation { get; set; }
@@ -166,11 +162,13 @@ namespace ComfySocks.Models
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SalesDelivery> SalesDeliveries { get; set; }
         public DbSet<SalesDeliveryInformation> SalesDeliveryInformation { get; set; }
-        public DbSet<Purchase> Purchases { get; set; }
-        public DbSet<PurchaseInformation> PurchaseInformation { get; set; }
         public DbSet<RowIssue> RowIssues { get; set; }
         public DbSet<RowIssueInformation> RowIssueInformation { get; set; }
         public DbSet<OfficeIssue> OfficeIssues { get; set; }
+        public DbSet<RowDelivery> RowDeliveries { get; set; }
+        public DbSet<RowDeliveryInformation> RowDeliveryInformation { get; set; }
         public DbSet<OfficeIssueInformation> OfficeIssueInformation { get; set; }
+        public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
+        public DbSet<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
     }
 }

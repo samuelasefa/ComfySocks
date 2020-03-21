@@ -5,7 +5,7 @@
 }
 
 <div class="box box-body box-info">
-    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
     {
         <p>
             @Html.ActionLink("Create New", "Create")

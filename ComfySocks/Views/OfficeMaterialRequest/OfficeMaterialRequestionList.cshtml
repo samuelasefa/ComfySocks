@@ -5,9 +5,18 @@
 }
 
 <div class="box box-body box-primary">
-    <p>
-        @Html.ActionLink("Create New", "NewOfficeMaterialRequest")
-    </p>
+    @if (User.IsInRole("Super Admin")||User.IsInRole("Production"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewOfficeMaterialRequest")
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewOfficeMaterialRequest")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
@@ -33,7 +42,12 @@
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "OfficeMaterialRequestDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                    @if (item.Status == "Approved")
+                    {
+                        @Html.ActionLink("Delivery", "OfficeDeliveryList", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                    }
                 </td>
+
             </tr>
         }
     </table>

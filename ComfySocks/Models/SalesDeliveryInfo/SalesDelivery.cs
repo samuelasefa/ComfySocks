@@ -42,10 +42,4 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         public string Remark { get; set; }
         public float Remaining { get; set; }
     }
-
-    public class DeliveryVMForError
-    {
-        public SalesDelivery SalesDelivery { get; set; }
-        public String Error { get; set; }
-    }
 }

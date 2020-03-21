@@ -5,9 +5,18 @@
 }
 
 <div class="box box-body box-info">
-    <p>
-        @Html.ActionLink("Create New", "NewRequestEntry")
-    </p>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Production"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewRequestEntry")
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewRequestEntry")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
@@ -33,6 +42,13 @@
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "StoreRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                    {
+                        if (item.Status == "Approved")
+                        {
+                            @Html.ActionLink("Delivery ", "NewRowDelivery", "RowDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info fa fa-truck &nbsp;" })
+                        }
+                    }
                 </td>
             </tr>
         }

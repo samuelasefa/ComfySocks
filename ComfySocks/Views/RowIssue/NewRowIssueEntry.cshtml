@@ -58,8 +58,8 @@
                                                 <td>@s.Item.Unit.Name</td>
                                                 <td>@s.Quantity</td>
                                                 <td>@{
-                                                    var item = db.AvaliableOnStocks.Find(s.ItemID);
-                                                } @item.Avaliable
+                                                    var item = db.RowMaterialRepositeries.Find(s.ItemID);
+                                                } @item.RowMaterialAavliable
                                                 </td>
                                             </tr>
                                         } 
@@ -119,10 +119,10 @@
                                             </div>
                                         </div>
                                         &nbsp;
-                                        <div class="col-md-3">
+                                        <div style="float:right; margin-right:50px">
                                             <div class="form-group">
                                                 <div class="col-md-offset-1 col-md-12">
-                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:8px" />
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:10px" />
                                                 </div>
                                             </div>
                                         </div>
@@ -166,7 +166,7 @@
                     <br />
 
                     <div>
-                        @if (ViewBag.selectedRowIssue != null)
+                        @if (ViewBag.haveItem == true)
                         {
 
                             <a class="btn btn-primary pull-right" href="~/RowIssue/NewRowIssueInfo">

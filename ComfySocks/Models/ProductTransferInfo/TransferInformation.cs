@@ -22,8 +22,10 @@ namespace ComfySocks.Models.ProductTransferInfo
         [Display(Name = "Type of Product")]
         public int TempProductStockInfoID { get; set; }
 
-        [Display(Name ="FPT-No")]
+        [Display(Name ="No")]
         public string FPTNo { get; set; }
+
+        //public string FGRNo { get; set; }
 
         [Display(Name ="To:")]
         [Required(ErrorMessage ="StoreID is required")]

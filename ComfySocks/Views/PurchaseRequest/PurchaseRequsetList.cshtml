@@ -1,67 +1,58 @@
-﻿@model IEnumerable<ComfySocks.Models.PurchaseRequest.PurchaseInformation>
+﻿@model IEnumerable<ComfySocks.Models.PurchaseRequestInfo.PurchaseRequestInformation>
+
+@{
+    ViewBag.Title = "Purchase Requestion List";
+}
 
 <div class="box box-body box-info">
-    <p>
-        @Html.ActionLink("Create New", "NewPurchaseRequestEntry")
-    </p>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewPurchaseRequestEntry")
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewPurchaseRequestEntry")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead style="background-color:#00CCD2; color:#ecf0f1" ;>
+        <thead style="background-color:#00CCD2; color:white">
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Date)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StoreName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
+                <th>Date</th>
+                <th>PurchaseRequest-No</th>
+                <th>SR-No</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot style="background-color:#00CCD2; color:#ecf0f1" ;>
+        <tfoot style="background-color:#00CCD2; color:white">
             <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Date)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.StoreName)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
+                <th>Date</th>
+                <th>PurchaseRequest-No</th>
+                <th>SR-No</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </tfoot>
         @foreach (var item in Model)
         {
-            ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StoreName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td><a class="btn-sm btn btn-info" href="~/PurchaseRequest/PurchaseRequestDetail?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a></td>
-
-        </tr>
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.PurchaseRequestNumber)</td>
+                <td></td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @Html.ActionLink("View ", "PurchaseRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                </td>
+            </tr>
         }
-
     </table>
-
 </div>
 
 <script>
     $(document).ready(function () {
-        $("#dtaTable").DataTable({
-            "lengthMenu": [[7, 14, 25, 50, -1], [7, 14, 25, 50, "All"]],
-        })
+        $("#dtaTable").DataTable({})
     })
 </script>
-
-
-

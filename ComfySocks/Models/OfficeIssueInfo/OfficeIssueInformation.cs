@@ -15,18 +15,19 @@ namespace ComfySocks.Models.OfficeIssueInfo
             [Display(Name = "OR-No.")]
             public string OfficeIssueNumber { get; set; }
 
+            [Display(Name ="Reqisition No.")]
+            public string RequestNumber { get; set; }
+            [Display(Name ="Section/Department")]
+            public string Section { get; set; }
             [Required]
             [Display(Name = "Approved By")]
             public string ApprovedBy { get; set; }
+
+            public string IssuedBy { get; set; }
+            public string ReciviedBy { get; set; }
             //geting user of application
-            [Display(Name = "From")]
-            public string From { get; set; }
-
             public string ApplicationUserID { get; set; }
-
-            [Display(Name = "To")]
-            public int StoreID { get; set; }
-
+        
             public string Status { get; set; }
             //reference
             public virtual ApplicationUser ApplicationUser { get; set; }

@@ -17,7 +17,6 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ItemSetting
-        [Authorize(Roles ="Super Admin, Admin, Store Manager")]
         public ActionResult Index()
         { //Succsess and error message goes upon here
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -38,7 +37,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemSetting/Details/5
-        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Details(int? id)
         {
             if (id == null)

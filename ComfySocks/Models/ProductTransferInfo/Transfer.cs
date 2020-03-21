@@ -7,7 +7,6 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Order;
-using ComfySocks.Models.ProductStock;
 
 namespace ComfySocks.Models.ProductTransferInfo
 {
@@ -20,7 +19,8 @@ namespace ComfySocks.Models.ProductTransferInfo
         public int TransferInformationID { get; set; }
 
         public int ItemID { get; set; }
-        
+        public string ProductCode { get; set; }
+
         public float Quantity{ get; set; }
         public string Remark { get; set; }
 

@@ -11,34 +11,31 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles = "Super Admin, Store Manager, Finance")]
     public class SalesDeliveryController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        // GET: RowMaterialDelivery
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult SalesDeliveryList(int id)
         {
-            TempData[User.Identity.GetUserId() + "saleDelivery"] = null;
+            TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
             ViewBag.ID = id;
 
             TempData[User.Identity.GetUserId() + "SaleID"] = id;
-            var SalesDeliverd = (from rd in db.SalesDeliveryInformation where rd.SalesInformationID == id orderby rd.ID descending select rd).ToList();
-
-            return View(SalesDeliverd);
+            var deliverd = (from d in db.SalesDeliveryInformation where d.SalesInformationID == id orderby d.ID descending select d).ToList();
+            return View(deliverd);
         }
 
-
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewSalesDelivery(int? id)
         {
             if (id == null)
             {
 
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected! Try again";
-                return RedirectToAction("SalesDeliveryList");
+                return RedirectToAction("DeliveryList");
             }
             SalesInformation salesInformation = db.SalesInformation.Find(id);
             if (salesInformation == null)
@@ -51,185 +48,177 @@ namespace ComfySocks.Controllers
             TempData[User.Identity.GetUserId() + "SaleInfoID"] = id;
             return View();
         }
-
-        [Authorize(Roles = "Super Admin, Admin")]
-        [HttpPost]
-        public ActionResult NewSalesDelivery(SalesDelivery salseDelivery)
+        [System.Web.Mvc.HttpPost]
+        public ActionResult NewSalesDelivery(SalesDelivery salesDelivery)
         {
             if (TempData[User.Identity.GetUserId() + "SaleInfoID"] == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Request time out! Try again";
-                TempData[User.Identity.GetUserId() + "saleDelivery"] = null;
-                return RedirectToAction("SalesDeliveryList", "SalesDelivery", null);
+                TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
+                return RedirectToAction("SalesDeliveryList", "", null);
             }
             int id = (int)TempData[User.Identity.GetUserId() + "SaleInfoID"];
             TempData[User.Identity.GetUserId() + "SaleInfoID"] = id;
             ViewBag.id = id;
             bool found = false;
-            List<SalesDeliveryVM> saleDelivery = new List<SalesDeliveryVM>();
-            if (TempData[User.Identity.GetUserId() + "saleDelivery"] != null)
+            List<SalesDeliveryVM> selectedDelivery = new List<SalesDeliveryVM>();
+            if (TempData[User.Identity.GetUserId() + "selectedDelivery"] != null)
             {
-                saleDelivery = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "saleDelivery"];
+                selectedDelivery = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
             }
             if (ModelState.IsValid)
             {
-                Sales s = db.Sales.Find(salseDelivery.SalesID);
-                if (s == null)
+                Sales sale = db.Sales.Find(salesDelivery.SalesID);
+                if (sale == null)
                 {
-                    TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to lode Request information! Try again";
-                    TempData[User.Identity.GetUserId() + "saleDelivery"] = null;
-                    return RedirectToAction("SalesDeliveryList", new { id });
+                    TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable To load sales Inforamtion From Database";
+                    TempData[User.Identity.GetUserId() + "errorMessage"] = "Sales id for saleItem =" + salesDelivery.SalesID;
+                    TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
+                    return RedirectToAction("SalesDeliveryList", new { id = id });
                 }
 
-                foreach (SalesDeliveryVM d in saleDelivery)
+                foreach (SalesDeliveryVM d in selectedDelivery)
                 {
-                    if (d.SalesDelivery.SalesID == salseDelivery.SalesID)
+                    if (d.SalesDelivery.SalesID == salesDelivery.SalesID)
                     {
 
-                        if (d.SalesDelivery.Quantity + salseDelivery.Quantity > s.RemaningDelivery)
+                        if (d.SalesDelivery.Quantity + salesDelivery.Quantity > sale.RemaningDelivery)
                         {
-                            ViewBag.errorMessage = "Only " + s.RemaningDelivery + "items remain, You can’t deliver " + salseDelivery.Quantity + "items";
+                            ViewBag.errorMessage = "Only " + sale.RemaningDelivery + "items remain, You can’t deliver " + salesDelivery.Quantity + "items";
                         }
                         else
                         {
-                            d.SalesDelivery.Quantity += salseDelivery.Quantity;
-                            d.Remaining -= (float)salseDelivery.Quantity;
+                            d.SalesDelivery.Quantity += salesDelivery.Quantity;
+                            d.Remaining -= (float)salesDelivery.Quantity;
                         }
                         found = true;
                     }
                 }
                 if (!found)
                 {
-                    if (s.RemaningDelivery < salseDelivery.Quantity)
+                    if (sale.RemaningDelivery < salesDelivery.Quantity)
                     {
-                        ViewBag.errorMessage = "Only " + s.RemaningDelivery + " Items remain, You can’t add" + salseDelivery.Quantity + " item for delivery";
+                        ViewBag.errorMessage = "Only " + sale.RemaningDelivery + " Items remain, You can’t add" + salesDelivery.Quantity + " item for delivery";
 
                     }
                     else
                     {
-                        SalesDeliveryVM salesDelivery = new SalesDeliveryVM();
-                        Item I = db.Items.Find(s.ItemID);
-                        salesDelivery.ItemCode = I.Code;
-                        salesDelivery.ItemDescription = I.Name;
-                        salesDelivery.Unit = s.Item.Unit.Name;
-                        salesDelivery.UnitPrice = s.UnitPrice;
-                        salesDelivery.SalesDelivery = salseDelivery;
-                        salesDelivery.Remaining = s.RemaningDelivery - (float)salseDelivery.Quantity;
-                        salesDelivery.Remark = salseDelivery.Remark;
-                        saleDelivery.Add(salesDelivery);
+                        SalesDeliveryVM deliveryVM = new SalesDeliveryVM();
+                        Item I = db.Items.Find(sale.ItemID);
+                        deliveryVM.ItemCode = I.Code;
+                        deliveryVM.ItemDescription = I.Name;
+                        deliveryVM.Unit = I.Unit.Name;
+                        deliveryVM.SalesDelivery = salesDelivery;
+                        deliveryVM.Remaining = sale.RemaningDelivery - (float)salesDelivery.Quantity;
+                        selectedDelivery.Add(deliveryVM);
                     }
                 }
             }
-            ViewBag.saleDelivery = saleDelivery;
-            TempData[User.Identity.GetUserId() + "saleDelivery"] = saleDelivery;
-            if (saleDelivery.Count > 0)
+            ViewBag.selectedDelivery = selectedDelivery;
+            TempData[User.Identity.GetUserId() + "selectedDelivery"] = selectedDelivery;
+            if (selectedDelivery.Count > 0)
             {
                 ViewBag.haveItem = true;
             }
             ViewBag.SalesID = (from d in db.Sales where d.SalesInformationID == id select d).ToList();
-            return View(salseDelivery);
+            return View(salesDelivery);
         }
 
-        [Authorize(Roles = "Salse,Super Admin,Admin,")]
+
+        public ActionResult NewSalesDeliveryInfo()
+        {
+            if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract delivery information!.";
+                return RedirectToAction("");
+            }
+            if (TempData[User.Identity.GetUserId() + "SaleInfoID"] == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Request time out!. Try again ";
+                return RedirectToAction("SalesDeliveryList", "joborderinformations", null);
+            }
+            int saleId = (int)TempData[User.Identity.GetUserId() + "SaleInfoID"];
+            TempData[User.Identity.GetUserId() + "SaleInfoID"] = saleId;
+            TempData[User.Identity.GetUserId() + "selectedDelivery"] = TempData[User.Identity.GetUserId() + "selectedDelivery"];
+            return View();
+        }
         public ActionResult Remove(int id)
         {
-            if (TempData[User.Identity.GetUserId() + "saleDelivery"] == null)
+            if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find selected orders. try again.";
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find selected Sales. try again.";
                 return RedirectToAction("NewSalesDelivery");
             }
-            List<SalesDeliveryVM> saleDelivery = new List<SalesDeliveryVM>();
-            saleDelivery = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "saleDelivery"];
-            foreach (var s in saleDelivery)
+            List<SalesDeliveryVM> selectedDelivery = new List<SalesDeliveryVM>();
+            selectedDelivery = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
+            foreach (var s in selectedDelivery)
             {
-                if (s.SalesDelivery.SalesID== id)
+                if (s.SalesDelivery.SalesID == id)
                 {
-                    saleDelivery.Remove(s);
-                    ViewBag.succsessMessage = "Sale item successfully Removed";
+                    selectedDelivery.Remove(s);
+                    ViewBag.succsessMessage = "Sales Delivery successfully Removed";
                     break;
                 }
             }
-            if (saleDelivery.Count > 0)
+            if (selectedDelivery.Count > 0)
                 ViewBag.haveItem = true;
-            ViewBag.saleDelivery = saleDelivery;
-            TempData[User.Identity.GetUserId() + "saleDelivery "] = saleDelivery;
+            ViewBag.selectedDelivery = selectedDelivery;
+            TempData[User.Identity.GetUserId() + "selectedDelivery"] = selectedDelivery;
             ViewBag.SalesID = (from d in db.Sales where d.SalesInformationID == id select d).ToList();
             return View("NewSalesDelivery");
         }
 
-
-        [Authorize(Roles = "Super Admin, Admin")]
-        //row material delivery information
-        public ActionResult NewSalesDeliveryInfo()
-        {
-            if (TempData[User.Identity.GetUserId() + "saleDelivery"] == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load selected Delivery";
-                return RedirectToAction("NewSalesDelivery");
-            }
-            if (TempData[User.Identity.GetUserId() + "SalesInfoID"] == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Request time out! try agian";
-                return RedirectToAction("SalesDeliveryList");
-            }
-            int SalesId = (int)TempData[User.Identity.GetUserId() + "SalesInfoID"];
-            TempData[User.Identity.GetUserId()+ "SalesInfoID"] = SalesId;
-            TempData[User.Identity.GetUserId() + "saleDelivery"] = TempData[User.Identity.GetUserId() + "selectedDelivery"];
-            return View();
-        }
-
-        [Authorize(Roles = "Super Admin, Admin")]
-
-        //row material delivery information
         [System.Web.Mvc.HttpPost]
-        public ActionResult NewSalesDeliveryInfo(SalesDeliveryInformation saleDeliveryInformation)
+        public ActionResult NewSalesDeliveryInfo(SalesDeliveryInformation salesDeliveryInformation)
         {
             if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load selected Delivery";
-                return RedirectToAction("SalesDeliveryList");
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract delivery information!.";
+                return RedirectToAction("index", "JobOrderInformations", null);
             }
-            if (TempData[User.Identity.GetUserId() + "SalesInfoID"] == null)
+            if (TempData[User.Identity.GetUserId() + "SaleInfoID"] == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Request time out! try agian";
-                return RedirectToAction("SalesDeliveryList", "salesInformation", null);
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Request time out!. Try again";
+                return RedirectToAction("SalesDeliveryList", "joborderinformations", null);
             }
-            saleDeliveryInformation.ApplictionUserID = User.Identity.GetUserId();
 
-            int SalesId = (int)TempData[User.Identity.GetUserId() + "SalesInfoID"];
-            TempData[User.Identity.GetUserId() + "SalesInfoID"] = SalesId;
+
+            int saleId = (int)TempData[User.Identity.GetUserId() + "SaleInfoID"];
+            TempData[User.Identity.GetUserId() + "SaleInfoID"] = saleId;
             List<SalesDeliveryVM> deliverylist = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
             TempData[User.Identity.GetUserId() + "selectedDelivery"] = deliverylist;
 
-            if (saleDeliveryInformation.Date > DateTime.Now)
+
+            if (salesDeliveryInformation.Date > DateTime.Now)
             {
-                ViewBag.errorMessage = "The date information you provide is not valid";
-                return View(saleDeliveryInformation);
+                ViewBag.errorMessage = "The date information you provide is not valid!.";
+                return View(salesDeliveryInformation);
             }
             SalesDeliveryVM d = deliverylist.FirstOrDefault();
-            saleDeliveryInformation.ApplictionUserID = User.Identity.GetUserId();
+            salesDeliveryInformation.ApplictionUserID = User.Identity.GetUserId();
+
             try
             {
                 SalesDeliveryInformation lastDeliverd = (from del in db.SalesDeliveryInformation orderby del.ID descending select del).First();
 
-                saleDeliveryInformation.SalesInformationID = SalesId;
-                saleDeliveryInformation.DeliveryNumber = "De-No:" + lastDeliverd.ID++;
+                salesDeliveryInformation.SalesInformationID = saleId;
+                salesDeliveryInformation.DeliveryNumber = "No-" + lastDeliverd.ID + 1;
             }
             catch
             {
-                saleDeliveryInformation.SalesInformationID = SalesId;
-                saleDeliveryInformation.DeliveryNumber = "De-No:" + 1;
+                salesDeliveryInformation.SalesInformationID = saleId;
+                salesDeliveryInformation.DeliveryNumber = "No-" + 1;
             }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    db.SalesDeliveryInformation.Add(saleDeliveryInformation);
+                    db.SalesDeliveryInformation.Add(salesDeliveryInformation);
                     db.SaveChanges();
+
                     foreach (SalesDeliveryVM de in deliverylist)
                     {
-                        de.SalesDelivery.SalesDeliveryInformationID = saleDeliveryInformation.ID;
+                        de.SalesDelivery.SalesDeliveryInformationID = salesDeliveryInformation.ID;
                         db.SalesDeliveries.Add(de.SalesDelivery);
                         db.SaveChanges();
                         Sales s = db.Sales.Find(de.SalesDelivery.SalesID);
@@ -237,59 +226,52 @@ namespace ComfySocks.Controllers
                         db.Entry(s).State = EntityState.Modified;
                         db.SaveChanges();
                     }
-                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery Information reqisterd!!";
-                    return RedirectToAction("SalesDeliveryList", "SalesDelivery", new {id = saleDeliveryInformation.ID });
+
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
+
+                    return RedirectToAction("SalesDeliveryList", "", new { id = salesDeliveryInformation.SalesInformationID });
 
                 }
-                
                 catch (Exception e)
                 {
                     ViewBag.errorMessage = e;
-                }
 
+                }
             }
 
-            return View(saleDeliveryInformation);
+            return View(salesDeliveryInformation);
         }
-
-
-
 
         public ActionResult DropDelivery(int id = 0)
         {
-            int SalesID = (int)TempData[User.Identity.GetUserId() + "SalesID"];
+            int SaleID = (int)TempData[User.Identity.GetUserId() + "SaleID"];
             if (id == 0)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation detected";
-                return RedirectToAction("SalesDeliveryList", new { id = SalesID });
+                return RedirectToAction("SalesDeliveryList", new { id = SaleID });
             }
 
-            SalesDeliveryInformation salesdeliveryInfo = db.SalesDeliveryInformation.Find(id);
-            if (salesdeliveryInfo == null)
+            SalesDeliveryInformation deliveryInfo = db.SalesDeliveryInformation.Find(id);
+            if (deliveryInfo == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find delivery information !";
-                return RedirectToAction("SalesDeliveryList", new { id = SalesID });
+                return RedirectToAction("SalesDeliveryList", new { id = SaleID });
             }
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
             List<SalesDelivery> RedusedDelivery = new List<SalesDelivery>();
             bool pass = true;
-            foreach (SalesDelivery d in salesdeliveryInfo.SalesDeliveries)
+            foreach (SalesDelivery d in deliveryInfo.SalesDeliveries)
             {
-                Sales sales = db.Sales.Find(d.SalesID);
-                if (sales == null)
+                Sales sale = db.Sales.Find(d.SalesID);
+                if (sale == null)
                 {
                     pass = false;
                     break;
                 }
-                if (sales.RemaningDelivery >= sales.Quantity)
-                {
-                    ViewBag.errorMessage = "You rich Maximum Quantity";
-                }
-                sales.RemaningDelivery += (float)d.Quantity;
-                
-                db.Entry(sales).State = EntityState.Modified;
+                sale.RemaningDelivery += (float)d.Quantity;
+                db.Entry(sale).State = EntityState.Modified;
                 db.SaveChanges();
                 RedusedDelivery.Add(d);
 
@@ -298,34 +280,33 @@ namespace ComfySocks.Controllers
             {
                 foreach (SalesDelivery d in RedusedDelivery)
                 {
-                    Sales sales = db.Sales.Find(d.SalesID);
-                    if (sales == null)
+                    Sales sale = db.Sales.Find(d.SalesID);
+
+                    if (sale == null)
                     {
                         pass = false;
                         break;
                     }
-                    sales.RemaningDelivery -= (float)d.Quantity;
-                    db.Entry(sales).State = EntityState.Modified;
+                    sale.RemaningDelivery -= (float)d.Quantity;
+                    db.Entry(sale).State = EntityState.Modified;
                     db.SaveChanges();
                     RedusedDelivery.Add(d);
 
                 }
                 TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information dropped !";
 
-                return RedirectToAction("SalesDeliveryList", new { id = SalesID });
+                return RedirectToAction("SalesDeliveryList", new { id = SaleID });
             }
             else
             {
-                salesdeliveryInfo.Status = "Rejected Delivery";
-                db.Entry(salesdeliveryInfo).State = EntityState.Modified;
+                deliveryInfo.Status = "Rejected Delivery";
+                db.Entry(deliveryInfo).State = EntityState.Modified;
                 db.SaveChanges();
-                return RedirectToAction("SalesDeliveryList", new { id = SalesID });
+                return RedirectToAction("SalesDeliveryList", new { id = SaleID });
             }
 
 
         }
-
-        //Disposing
         protected override void Dispose(bool disposing)
         {
             if (disposing)

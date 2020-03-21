@@ -94,12 +94,21 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 hidden">
                                             <div class="form-group">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
-                                                    @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                                    @Html.ValidationMessageFor(model => model.Item, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item Code</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemCode form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -135,7 +144,7 @@
                                         <div style="float:right; margin-left:10px">
                                             <div class="form-group">
                                                 <div class="col-md-offset-1 col-md-12">
-                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:8px" />
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-right:27px; margin-top:8px" />
                                                 </div>
                                             </div>
 
@@ -157,12 +166,12 @@
                         <table class="table table-border table-striped" id="dtaTable">
                             <thead>
                                 <tr>
-                                    <th>ItemCode</th>
+                                    <th>Code</th>
                                     <th>Description</th>
                                     <th>Unit</th>
                                     <th>Quantity</th>
-                                    <th>Unit Price</th>
-                                    <th>Total Price</th>
+                                    <th>U.Price</th>
+                                    <th>T.Price</th>
                                     <th><i class="glyphicon glyphicon-trash"></i></th>
                                 </tr>
                             </thead>
@@ -191,7 +200,7 @@
                 <br />
 
                 <div>
-                    @if (ViewBag.SelectedList != null)
+                    @if (ViewBag.haveItem == true)
                     {
 
                         <a class="btn btn-primary pull-right" href="~/Stocks/NewStockInformation">
@@ -256,7 +265,8 @@
 
 <script>
     function ItemSelected(id, Code) {
-        document.getElementById("ItemID").value = id, Code;
+        document.getElementById("ItemID").value = id;
+        document.getElementById("ItemCode").value = Code;
     }
 
     //datatabale

@@ -13,7 +13,7 @@ namespace ComfySocks.Controllers
         // GET: StockAvailable
         public ActionResult StockAvailable()
         {
-            var Items = (from I in db.Items where I.StoreType == Models.Items.StoreType.OfficeMaterial || I.StoreType == Models.Items.StoreType.RowMaterial select I);
+            var Items = (from I in db.Items where I.StoreType == Models.Items.StoreType.OfficeMaterial || I.StoreType == Models.Items.StoreType.RowMaterial || I.StoreType == Models.Items.StoreType.ProductItem select I);
             return View(Items.ToList());
         }
     }

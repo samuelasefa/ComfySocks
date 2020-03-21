@@ -17,7 +17,6 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: ItemTypes
-        [Authorize(Roles="Super Admin, Admin, Store Manager")]
         public ActionResult Index()
         {
             //error Message display
@@ -35,8 +34,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: ItemTypes/Details/
-        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
-
         public ActionResult Details(int? id)
         {
             //error Message display

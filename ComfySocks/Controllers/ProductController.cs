@@ -11,19 +11,17 @@ using ComfySocks.Models.ProductInfo;
 using ComfySocks.Models.Items;
 using Microsoft.AspNet.Identity;
 using ComfySocks.Models.InventoryModel;
-using ComfySocks.Models.ProductStock;
 using ComfySocks.Models.Repository;
 using ComfySocks.Models.ProductTransferInfo;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Super Admin, Production, Store Manager, Finance")]
     public class ProductController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Stocks
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult ProductList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -35,7 +33,6 @@ namespace ComfySocks.Controllers
             return View(products.ToList());
         }
 
-        [Authorize(Roles = "Super Admin, Admin, Production")]
         public ActionResult ProductDetail(int? id)
         {
             //errormessage display
@@ -58,16 +55,17 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from s in db.TransferInformation orderby s.ID orderby s.ID ascending select s.ID).First();
-                TI.FPTNo= "FGRNo-" + (LastId + 1);
+                TI.FPTNo = "FGRNo-" + (LastId + 1).ToString("D6");
             }
             catch
             {
-                TI.FPTNo = "FGRNo-1";
+                TI.FPTNo = "FGRNo"+ 1.ToString("D6");
             }
             return View(TI);
         }
 
         // Production order Approval
+        [Authorize(Roles = "Super Admin, Store Manager")]
         public ActionResult ProductApproved(int? id)
         {
             if (id == null)
@@ -99,6 +97,7 @@ namespace ComfySocks.Controllers
         }
 
         //Production order Rejection
+        [Authorize(Roles = "Super Admin, Store Manager")]
         public ActionResult ProductRejected(int? id)
         {
             if (id == null)

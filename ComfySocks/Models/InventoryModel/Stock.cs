@@ -16,6 +16,7 @@ namespace ComfySocks.Models.InventoryModel
         [Required]
         public int ItemID { get; set; }
 
+        public string ItemCode { get; set; }
         public int StockInformationID { get; set; }
 
         [Display(Name ="Unit Price")]

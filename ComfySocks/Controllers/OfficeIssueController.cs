@@ -1,33 +1,32 @@
 ﻿using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.Request;
+using ComfySocks.Models.OfficeIssueInfo;
+using ComfySocks.Models.RowIssueInfo;
 using ComfySocks.Repository;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles = "Super Admin, Admin, Store Manager, Finance, Production")]
     public class OfficeIssueController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Request
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OfficeIssueList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var OfficeIsssueInfo = (from office in db.StoreRequestInformation orderby office.ID ascending select office).ToList();
+            var OfficeIsssueInfo = (from issue in db.OfficeIssueInformation orderby issue.ID ascending select issue).ToList();
 
             return View(OfficeIsssueInfo);
         }
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewOfficeIssueEntry()
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
@@ -43,50 +42,47 @@ namespace ComfySocks.Controllers
                 }
                 
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
                 
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
-        public ActionResult NewOfficeIssueEntry(StoreRequest storeRequest)
+        public ActionResult NewOfficeIssueEntry(OfficeIssue officeIssue)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
+            List<OfficeIssueVM> selectedOfficeIssue = new List<OfficeIssueVM>();
             bool found = false;
 
-            if (TempData[User.Identity.GetUserId() + "selectedStoreRequests"] != null)
+            if (TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] != null)
             {
-                selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
+                selectedOfficeIssue = (List<OfficeIssueVM>)TempData[User.Identity.GetUserId() + "selectedRowIssue"];
             }
-            storeRequest.StoreRequestInformationID = 1;
-            storeRequest.RemaningDelivery = (float)storeRequest.Quantity;
-            storeRequest.Deliverd = false;
+            officeIssue.OfficeIssueInformationID = 1;
 
             if (ModelState.IsValid)
             {
-                foreach (StoreRequestVM sr in selectedStoreRequests)
+                foreach (OfficeIssueVM oi in selectedOfficeIssue)
                 {
-                    if (sr.StoreRequest.ItemID == storeRequest.ItemID)
+                    if (oi.OfficeIssue.ItemID == officeIssue.ItemID)
                     {
-                        if (AvalableQuantity(sr.StoreRequest.ItemID) > 0 && (sr.StoreRequest.Quantity + storeRequest.Quantity) <= AvalableQuantity(sr.StoreRequest.ItemID))
+                        if (AvalableQuantity(oi.OfficeIssue.ItemID) > 0 && (oi.OfficeIssue.Quantity + officeIssue.Quantity) <= AvalableQuantity(oi.OfficeIssue.ItemID))
                         {
-                            sr.StoreRequest.Quantity += storeRequest.Quantity;
+                            oi.OfficeIssue.Quantity += officeIssue.Quantity;
                             found = true;
                             ViewBag.infoMessage = "Item is Added !!!";
                             break;
                         }
-                        else if (AvalableQuantity(sr.StoreRequest.ItemID) == -2)
+                        else if (AvalableQuantity(oi.OfficeIssue.ItemID) == -2)
                         {
                             ViewBag.errorMessage = "Unable to load Item Information!.";
                             found = true;
                         }
                         else
                         {
-                            ViewBag.errorMessage = "Low Stock previously " + sr.StoreRequest.Quantity + " Selected Only " + AvalableQuantity(sr.StoreRequest.ItemID) + " avaliable!.";
+                            ViewBag.errorMessage = "Low Stock previously " + oi.OfficeIssue.Quantity + " Selected Only " + AvalableQuantity(oi.OfficeIssue.ItemID) + " avaliable!.";
                             found = true;
                         }
                     }
@@ -94,26 +90,26 @@ namespace ComfySocks.Controllers
 
                 if (found == false)
                 {
-                    if (AvalableQuantity(storeRequest.ItemID) > 0 && (storeRequest.Quantity) <= AvalableQuantity(storeRequest.ItemID))
+                    if (AvalableQuantity(officeIssue.ItemID) > 0 && (officeIssue.Quantity) <= AvalableQuantity(officeIssue.ItemID))
                     {
-                        StoreRequestVM storeRequestVM = new StoreRequestVM();
+                        OfficeIssueVM officeIssueVM = new OfficeIssueVM();
 
-                        Item item = db.Items.Find(storeRequest.ItemID);
-                        storeRequestVM.ItemDescription = item.Name;
-                        storeRequestVM.Type = item.ItemType.Name;
-                        storeRequestVM.Code = item.Code;
-                        storeRequestVM.Unit = item.Unit.Name;
-                        storeRequestVM.StoreRequest = storeRequest;
-                        selectedStoreRequests.Add(storeRequestVM);
+                        Item item = db.Items.Find(officeIssue.ItemID);
+                        officeIssueVM.ItemDescription = item.Name;
+                        officeIssueVM.ItemType = item.ItemType.Name;
+                        officeIssueVM.ItemCode = item.Code;
+                        officeIssueVM.Unit = item.Unit.Name;
+                        officeIssueVM.OfficeIssue = officeIssue;
+                        selectedOfficeIssue.Add(officeIssueVM);
                         
                     }
-                    else if (AvalableQuantity(storeRequest.ItemID) == -2)
+                    else if (AvalableQuantity(officeIssue.ItemID) == -2)
                     {
                         ViewBag.errorMessage = "Unable to lode Item Information!.";
                     }
                     else
                     {
-                        ViewBag.errorMessage = "Only " + AvalableQuantity(storeRequest.ItemID) + " avalable!.";
+                        ViewBag.errorMessage = "Only " + AvalableQuantity(officeIssue.ItemID) + " avalable!.";
                     }
                 }
             }
@@ -121,39 +117,38 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.errorMessage = "State is not valid";
             }
-            TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
-            ViewBag.selectedStoreRequests = selectedStoreRequests;
-            if (selectedStoreRequests.Count > 0)
+            TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] = selectedOfficeIssue;
+            ViewBag.selectedOfficeIssue = selectedOfficeIssue;
+            if (selectedOfficeIssue.Count > 0)
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
 
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult Remove(int id = 0)
         {
-            List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
-            selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
+            List<OfficeIssueVM> selectedOfficeIssue = new List<OfficeIssueVM>();
+            selectedOfficeIssue = (List<OfficeIssueVM>)TempData[User.Identity.GetUserId() + "selectedOfficeIssue"];
 
-            foreach (StoreRequestVM s in selectedStoreRequests)
+            foreach (OfficeIssueVM s in selectedOfficeIssue)
             {
-                if (s.StoreRequest.ID == id)
+                if (s.OfficeIssue.ID == id)
                 {
                 }
-                selectedStoreRequests.Remove(s);
+                selectedOfficeIssue.Remove(s);
                 break;
             }
-            TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
-            ViewBag.selectedStoreRequests = selectedStoreRequests;
-            if (selectedStoreRequests.Count > 0)
+            TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] = selectedOfficeIssue;
+            ViewBag.selectedOfficeIssue = selectedOfficeIssue;
+            if (selectedOfficeIssue.Count > 0)
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
-            return View("NewRequestEntry");
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
+            return View("NewOfficeIssueEntry");
         }
        
         
@@ -162,65 +157,62 @@ namespace ComfySocks.Controllers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult NewOfficeIssueInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-            List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
-            if (TempData[User.Identity.GetUserId() + "selectedStoreRequests"] != null)
+            List<OfficeIssueVM> selectedOfficeIssue = new List<OfficeIssueVM>();
+            if (TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] != null)
             {
-                selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
-                TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
-
+                selectedOfficeIssue = (List<OfficeIssueVM>)TempData[User.Identity.GetUserId() + "selectedOfficeIssue"];
+                TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] = selectedOfficeIssue;
             }
             else
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected store request";
-                return RedirectToAction("NewRequestEntry");
+                return RedirectToAction("NewOfficeIssueEntry");
             }
             ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles ="Super Admin, Admin, Production,")]
-        public ActionResult NewOfficeIssueInfo(StoreRequestInformation StoreRequestInformation)
+        public ActionResult NewOfficeIssueInfo(OfficeIssueInformation officeIssueInformation)
         {   
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
             ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
-            List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
+            List<OfficeIssueVM> selectedOfficeIssue = new List<OfficeIssueVM>();
 
-            if (TempData[User.Identity.GetUserId() + "selectedStoreRequests"] != null)
+            if (TempData[User.Identity.GetUserId() + "selectedOfficeIssue"] != null)
             {
-                selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
+                selectedOfficeIssue = (List<OfficeIssueVM>)TempData[User.Identity.GetUserId() + "selectedOfficeIssue"];
             }
             else
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Store Order";
-                return RedirectToAction("NewRequestEntry");
+                return RedirectToAction("NewOfficeIssueEntry");
             }
-            StoreRequestInformation.ApplicationUserID = User.Identity.GetUserId();
+            officeIssueInformation.ApplicationUserID = User.Identity.GetUserId();
             try
             {
-                int LastId = (from sr in db.StoreRequestInformation orderby sr.ID descending select sr.ID).First();
-                StoreRequestInformation.StoreRequestNumber = "SR.No:-" + (LastId + 1);
+                int LastId = (from sr in db.OfficeIssueInformation orderby sr.ID descending select sr.ID).First();
+                officeIssueInformation.OfficeIssueNumber = "No:-" + (LastId + 1).ToString("D5");
             }
             catch
             {
-                StoreRequestInformation.StoreRequestNumber = "SR.No-1";
+                officeIssueInformation.OfficeIssueNumber = "No-" + 1.ToString("D5");
             }
-            StoreRequestInformation.Date = DateTime.Now;
+            officeIssueInformation.Date = DateTime.Now;
             bool pass = true;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    StoreRequestInformation.Status = "Submmited";
-                    db.StoreRequestInformation.Add(StoreRequestInformation);
+                    officeIssueInformation.Status = "Submmited";
+                    db.OfficeIssueInformation.Add(officeIssueInformation);
                     db.SaveChanges();
                     pass = true;
                 }
@@ -233,14 +225,14 @@ namespace ComfySocks.Controllers
                 {
                     try
                     {
-                        foreach (StoreRequestVM sr in selectedStoreRequests)
+                        foreach (OfficeIssueVM oi in selectedOfficeIssue)
                         {
-                            sr.StoreRequest.StoreRequestInformationID = StoreRequestInformation.ID;
-                            db.StoreRequest.Add(sr.StoreRequest);
+                            oi.OfficeIssue.OfficeIssueInformationID = officeIssueInformation.ID;
+                            db.OfficeIssues.Add(oi.OfficeIssue);
                             db.SaveChanges();
                         }
-                        ViewBag.succsessMessage = "Store Request is Succesfully Submited!!";
-                        return RedirectToAction("StoreRequestDetial", new { id = StoreRequestInformation.ID });
+                        ViewBag.succsessMessage = "Issued is Succesfully Submited!!";
+                        return RedirectToAction("OfficeIssueDetial", new { id = officeIssueInformation.ID });
                     }
                     catch(Exception e)
                     {   
@@ -251,98 +243,92 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OfficeIssueDetial(int? id)
         {
             if (id == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation detected! Try agian";
-                return RedirectToAction("StoreRequestionList");
+                return RedirectToAction("OfficeIssueList");
             }
-            StoreRequestInformation StoreRequestInformation = db.StoreRequestInformation.Find(id);
-            if (StoreRequestInformation == null) {
+            OfficeIssueInformation officeIssueInformation = db.OfficeIssueInformation.Find(id);
+            if (officeIssueInformation == null) {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load Store Request Information";
-                return RedirectToAction("StoreRequestionList");
+                return RedirectToAction("RowIssueList");
             }
-            return View(StoreRequestInformation);
+            return View(officeIssueInformation);
         }
 
 
-        //Request is approved 
-        [Authorize(Roles = "Super Admin, Admin")]
-        public ActionResult IssueApproved(int? id)
+        //Issue is approved 
+        public ActionResult OfficeIssueApproved(int? id)
         {
             if (id == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected!. Try again";
-                return RedirectToAction("StoreRequestionList");
+                return RedirectToAction("RowIssueList");
             }
-            StoreRequestInformation StoreRequestInformation = db.StoreRequestInformation.Find(id);
-            if (StoreRequestInformation == null) {
+            OfficeIssueInformation officeIssueInformation = db.OfficeIssueInformation.Find(id);
+            if (officeIssueInformation == null) {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Reterive Store Request Information";
-                return RedirectToAction("StoreRequestionList");
+                return RedirectToAction("OfficeIssueList");
             }
-            List<StoreRequstVMForError> ErrorList = new List<StoreRequstVMForError>();
+            List<OfficeIssueVMForError> ErrorList = new List<OfficeIssueVMForError>();
             bool pass = true;
-            foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
+            foreach (OfficeIssue officeIssue in officeIssueInformation.OfficeIssue)
             {
-                //StoreRequest request = (from sr in db.StoreRequest where sr.ItemID == storeRequest.ItemID select sr).First();
-                //request.Quantity += storeRequest.Quantity;
-                //db.Entry(request).State = EntityState.Modified;
-                //db.SaveChanges();
-                Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
-                AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(stock.ItemID);
+                Stock stock = (from s in db.Stocks where s.ItemID == officeIssue.ItemID select s).First();
+                RowMaterialRepositery rowMaterialRepositery = db.RowMaterialRepositeries.Find(stock.ItemID);
                 if (stock == null)
                 {
-                    StoreRequstVMForError storeRequstVMForError = new StoreRequstVMForError()
+                    OfficeIssueVMForError officeIssueVMForError = new OfficeIssueVMForError()
                     {
-                        StoreRequest = storeRequest,
+                        OfficeIssue = officeIssue,
                         Error = "Unable to load store Information Posible reason is no information registed about the item"
                     }; pass = false;
                     ViewBag.errorMessage = "Some error found. see error detail for more information";
-                    ErrorList.Add(storeRequstVMForError);
+                    ErrorList.Add(officeIssueVMForError);
                 }
-                else if(avaliableOnStock.Avaliable < storeRequest.Quantity)
+                else if(rowMaterialRepositery.RowMaterialAavliable < officeIssue.Quantity)
                 {
-                    StoreRequstVMForError storeRequstVMError = new StoreRequstVMForError()
+                    OfficeIssueVMForError officeIssueVMForError = new OfficeIssueVMForError()
                     {
-                        StoreRequest = storeRequest,
-                        Error = "The Avaliable stock in "+ StoreRequestInformation.Store.Name + "store is less than requested Quantity" + stock.Total
+                        OfficeIssue = officeIssue,
+                        Error = "The Avaliable stock in "+ officeIssueInformation.Store.Name + "store is less than requested Quantity" + stock.Total
                     };
                     pass = false;
-                    ViewBag.errorMessage = "The Avaliable stock in " + StoreRequestInformation.Store.Name + " is less than requested Quantity" + stock.Total;
-                    ErrorList.Add(storeRequstVMError);
+                    ViewBag.errorMessage = "The Avaliable stock in " + officeIssueInformation.Store.Name + " is less than requested Quantity" + stock.Total;
+                    ErrorList.Add(officeIssueVMForError);
                 }
             }
             if (pass)
             {
-                foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
+                foreach (OfficeIssue officeIssue  in officeIssueInformation.OfficeIssue)
                 {
-                    Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
+                    Stock stock = (from s in db.Stocks where s.ItemID == officeIssue.ItemID select s).First();
                     //stock.Total -= (float)storeRequest.Quantity;
                     db.Entry(stock).State = EntityState.Modified;
                     db.SaveChanges();
-                    AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(storeRequest.ItemID);
-                    Item i = db.Items.Find(avaliableOnStock.ID);
-                    float deference = avaliableOnStock.RecentlyReduced - storeRequest.Quantity;
+                    RowMaterialRepositery rowMaterialRepositery = db.RowMaterialRepositeries.Find(officeIssue.ItemID);
+                    Item i = db.Items.Find(rowMaterialRepositery.ID);
+                    float deference = rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable - officeIssue.Quantity;
 
                     if (deference > 0)
                     {
-                        avaliableOnStock.RecentlyReduced -= (float)storeRequest.Quantity;
+                        rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable -= (float)officeIssue.Quantity;
                     }
                     else {
-                        avaliableOnStock.RecentlyReduced = 0;
-                        avaliableOnStock.Avaliable += deference;
+                        rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable = 0;
+                        rowMaterialRepositery.RowMaterialAavliable += deference;
                         
                     }
-                    db.Entry(avaliableOnStock).State = EntityState.Modified;
+                    db.Entry(rowMaterialRepositery).State = EntityState.Modified;
                     db.SaveChanges();
                 }
-                StoreRequestInformation.Status = "Approved";
-                StoreRequestInformation.ApprovedBy = User.Identity.GetUserName();
-                db.Entry(StoreRequestInformation).State = EntityState.Modified;
+                officeIssueInformation.Status = "Approved";
+                officeIssueInformation.ApprovedBy = User.Identity.GetUserName();
+                db.Entry(officeIssueInformation).State = EntityState.Modified;
                 db.SaveChanges();
-                ViewBag.succsessMessage = "Store Request is approved!!.";
+                ViewBag.succsessMessage = "Row Issue is approved!!.";
             }
 
             else
@@ -350,81 +336,56 @@ namespace ComfySocks.Controllers
                 ViewBag.erroList = ErrorList;
             }
 
-            return View("StoreRequestDetial", StoreRequestInformation);
+            return View("OfficeIssueDetial", officeIssueInformation);
         }
-
-        //Request is Rejected
-
-        public ActionResult IssueRejected(int? id)
+        //Production order Rejection
+        public ActionResult OfficeIssueRejected(int? id)
         {
             if (id == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation detected!. Try again";
-                return RedirectToAction("StoreRequestionList");
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation is detected";
+                return RedirectToAction("OfficeIssueList");
             }
-            StoreRequestInformation StoreRequestInformation = db.StoreRequestInformation.Find(id);
-            if (StoreRequestInformation == null)
+
+            OfficeIssueInformation officeIssueInformation = db.OfficeIssueInformation.Find(id);
+
+            if (officeIssueInformation == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Reterive Store Request Information";
-                return RedirectToAction("StoreRequestionList");
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to load Temporary product Information";
+                return RedirectToAction("OfficeIssueList");
             }
-            List<StoreRequstVMForError> ErrorList = new List<StoreRequstVMForError>();
+
+            List<OfficeIssueVMForError> ErrorList = new List<OfficeIssueVMForError>();
             bool pass = true;
-            foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
+            foreach (OfficeIssue officeIssue in officeIssueInformation.OfficeIssue)
             {
-                Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
-                if (stock == null)
+                if (officeIssue == null)
                 {
-                    StoreRequstVMForError storeRequstVMForError = new StoreRequstVMForError()
+                    OfficeIssueVMForError officeIssueVMForError = new OfficeIssueVMForError()
                     {
-                        StoreRequest = storeRequest,
-                        Error = "Unable to load store Information Posible reason is no information registed about the item"
+                        OfficeIssue = officeIssue,
+                        Error = "Unable to load Production Order"
                     }; pass = false;
-                    ViewBag.errorMessage = "Some error found. see error detail for more information";
-                    ErrorList.Add(storeRequstVMForError);
-                }
-                else if (stock.Total < storeRequest.Quantity)
-                {
-                    StoreRequstVMForError storeRequstVMError = new StoreRequstVMForError()
-                    {
-                        StoreRequest = storeRequest,
-                        Error = "The Avaliable stock in " + StoreRequestInformation.Store.Name + "store is less than requested Quantity" + stock.Total
-                    };
-                    pass = false;
-                    ViewBag.errorMessage = "Some error found. see error in detail for more information";
-                    ErrorList.Add(storeRequstVMError);
+
                 }
             }
             if (pass)
             {
-                foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
+                foreach (OfficeIssue officeIssue in officeIssueInformation.OfficeIssue)
                 {
-                    Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
-                    stock.Total = stock.Total;
-                    db.Entry(stock).State = EntityState.Modified;
+                    officeIssueInformation.Status = "Rejected";
+                    db.Entry(officeIssueInformation).State = EntityState.Modified;
                     db.SaveChanges();
-                    AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(storeRequest.ItemID);
-                    Item i = db.Items.Find(avaliableOnStock.ID);
-                    avaliableOnStock.RecentlyReduced = 0;
-                    avaliableOnStock.Avaliable = stock.Total;
-                    db.Entry(avaliableOnStock).State = EntityState.Modified;
-                    db.SaveChanges();
+                    ViewBag.succsessMessage = "Succesfully Rejected";
                 }
-                StoreRequestInformation.Status = "Rejected";
-                StoreRequestInformation.ApprovedBy = User.Identity.GetUserName();
-                db.Entry(StoreRequestInformation).State = EntityState.Modified;
-                db.SaveChanges();
-                ViewBag.succsessMessage = "Store Request is Rejected!!.";
-            }
 
+            }
             else
             {
-                ViewBag.erroList = ErrorList;
+                ViewBag.errorList = ErrorList;
             }
-            return View("RowIssueDetial", StoreRequestInformation);
+            return View("OfficeIssueDetail", officeIssueInformation);
         }
-
-   
 
         //to check avaliable on stock 
         float AvalableQuantity(int item)

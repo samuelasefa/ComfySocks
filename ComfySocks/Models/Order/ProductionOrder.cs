@@ -1,6 +1,5 @@
 ﻿using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductStock;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,6 +10,11 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Models.Order
 {
+    public enum ProductSize{
+        Small,
+        Medium,
+        Large
+    }
     [Table("ProductionOrder")]
     public partial class ProductionOrder
     {

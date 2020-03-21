@@ -1,5 +1,4 @@
 ﻿using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductStock;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -30,6 +29,7 @@ namespace ComfySocks.Models.SalesInfo
     }
     public class SalesVM
     {
+        public int ID { get; set; }
         public string TypeOfProduct { get; set; }
         public string Code { get; set; }
         public string Unit { get; set; }

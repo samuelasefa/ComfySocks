@@ -12,7 +12,7 @@ namespace ComfySocks.Models.RowIssueInfo
             [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
             public DateTime Date { get; set; }
 
-            [Display(Name = "RI-No.")]
+            [Display(Name = "No.")]
             public string RowIssueNumber { get; set; }
             [Required]
             [Display(Name = "Approved By")]

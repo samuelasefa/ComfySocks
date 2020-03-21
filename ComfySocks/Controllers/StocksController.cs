@@ -19,7 +19,6 @@ namespace ComfySocks.Controllers
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Stocks
-        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult StockList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -32,7 +31,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stocks/Create
-        [Authorize(Roles = "Store Manager, Super Admin, Admin,")]
+        [Authorize(Roles = "Store Manager,Super Admin")]
         public ActionResult NewPurchaseEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -82,7 +81,6 @@ namespace ComfySocks.Controllers
         // POST: Stocks/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = "Store Manager, Super Admin, Admin,")]
         [HttpPost]
         public ActionResult NewPurchaseEntry(Stock stock)
         {
@@ -136,10 +134,13 @@ namespace ComfySocks.Controllers
             };
             TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
             ViewBag.SelectedList = SelectedList.ToList();
+            if (SelectedList.Count > 0)
+            {
+                ViewBag.haveItem = true;
+            }
             return View();
         }
 
-        [Authorize(Roles = "Store Manager,Super Admin,Admin,")]
         public ActionResult RemoveSelected(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -159,6 +160,7 @@ namespace ComfySocks.Controllers
                         if (items.Stock.ItemID == id)
                         {
                             SelectedList.Remove(items);
+                            ViewBag.infoMessage = "Selected Item is Removed";
                             if (SelectedList.Count() > 0)
                             {
                                 TempData[User.Identity.GetUserId() + "SelectedList"] = SelectedList;
@@ -179,7 +181,6 @@ namespace ComfySocks.Controllers
             return View("NewPurchaseEntry");
         }
 
-        [Authorize(Roles = "Super Admin, Admin, Store Manager,")]
         public ActionResult NewStockInformation()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -188,7 +189,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "SelectedList"] == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Selected Stock Information. try agin";
-                return RedirectToAction("NewOfficePurchaseEntry");
+                return RedirectToAction("NewPurchaseEntry");
             }
             TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
             ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
@@ -196,7 +197,6 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin, Store Manager,")]
         public ActionResult NewStockInformation(StockInformation StockInformation)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -217,11 +217,11 @@ namespace ComfySocks.Controllers
                 try
                 {
                     var lastID = (from s in db.StockInformation orderby s.ID orderby s.ID descending select s).First();
-                    StockInformation.StoreNumber = "P-Info-" + (lastID.ID + 1);
+                    StockInformation.StoreNumber = "No:-" + (lastID.ID + 1).ToString("D4");
                 }
                 catch
                 {
-                    StockInformation.StoreNumber = "P-Info-1";
+                    StockInformation.StoreNumber = "No:-"+1.ToString("D4");
                 }
 
                 db.StockInformation.Add(StockInformation);
@@ -236,28 +236,24 @@ namespace ComfySocks.Controllers
                     {
                         try
                         {
-                            Stock S = (from i in db.Stocks where items.Stock.ItemID <= i.ID select i).First();
+                            List<Stock> S = (from i in db.Stocks where items.Stock.ItemID <= i.ID select i).ToList();
                             totalPrice += (float)items.Stock.Quantity * (float)items.Stock.UnitPrice;
                             db.Entry(S).State = EntityState.Modified;
                             db.SaveChanges();
-                            double Tax = 1.15;
-                            stockInformation.SubTotal = totalPrice;
-                            stockInformation.GrandTotal = totalPrice * (float)Tax;
-                            stockInformation.Tax = stockInformation.GrandTotal - stockInformation.SubTotal;
-                            db.Entry(stockInformation).State = EntityState.Modified;
-                            db.SaveChanges();
                             //items.Stock.Total += S.Total + items.Stock.Quantity;
                             //items.Stock.ProwTotal += S.ProwTotal + items.Stock.Quantity;
-                            if (items.Stock.ItemID == S.ItemID) {
-                                TempData[User.Identity.GetUserId() + "SelectedList"] = stocks;
-                                ViewBag.stocks = stocks;
-                            }
                         }
                         catch
                         {
                             items.Stock.Total +=  items.Stock.Quantity;
                             items.Stock.ProwTotal += items.Stock.Quantity;
                         }
+                        double Tax = 1.15;
+                        stockInformation.SubTotal = totalPrice;
+                        stockInformation.GrandTotal = totalPrice * (float)Tax;
+                        stockInformation.Tax = stockInformation.GrandTotal - stockInformation.SubTotal;
+                        db.Entry(stockInformation).State = EntityState.Modified;
+                        db.SaveChanges();
                         Item I = db.Items.Find(items.Stock.ItemID);
                         items.Stock.StockInformationID = StockInformation.ID;
                         db.Stocks.Add(items.Stock);
@@ -328,7 +324,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stocks/Details/5
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult StockDetails(int? id)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -347,9 +342,6 @@ namespace ComfySocks.Controllers
             }
             return View(stockinfo);
         }
-
-
-
         protected override void Dispose(bool disposing)
         {
             if (disposing)

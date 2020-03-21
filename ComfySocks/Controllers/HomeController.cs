@@ -30,14 +30,14 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        public JsonResult GetNotificationOrder()
-        {
-            var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
-            NotificationComponent NC = new NotificationComponent();
-            var list = NC.GetProductionOrder(notificationRegisterTime);
-            //update session here for get only new added contacts (notification)
-            Session["LastUpdate"] = DateTime.Now;
-            return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        }
+        //public JsonResult GetRequestNotification()
+        //{
+        //    var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
+        //    NotificationComponent NC = new NotificationComponent();
+        //    var list = NC.GetStoreRequest(notificationRegisterTime);
+        //    //update session here for get only new added contacts (notification)
+        //    Session["LastUpdate"] = DateTime.Now;
+        //    return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+        //}
     }
 }

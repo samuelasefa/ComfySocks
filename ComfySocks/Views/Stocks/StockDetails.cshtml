@@ -1,12 +1,4 @@
 ﻿@model ComfySocks.Models.InventoryModel.StockInformation
-
-<div class="row page-titles">
-    <div class="col-sm-6  align-self-center ">
-        <h4 class="text-danger"> @ViewBag.errorMessage</h4>
-        <h5 class="text-success">@ViewBag.succsessMessage</h5>
-    </div>
-</div>
-
 <div class="row">
     <div class="col-md-10">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
@@ -17,13 +9,6 @@
         <a href="~/Stocks/StockList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
 
     </div>
-    @*@if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-    {
-        <div class="col-md-2">
-            <a href="#">Accept <span class="glyphicon glyphicon-check"></span></a> &nbsp;
-            <a href="#">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
-        </div>
-    }*@
 </div>
 <div class="box box-info" id="printable">
     <div style="margin:40px">
@@ -36,7 +21,7 @@
             </div>
             <div class="col-md-4" style="float:right">
                 Date: @Html.DisplayFor(modelItem => Model.Date)<br />
-                No:@Html.DisplayFor(modelItem => Model.ID)
+                @Html.DisplayFor(modelItem => Model.StoreNumber)
             </div>
         </div>
 

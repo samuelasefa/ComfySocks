@@ -24,7 +24,7 @@ namespace ComfySocks.Models.OfficeIssueInfo
         public virtual Item Item { get; set; }
         public virtual OfficeIssueInformation OfficeIssueInformation { get; set; }
     }
-    public partial class RowIssueVM
+    public partial class OfficeIssueVM
     {
         public string ItemDescription { get; set; }
         public string ItemType { get; set; }
@@ -36,7 +36,7 @@ namespace ComfySocks.Models.OfficeIssueInfo
         public virtual OfficeIssue OfficeIssue { get; set; }
     }
 
-    public class RowIssueVMForError
+    public class OfficeIssueVMForError
     {
         public OfficeIssue OfficeIssue { get; set; }
         public String   Error { get; set; }

@@ -1,5 +1,4 @@
 ﻿using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductStock;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ComfySocks.Models.Repository

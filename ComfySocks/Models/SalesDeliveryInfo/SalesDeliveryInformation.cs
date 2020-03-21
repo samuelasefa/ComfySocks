@@ -13,10 +13,18 @@ namespace ComfySocks.Models.SalesDeliveryInfo
     [Table("SalesDeliveryInformation")]
     public partial class SalesDeliveryInformation
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public SalesDeliveryInformation()
+        {
+            SalesDeliveries = new HashSet<SalesDelivery>();
+        }
 
         public int ID { get; set; }
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
+
+        [Display(Name = "Transfer No")]
+        public int SalesInformationID { get; set; }
 
         [Display(Name ="De-No")]
         public string DeliveryNumber { get; set; }
@@ -24,9 +32,6 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         [Display(Name ="Section/Department")]
         public string From { get; set; }
 
-        [Display(Name ="Transfer No")]
-        public int SalesInformationID { get; set; }
-        
         [Display(Name = "Received by")]
         public string Receivedby { get; set; }
 

@@ -1,7 +1,6 @@
 ﻿using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.PurchaseRequest;
 using ComfySocks.Models.Request;
 using ComfySocks.Models.RowIssueInfo;
 using ComfySocks.Repository;
@@ -12,15 +11,14 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using static ComfySocks.Models.PurchaseRequest.Purchase;
 
 namespace ComfySocks.Controllers
 {
+   [Authorize(Roles = "Super Admin, Admin, Store Manager, Finance, Production")]
     public class RowIssueController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Request
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult RowIssueList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -30,7 +28,6 @@ namespace ComfySocks.Controllers
 
             return View(RowIsssueInfo);
         }
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewRowIssueEntry()
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
@@ -46,13 +43,12 @@ namespace ComfySocks.Controllers
                 }
                 
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial || S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
                 
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewRowIssueEntry(RowIssue rowIssue)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -128,12 +124,11 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial || S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
 
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult Remove(int id = 0)
         {
             List<RowIssueVM> selectedRowIssue = new List<RowIssueVM>();
@@ -153,7 +148,7 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial || S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID descending select S).ToList();
+            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
             return View("NewRowIssueEntry");
         }
        
@@ -163,7 +158,6 @@ namespace ComfySocks.Controllers
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult NewRowIssueInfo()
         {
@@ -186,7 +180,6 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Super Admin, Admin, Production,")]
         public ActionResult NewRowIssueInfo(RowIssueInformation rowIssueInformation)
         {   
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -208,11 +201,11 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from sr in db.RowIssueInformation orderby sr.ID descending select sr.ID).First();
-                rowIssueInformation.RowIssueNumber = "RI.No:-" + (LastId + 1);
+                rowIssueInformation.RowIssueNumber = "No:-" + (LastId + 1).ToString("D5");
             }
             catch
             {
-                rowIssueInformation.RowIssueNumber = "RI.No-1";
+                rowIssueInformation.RowIssueNumber = "No:-" + 1.ToString("D5");
             }
             rowIssueInformation.Date = DateTime.Now;
             bool pass = true;
@@ -252,7 +245,6 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult RowIssueDetial(int? id)
         {
             if (id == null)
@@ -270,7 +262,6 @@ namespace ComfySocks.Controllers
 
 
         //Issue is approved 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult IssueApproved(int? id)
         {
             if (id == null)
@@ -347,7 +338,7 @@ namespace ComfySocks.Controllers
                 ViewBag.erroList = ErrorList;
             }
 
-            return View("RowIssueDetail", rowIssueInformation);
+            return View("RowIssueDetial", rowIssueInformation);
         }
         //Production order Rejection
         public ActionResult OrderRejected(int? id)

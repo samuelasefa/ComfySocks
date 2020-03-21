@@ -5,9 +5,18 @@
 }
 
 <div class="box box-body box-info">
-    <p>
-        @Html.ActionLink("Create New", "NewOrderEntry")
-    </p>
+    @if (User.IsInRole("Super Admin, Admin"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewOrderEntry")
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewOrderEntry")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
@@ -15,7 +24,7 @@
                     @Html.DisplayNameFor(model => model.Date)
                 </th>
                 <th>
-                   Customer Name
+                    Customer Name
                 </th>
                 <th>
                     Order Number
@@ -27,24 +36,24 @@
         </thead>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Customer.FirstName)
-            </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Customer.FirstName)
+                </td>
 
-            <td>
-                @Html.DisplayFor(modelItem => item.OrderNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a class="btn-sm btn btn-info" href="~/Order/OrderDetial?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
-            </td>
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OrderNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a class="btn-sm btn btn-info" href="~/Order/OrderDetial?id=@item.ID">View &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
+                </td>
+            </tr>
         }
 
     </table>

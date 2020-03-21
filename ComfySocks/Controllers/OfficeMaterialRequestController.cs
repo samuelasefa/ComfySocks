@@ -17,7 +17,6 @@ namespace ComfySocks.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Request
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OfficeMaterialRequestionList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -27,7 +26,7 @@ namespace ComfySocks.Controllers
 
             return View(OfficeMaterial);
         }
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Production")]
         public ActionResult NewOfficeMaterialRequest()
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
@@ -49,7 +48,7 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Production")]
         public ActionResult NewOfficeMaterialRequest(OfficeMaterialRequest officeMaterialRequest)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -133,7 +132,7 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Production")]
         public ActionResult Remove(int id = 0)
         {
             List<OfficeMaterialRequestVM> selectedOfficeMaterialRequests = new List<OfficeMaterialRequestVM>();
@@ -157,15 +156,15 @@ namespace ComfySocks.Controllers
             ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
             return View("NewOfficeMaterialRequest");
         }
-       
-        
+
+
         /// <summary>
         /// submitteng the requested form to controller and database
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        [Authorize(Roles = "Super Admin, Admin")]
-
+        
+        [Authorize(Roles = "Super Admin, Production")]
         public ActionResult NewOfficeMaterialInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -187,7 +186,7 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles ="Super Admin, Admin, Production,")]
+        [Authorize(Roles = "Super Admin, Production")]
         public ActionResult NewOfficeMaterialInfo(OfficeMaterialRequestInformation officeMaterialRequestInformation)
         {   
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -208,12 +207,12 @@ namespace ComfySocks.Controllers
             officeMaterialRequestInformation.ApplicationUserID = User.Identity.GetUserId();
             try
             {
-                int LastId = (from sr in db.StoreRequestInformation orderby sr.ID descending select sr.ID).First();
-                officeMaterialRequestInformation.StoreRequestNumber = "SR.No:-" + (LastId + 1);
+                int LastId = (from sr in db.OfficeMaterialRequestInformation orderby sr.ID descending select sr.ID).First();
+                officeMaterialRequestInformation.StoreRequestNumber = "No:-" + (LastId + 1).ToString("D4");
             }
             catch
             {
-                officeMaterialRequestInformation.StoreRequestNumber = "SR.No-1";
+                officeMaterialRequestInformation.StoreRequestNumber = "No:-" + 1.ToString("D4");
             }
             officeMaterialRequestInformation.Date = DateTime.Now;
             bool pass = true;
@@ -253,7 +252,6 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OfficeMaterialRequestDetail(int? id)
         {
             if (id == null)
@@ -271,7 +269,6 @@ namespace ComfySocks.Controllers
 
 
         //Request is approved 
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult RequestApproved(int? id)
         {
             if (id == null)

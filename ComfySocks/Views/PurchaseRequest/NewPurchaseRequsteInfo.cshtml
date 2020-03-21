@@ -1,0 +1,114 @@
+﻿
+@model ComfySocks.Models.PurchaseRequestInfo.PurchaseRequestInformation
+@{
+    ViewBag.Title = null;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="form-horizontal panel col-sm-offset-3 col-sm-6">
+    <h4>Purchase Request Info</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.StoreID, "From", htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.DropDownList("StoreID", null, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.StoreID, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.To, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Production Department" } })
+            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.ItemType, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.ItemType, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Polyster/Spare Part" } })
+            @Html.ValidationMessageFor(model => model.ItemType, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.StoreName, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.StoreName, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Comfy" } })
+            @Html.ValidationMessageFor(model => model.StoreName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.CheckedBy, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.CheckedBy, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:jhon" } })
+            @Html.ValidationMessageFor(model => model.CheckedBy, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        @Html.LabelFor(model => model.ApprovedBy, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EditorFor(model => model.ApprovedBy, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:jhon" } })
+            @Html.ValidationMessageFor(model => model.ApprovedBy, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.RequestType, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="col-md-8">
+            @Html.EnumDropDownListFor(model => model.RequestType, "--Selecte RequestType--", new { @class = "form-control" })
+            @Html.ValidationMessageFor(model => model.RequestType, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create" class="btn btn-default" />
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Back to List", "PurchaseRequsetList")
+    </div>
+</div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage");
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success","@ViewBag.succsessMessage");
+                }
+    </script>
+
+}
+
+<script>
+        //datepicker
+        $(function () {
+            $(".datepicker").datepicker({
+                format: 'MM-dd-yyyy'
+            });
+        });
+</script>

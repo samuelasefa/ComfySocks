@@ -29,12 +29,14 @@
                 </th>
             </tr>
         </thead>
-
+        @{ 
+            int i = 1;
+        }
         @foreach (var item in Model)
         {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ID)
+                    @Html.Raw(i++)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Name)
@@ -53,9 +55,9 @@
                     @try
                     {
                         ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                        var i = db.Stocks.FirstOrDefault();
+                        var items = db.Stocks.FirstOrDefault();
 
-                        @Html.DisplayFor(modelItem => i.Quantity);
+                        @Html.DisplayFor(modelItem => items.Quantity);
                     }
                     catch
                     {

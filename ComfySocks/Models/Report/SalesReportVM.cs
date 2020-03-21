@@ -1,5 +1,4 @@
-﻿using ComfySocks.Models.ProductStock;
-using ComfySocks.Models.Repository;
+﻿using ComfySocks.Models.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +19,6 @@ namespace ComfySocks.Models.Report
         public float PhysicalProductAvalaiableID { get; set; }
         public float PhysicalRecentlyReducedQuantityID { get; set; }
         //referance
-        public virtual ProductAvialableOnStock ProductAvaliableOnStock { get; set; }
         public virtual ProductMaterialRepository ProductMaterialRepositery { get; set; }
     }
 }

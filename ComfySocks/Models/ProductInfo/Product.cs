@@ -1,5 +1,4 @@
-﻿using ComfySocks.Models.ProductStock;
-using ComfySocks.Models.ProductTransferInfo;
+﻿using ComfySocks.Models.ProductTransferInfo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

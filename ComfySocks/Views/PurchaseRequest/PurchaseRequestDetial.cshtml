@@ -1,21 +1,15 @@
-﻿@model ComfySocks.Models.ProductStock.ProStockInformation
-@{
-                /**/
-
-                ViewBag.Title = null;
-}
+﻿@model ComfySocks.Models.PurchaseRequestInfo.PurchaseRequestInformation
 
 <div class="row">
     <div class="col-md-10">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
-            <a href="~/ProductStocks/NewProductEntry">New <span class="glyphicon glyphicon-plus"></span></a>
+            <a href="~/PurchaseRequest/NewPurchaseRequestEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
-        <a href="~/ProductStocks/ProductStockList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+        <a href="~/PurchaseRequest/PurchaseRequsetList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
 
     </div>
-
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
         {
@@ -23,10 +17,10 @@
             {
                 <div class="row">
                     <div class="col-md-6">
-                        <a href="~/ProductStocks/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                        <a href="~/Request/RequestApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
                     </div>
                     <div class="col-md-6" style="float:right">
-                        <a href="~/ProductStocks/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                        <a href="~/Request/RequestRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
                     </div>
                 </div>
             }
@@ -41,70 +35,94 @@
         </div>
         <div class="row">
             <div class="col-md-8">
-                <h3 style="align-content:center;text-decoration:underline">Product Reciving Voucher</h3>
+                <h3 style="align-content:center;text-decoration:underline">Purchase Requestion</h3>
             </div>
             <div class="col-md-4" style="float:right">
                 Date: @Html.DisplayFor(modelItem => Model.Date)<br />
-                No:@Html.DisplayFor(modelItem => Model.ID)
+                @Html.DisplayFor(modelItem => Model.PurchaseRequestNumber)<br />
+                RequestType:@Html.DisplayFor(modelItem => Model.RequestType)
             </div>
         </div>
 
         <table class="table">
             <tr>
                 <td>
-                    From:
+                    To:@Html.DisplayFor(modelItem => Model.To)
                 </td>
             </tr>
             <tr>
                 <td>
-                    To:
+                    From:Project @Html.DisplayFor(modelItem => Model.Store.Name)
+                </td>
+                <td>
+                    StoreName: @Html.DisplayFor(modelItem => Model.StoreName)
+                </td>
+            </tr>
+
+            <tr>
+                <td>
+                    ItemType: @Html.DisplayFor(modelItem => Model.ItemType)
                 </td>
             </tr>
         </table>
         <table class="table well table-bordered">
+            @{
+                int i = 1;
+            }
             <thead>
                 <tr>
-                    <td>Item Description</td>
-                    <td>Item Code</td>
-                    <td>Unit</td>
+                    <td>Item No</td>
+                    <td>Description</td>
+                    <td>Part No./Size</td>
+                    <td>Unit of Meas</td>
                     <td>Quantity</td>
+                    <td>SR No</td>
+                    <td>Remark</td>
                 </tr>
             </thead>
-            @foreach (ComfySocks.Models.ProductStock.ProStock proStock in Model.ProStocks)
+            @foreach (ComfySocks.Models.PurchaseRequestInfo.PurchaseRequest purchaseRequest in Model.PurchaseRequest)
             {
 
-                <tr>
-                    <td>
-                        @proStock.Item.Name @proStock.Item.ItemType.Name
-                    </td>
-                    <td>@proStock.Item.Code</td>
-                    <td>@proStock.Item.Unit.Name</td>
-                    <td>
-                        @proStock.Quantity
-                    </td>
-                </tr>
+            <tr>
+                <td>@Html.Raw(i++)</td>
+                <td>
+                    @purchaseRequest.Item.Name @purchaseRequest.Item.ItemType.Name
+                </td>
+                <td></td>
+                <td>@purchaseRequest.Item.Unit.Name</td>
+                <td>
+                    @purchaseRequest.Quantity
+                </td>
+                <td>
+                    @purchaseRequest.StoreRequestNumber
+                </td>
+                <td>
+                    @purchaseRequest.Remark
+                </td>
+            </tr>
 
             }
         </table>
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-4" style="float:left">
-                    Prepared by : _________________
+                    Prepared by : @Model.ApplicationUser.FullName
                 </div>
-                <div class="col-md-4">
-                    Received by : @Model.ApplicationUser.UserName
+                <div class="col-md-4" style="float:left">
+                    Checked by : @Model.CheckedBy
                 </div>
-                <div class="col-md-4">
-                    Approved by : _________________
+
+                <div class="col-md-4" style="float:left">
+                    Approved by : @Model.ApprovedBy
                 </div>
             </div>
             <br />
+
             <div class="col-sm-12 alert-danger" style="background-color:red;"></div>
         </div>
-
     </div>
-</div>
 
+</div>
 
 <script>
 
@@ -129,7 +147,10 @@
         document.getElementById("footer").style.marginTop = 0 + "px";
         return false;
     }
+
+
 </script>
+
 <script src="~/Scripts/sweetalert.js"></script>
 <script src="~/Scripts/sweetalert.min.js"></script>
 <link href="~/Scripts/sweetalert.css" rel="stylesheet" />
@@ -139,7 +160,7 @@
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
                     return false;
                 }
     </script>
@@ -149,48 +170,9 @@
 {
     <script>
                 window.onload = function () {
-                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
                     return false;
                 }
     </script>
 }
 
-@if (ViewBag.infoMessage != null)
-{
-    <script>
-        window.onload = function () {
-                sweetAlert("Success", "@ViewBag.infoMessage", "info");
-                return false;
-        }
-    </script>
-}
-@if (ViewBag.RequiredItems != null)
-{
-    <script>
-        window.onload = function () {
-            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
-            return false;
-        }
-    </script>
-}
-
-<script>
-    function ItemSelected(id, Code) {
-        document.getElementById("ItemID").value = id, Code;
-    }
-
-    //datatabale
-    $("#maintable").DataTable({
-        "info": false,
-        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
-        "lengthChange": false,
-    });
-</script>
-
-<style>
-    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-        background-color: #847BAA;
-        color: #ecf0f1;
-        cursor: pointer;
-    }
-</style>

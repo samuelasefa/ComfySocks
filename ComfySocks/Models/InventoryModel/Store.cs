@@ -1,12 +1,8 @@
 ﻿using ComfySocks.Models.ProductInfo;
-using ComfySocks.Models.ProductStock;
-using ComfySocks.Models.PurchaseRequest;
-using System;
+using ComfySocks.Models.PurchaseRequestInfo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Web;
 
 namespace ComfySocks.Models.InventoryModel
 {
@@ -26,7 +22,7 @@ namespace ComfySocks.Models.InventoryModel
         public virtual ApplicationUser ApplicationUser { get; set; }
 
         //Collection
-        public virtual ICollection<PurchaseInformation> PurchaseInformation { get; set; }
+        public virtual ICollection<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
         public virtual ICollection<ProductInformation> ProductInformation { get; set; }
         public virtual ICollection<Stock> Stocks { get; set; }
     }

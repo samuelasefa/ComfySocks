@@ -7,9 +7,19 @@
 }
 
 <div class="box box-body box-info">
-    <p>
-        @Html.ActionLink("Create New", "NewSalesEntry")
-    </p>
+    @if (User.IsInRole("Super Admin, Admin, Sales"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewSalesEntry")
+        </p>
+    }
+    else
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewSalesEntry")
+        </p>
+
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
@@ -33,21 +43,21 @@
         </tfoot>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>@Html.DisplayFor(modelItem => item.Date)</td>
-            <td>@Html.DisplayFor(modelItem => item.Customer.FirstName) @Html.DisplayFor(modelItem => item.Customer.LastName)</td>
-            <td>@Html.DisplayFor(modelItem => item.FsNo)</td>
-            <td>@Html.DisplayFor(modelItem => item.Customer.TinNumber)</td>
-            <td>@Html.DisplayFor(modelItem => item.Status)</td>
-            <td>
-                @Html.ActionLink("View ", "SalesDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.Customer.FirstName) @Html.DisplayFor(modelItem => item.Customer.LastName)</td>
+                <td>@Html.DisplayFor(modelItem => item.FsNo)</td>
+                <td>@Html.DisplayFor(modelItem => item.Customer.TinNumber)</td>
+                <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                <td>
+                    @Html.ActionLink("View ", "SalesDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
 
-                @if (item.Status == "Approved")
-                {
-                    @Html.ActionLink("Delivery", "SalesDeliveryList", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
-                }
-            </td>
-        </tr>
+                    @if (item.Status == "Approved")
+                    {
+                        @Html.ActionLink("Delivery", "SalesDeliveryList", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                    }
+                </td>
+            </tr>
         }
     </table>
 </div>

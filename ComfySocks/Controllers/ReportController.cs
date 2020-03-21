@@ -11,14 +11,12 @@ namespace ComfySocks.Controllers
     public class ReportController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult StockReport()
         {
             var Items = (from I in db.Items where I.StoreType == Models.Items.StoreType.OfficeMaterial || I.StoreType == Models.Items.StoreType.RowMaterial select I);
             return View(Items.ToList());
         }
         // GET: Report
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult SalesReport()
         {
             var Items = (from I in db.Items where I.StoreType == Models.Items.StoreType.ProductItem select I);

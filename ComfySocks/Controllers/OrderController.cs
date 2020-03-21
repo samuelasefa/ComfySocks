@@ -2,7 +2,6 @@
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
 using ComfySocks.Models.Order;
-using ComfySocks.Models.ProductStock;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -13,12 +12,10 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize]
     public class OrderController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: Order
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OrderHistory()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -28,10 +25,7 @@ namespace ComfySocks.Controllers
 
             return View(productionOrderInfos.ToList());
         }
-
-
-      
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult NewOrderEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -78,8 +72,7 @@ namespace ComfySocks.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin")]
-
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult NewOrderEntry(ProductionOrder productionOrder)
         {
             //This is to display error message
@@ -143,7 +136,7 @@ namespace ComfySocks.Controllers
         }
 
         //removing item from Production List Item
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult RemoveSelected(int id)
         {
             if (TempData[User.Identity.GetUserId() + "ProductionOrders"] == null)
@@ -169,8 +162,7 @@ namespace ComfySocks.Controllers
             ViewBag.ItemID = new SelectList((from i in db.Items where i.StoreType == Models.Items.StoreType.ProductItem orderby i.Code select i), "ID", "Code");
             return View("NewOrderEntry");
         }
-
-        [Authorize(Roles ="Sales, Super Admin, Admin")]
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult NewOrderInfo()
         {
             if (TempData[User.Identity.GetUserId() + "ProductionOrders"] == null)
@@ -183,9 +175,9 @@ namespace ComfySocks.Controllers
             ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
             return View();
         }
-
-        [Authorize(Roles ="Super Admin, Admin, Sales")]
         [HttpPost]
+        [Authorize(Roles = "Admin, Super Admin")]
+
         public ActionResult NewOrderInfo(ProductionOrderInfo productionOrderInfo)
         {
             if (TempData[User.Identity.GetUserId() + "ProductionOrders"] == null)
@@ -222,7 +214,7 @@ namespace ComfySocks.Controllers
                     }
 
                     ProductionOrderInfo po = db.ProductionOrderInfos.Find(productionOrderInfo.ID);
-                    po.OrderNumber = "OR-No: " + po.ID;
+                    po.OrderNumber = po.ID.ToString("D4");
                     db.Entry(po).State = EntityState.Modified;
                     db.SaveChanges();
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = " Production Order Created!";
@@ -240,7 +232,6 @@ namespace ComfySocks.Controllers
 
 
         //Detail
-        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult OrderDetial(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -261,6 +252,7 @@ namespace ComfySocks.Controllers
             return View(POI);
         }
         // Production order Approval
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult OrderApproved(int? id)
         {
             if (id == null)
@@ -310,6 +302,7 @@ namespace ComfySocks.Controllers
         }
 
         //Production order Rejection
+        [Authorize(Roles = "Admin, Super Admin")]
         public ActionResult OrderRejected(int? id)
         {
             if (id == null)

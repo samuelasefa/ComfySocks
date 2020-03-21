@@ -1,8 +1,5 @@
 ﻿@model ComfySocks.Models.Request.StoreRequestInformation
 
-
-@if (ViewBag.errorList != null)
-
 <div class="row">
     <div class="col-md-10">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))

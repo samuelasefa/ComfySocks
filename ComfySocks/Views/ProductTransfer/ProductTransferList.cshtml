@@ -4,10 +4,18 @@
 }
 
 <div class="box box-info box-body">
-    <p>
-        @Html.ActionLink("Create New", "NewTransferEntry", new { @id = ViewBag.ID })
-    </p>
-
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Production"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewTransferEntry", new { @id = ViewBag.ID })
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewTransferEntry", new { @id = ViewBag.ID })
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style=" background-color:#00CCD2; color:white" ;>
             <tr>

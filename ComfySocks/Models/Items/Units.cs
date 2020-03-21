@@ -5,7 +5,6 @@ using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ComfySocks.Models.InventoryModel;
-using ComfySocks.Models.ProductStock;
 
 namespace ComfySocks.Models.Items
 {

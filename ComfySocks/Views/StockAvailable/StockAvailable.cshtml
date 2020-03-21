@@ -2,7 +2,7 @@
 
 @{
 
-    ViewBag.Title = "Stock Avaliable";
+    ViewBag.Title = "Row Material Avaliable";
 }
 @*<link href="~/Scripts/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />*@
 <div class="box box-info box-body">
@@ -10,56 +10,65 @@
         <thead style="background-color:#00CCD2; color:white">
             <tr>
                 <th>
-                    ID #
+                    Sq No
                 </th>
                 <th>
-                    Description
+                   Stock Description
                 </th>
                 <th>
-                    ItemType
-                </th>
-                <th>
-                    Item Code
+                    Code
                 </th>
                 <th>
                     Unit
                 </th>
                 <th>
-                    Avalable Qty
+                    Avaliable On Stock
                 </th>
             </tr>
         </thead>
 
         @foreach (var item in Model)
         {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-
-                <td>
-                    @Html.DisplayFor(modelItem => item.ItemType.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Code)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Unit.Name)
-                </td>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name) &nbsp;  @Html.DisplayFor(modelItem => item.ItemType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Unit.Name)
+            </td>
+            @if(item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial ||item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
+            {
                 <td>
                     @try
                     {
-                        @item.AvaliableOnStocks.Avaliable @item.Unit.Name
+                        @item.RowMaterialRepositery.RowMaterialAavliable
                     }
                     catch
                     {
-                        <h5>0 @item.Unit.Name</h5>
+                        <h5>0</h5>
                     }
                 </td>
-            </tr>
+            }
+            else if(item.StoreType == ComfySocks.Models.Items.StoreType.ProductItem)
+            {
+                <td>
+                    @try
+                    {
+                        @item.ProductMaterialRepository.ProductMaterialAavliable
+                    }
+                    catch
+                    {
+                        <h5>0</h5>
+                    }
+                </td>
+            }
+        </tr>
         }
 
     </table>

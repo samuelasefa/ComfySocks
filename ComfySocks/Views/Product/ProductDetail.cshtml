@@ -13,7 +13,7 @@
 
     </div>
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
             if (Model.Status == "Transferd")
             {
@@ -26,6 +26,17 @@
                     </div>
                 </div>
             }
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-md-6">
+                    <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check disabled"></span></a>
+                </div>
+                <div class="col-md-6" style="float:right">
+                    <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle disabled"></span></a>
+                </div>
+            </div>
         }
     </div>
 

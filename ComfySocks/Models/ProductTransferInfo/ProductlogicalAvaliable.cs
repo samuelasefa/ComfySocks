@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductStock;
 
 namespace ComfySocks.Models.ProductTransferInfo
 {

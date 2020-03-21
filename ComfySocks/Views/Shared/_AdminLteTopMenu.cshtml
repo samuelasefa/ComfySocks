@@ -17,7 +17,6 @@
         </a>
         <!-- Navbar Right Menu -->
         <div class="navbar-collapse collapse">
-
             <div class="navbar-custom-menu">
                 <ul class="nav navbar-nav">
                     <li>
@@ -40,12 +39,11 @@
 
             <!-- /.navbar-custom-menu -->
         </div>
-        
-            <span class="noti glyphicon glyphicon-bell"><span class="count">&nbsp;</span></span>
+            @*<span class="noti glyphicon glyphicon-bell"><span class="count">&nbsp;</span></span>
             <div class="noti-content">
                 <div class="noti-top-arrow"></div>
                 <ul id="notiContent"></ul>
-            </div>
+            </div>*@
         <!-- /.container-fluid -->
     </nav>
 
@@ -76,7 +74,7 @@
     /* COPY css content from youtube video description*/
     .noti-content {
         position: fixed;
-        right:320px;
+        right:350px;
         background: #ffffff;
         border-radius: 4px;
         top: 47px;
@@ -119,7 +117,7 @@
     }
 
     span.count {
-        margin-right: 220px;
+        margin-right: 240px;
         position: relative;
         top: -3px;
     }
@@ -150,7 +148,7 @@
             $('#notiContent').append($('<li>Loading...</li>'));
             $.ajax({
                 type: 'GET',
-                url: '/home/GetNotificationOrder',
+                url: '/home/GetRequestNotification',
                 success: function (response) {
                     $('#notiContent').empty();
                     if (response.length == 0) {

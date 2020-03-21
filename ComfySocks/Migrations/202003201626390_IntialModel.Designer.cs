@@ -13,7 +13,7 @@ namespace ComfySocks.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202002250706179_IntialModel"; }
+            get { return "202003201626390_IntialModel"; }
         }
         
         string IMigrationMetadata.Source

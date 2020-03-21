@@ -48,7 +48,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (ComfySocks.Models.ProductTransferInfo.Transfer T in ViewBag.TransferID)
+                                    @foreach (ComfySocks.Models.ProductTransferInfo.Transfer T in ViewBag.ProductID)
                                     {
                                     <tr onclick="ItemSelected('@T.ItemID','@T.Item.Code')">
                                         <td>@T.Item.Code</td>
@@ -146,8 +146,8 @@
                                 <th>Description</th>
                                 <th>Unit</th>
                                 <th>Quantity</th>
-                                <th>Unit Price</th>
-                                <th>Total Price</th>
+                                <th>U.Price</th>
+                                <th>T.Price</th>
                                 <th>
                                     <i class="glyphicon glyphicon-trash"></i>
                                 </th>
@@ -163,7 +163,7 @@
                                 <td>@items.Sales.UnitPrice</td>
                                 <td>@(items.Sales.UnitPrice * items.Sales.Quantity)</td>
                                 <td hidden>@(totalPrice += (float)(items.Sales.UnitPrice * items.Sales.Quantity))</td>
-                                <td><a href="~/Sales/RemoveSelected?id=@items.Sales.ItemID"><span class="fa fa-remove"></span></a></td>
+                                <td><a href="~/Sales/Remove?id=@items.Sales.ItemID"><span class="fa fa-remove"></span></a></td>
                             </tr>
                         }
                         
@@ -179,7 +179,7 @@
                 <br />
 
                 <div>
-                    @if (ViewBag.selectedSales != null)
+                    @if (ViewBag.haveItem == true)
                     {
 
                         <a class="btn btn-primary pull-right" href="~/Sales/NewSalesInfo">

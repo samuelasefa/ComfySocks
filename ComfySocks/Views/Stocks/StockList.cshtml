@@ -5,11 +5,20 @@
 }
 
 <div class="box box-body box-info">
-    <p>
-        @Html.ActionLink("Create New", "NewPurchaseEntry")
-    </p>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewPurchaseEntry")
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewPurchaseEntry")
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
-        <thead style="background-color:#00CCD2; color:#ecf0f1";>
+        <thead style="background-color:#00CCD2; color:#ecf0f1" ;>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)
@@ -23,7 +32,7 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tfoot  style="background-color:#00CCD2; color:#ecf0f1";>
+        <tfoot style="background-color:#00CCD2; color:#ecf0f1" ;>
             <tr>
                 <th>
                     @Html.DisplayNameFor(model => model.Date)

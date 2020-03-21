@@ -21,9 +21,6 @@ namespace ComfySocks.Models.Order
         public string LastName { get; set; }
         [Display(Name ="City")]
         public string City{ get; set; }
-        [Display(Name ="Sub City")]
-        public string SubCity { get; set; }
-
         //referance to Productionorderinfo
         public virtual ICollection<SalesInformation> SalesInformation { get; set; }
         public virtual ICollection<ProductionOrderInfo> ProductionOrderInfos { get; set; }

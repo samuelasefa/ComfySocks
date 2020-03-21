@@ -1,6 +1,7 @@
 ﻿using ComfySocks.Models;
+using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.PurchaseRequest;
+using ComfySocks.Models.PurchaseRequestInfo;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -8,230 +9,343 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using static ComfySocks.Models.PurchaseRequest.Purchase;
 
 namespace ComfySocks.Controllers
 {
     public class PurchaseRequestController : Controller
     {
-        // GET: PurchaseRequest
         private ApplicationDbContext db = new ApplicationDbContext();
+        // GET: Request
         public ActionResult PurchaseRequsetList()
         {
-            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            //errormessage display
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            var purchaseRequest = (from purchase in db.PurchaseRequestInformation orderby purchase.ID descending select purchase).ToList();
 
-            var PurchaseInfoList = (from p in db.PurchaseInformation orderby p.ID ascending select p);
-            return View(PurchaseInfoList.ToList());
+            return View(purchaseRequest);
         }
-        //GET:NewPurchaseRequest
+
+        // controller of Finshed product transfer
         public ActionResult NewPurchaseRequestEntry()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
-            // requred Item Must be done
-            {
-                var item = db.Items.ToList();
-                ViewBag.item = "";
-                if (item.Count() == 0) {
-                    ViewBag.item = "Register Item Information Frist";
-                    ViewBag.RequiredItems = true;
-                }
-            }
-            ViewBag.ItemID = (from I in db.Items where I.StoreType == Models.Items.StoreType.RowMaterial orderby I.ID descending select I).ToList();
+            ViewBag.PurchaseRequestID = (from p in db.Items where p.StoreType == StoreType.OfficeMaterial || p.StoreType == StoreType.RowMaterial  orderby p.ID select p).ToList();
             return View();
         }
 
-        //POST:NewPurchaseRequest
-        [HttpPost]
-        public ActionResult NewPurchaseRequestEntry(Purchase purchase)
+        //post method  for transfering product
+        [System.Web.Mvc.HttpPost]
+        public ActionResult NewPurchaseRequestEntry(PurchaseRequest purchaseRequest)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            List<PurchaseRequestVM> selectedPurchaserequest = new List<PurchaseRequestVM>();
+            List<PurchaseRequestVM> SelectedPurchaseRequest = new List<PurchaseRequestVM>();
             bool found = false;
-
-            if (TempData[User.Identity.GetUserId() + "selectedPurchaserequest"] != null)
+            if (TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] != null)
             {
-                selectedPurchaserequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "selectedPurchaserequest"];
+                SelectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"];
             }
-            purchase.PurchaseInformtionID = 1;
+            purchaseRequest.PurchaseRequestInformationID= 1;
+
+            var item = db.PurchaseRequests.Find(purchaseRequest.ItemID);
+
             if (ModelState.IsValid)
             {
-                foreach (PurchaseRequestVM sr in selectedPurchaserequest)
+
+                foreach (PurchaseRequestVM t in SelectedPurchaseRequest)
                 {
-                    if (sr.Purchase.ItemID == purchase.ItemID)
+                    if (t.PurchaseRequest.ItemID == purchaseRequest.ItemID)
                     {
-                       sr.Purchase.Quantity += purchase.Quantity;
+                        t.PurchaseRequest.Quantity += purchaseRequest.Quantity;
                         found = true;
-                        ViewBag.infoMessage = "Item is Added !!!";
+                        ViewBag.infoMessage = "Purchase Request Item is Added!";
                         break;
                     }
                 }
-                if (found == false)
+                if (!found)
                 {
-                    PurchaseRequestVM purchaseRequestVM = new PurchaseRequestVM();
-                    Item item = db.Items.Find(purchase.ItemID);
-                    purchaseRequestVM.Description = item.Name;
-                    purchaseRequestVM.Unit = item.Unit.Name;
-                    purchaseRequestVM.Purchase = purchase;
-                    selectedPurchaserequest.Add(purchaseRequestVM);
+                    Item I = db.Items.Find(purchaseRequest.ItemID);
+
+                    if (I == null)
+                    {
+                        ViewBag.errorMessage = "Unable to find Item";
+                    }
+                    else
+                    {
+                        PurchaseRequestVM purchaseRequestVM = new PurchaseRequestVM();
+                        purchaseRequestVM.ItemDescription = I.Name;
+                        purchaseRequestVM.Code = I.Code;
+                        purchaseRequestVM.Unit = I.Unit.Name;
+                        purchaseRequestVM.PurchaseRequest = purchaseRequest;
+                        SelectedPurchaseRequest.Add(purchaseRequestVM);
+                    }
                 }
             }
             else
             {
                 ViewBag.errorMessage = "State is not valid";
             }
-            TempData[User.Identity.GetUserId() + "selectedPurchaserequest"] = selectedPurchaserequest;
-            ViewBag.selectedPurchaserequest = selectedPurchaserequest;
-            if (selectedPurchaserequest.Count > 0)
+            ViewBag.SelectedPurchaseRequest = SelectedPurchaseRequest;
+            TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] = SelectedPurchaseRequest;
+            if (SelectedPurchaseRequest.Count() > 0)
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.ItemID = (from I in db.Items where I.StoreType == StoreType.RowMaterial orderby I.ID descending select I).ToList();
-            return View("NewPurchaseRequestEntry");
+            ViewBag.PurchaseRequestID = (from p in db.Items where p.StoreType == StoreType.OfficeMaterial || p.StoreType == StoreType.RowMaterial orderby p.ID select p).ToList();
+            return View(purchaseRequest);
         }
 
-        //REMOVE: Purchase request list
-
-        public ActionResult RemoveSelected(int id = 0)
+        public ActionResult Remove(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            ViewBag.PurchaseRequestID = (from p in db.Items where p.StoreType == StoreType.OfficeMaterial || p.StoreType == StoreType.RowMaterial orderby p.ID select p).ToList();
 
-            List<PurchaseRequestVM> selectedPurchaserequest = new List<PurchaseRequestVM>();
-            selectedPurchaserequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "selectedPurchaserequest"];
 
-            foreach (PurchaseRequestVM p in selectedPurchaserequest)
+            List<PurchaseRequestVM> SelectedPurchaseRequest = new List<PurchaseRequestVM>();
+            if (TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] != null)
             {
-                if (p.Purchase.ItemID == id)
+                try
                 {
-                    selectedPurchaserequest.Remove(p);
-                    ViewBag.infoMessage = "Item is removed";
-                    break;
+                    SelectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"];
+                    foreach (PurchaseRequestVM items in SelectedPurchaseRequest)
+                    {
+                        if (items.PurchaseRequest.ItemID == id)
+                        {
+                            SelectedPurchaseRequest.Remove(items);
+                            if (SelectedPurchaseRequest.Count() > 0)
+                            {
+                                TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] = SelectedPurchaseRequest;
+                                ViewBag.selectedTransfer = SelectedPurchaseRequest;
+                            }
+                            return View("NewPurchaseRequestEntry");
+                        }
+                    }
+
                 }
+                catch (Exception e)
+                {
+                    ViewBag.errorMessage = e;
+                }
+
             }
-            TempData[User.Identity.GetUserId() + "selectedPurchaserequest"] = selectedPurchaserequest;
-            ViewBag.selectedPurchaserequest = selectedPurchaserequest;
-            if (selectedPurchaserequest.Count > 0)
-            {
-                ViewBag.haveItem = true;
-            }
-            ViewBag.ItemID = (from I in db.Items where I.StoreType == StoreType.RowMaterial orderby I.ID descending select I).ToList();
+            ViewBag.errorMesage = "You process can't be performed for now try again";
             return View("NewPurchaseRequestEntry");
         }
 
-        //Get Purchase request information
-
-        public ActionResult NewPurchaseRequestInfo()
+        public ActionResult NewPurchaseRequsteInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            List<PurchaseRequestVM> SelectedPurchaseRequest = new List<PurchaseRequestVM>();
 
-            if (TempData[User.Identity.GetUserId()+ "selectedPurchaserequest"] == null) {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Find selected Purchase request Information!";
-                return RedirectToAction("PurchaseRequestList");
+            if (TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] != null)
+            {
+                SelectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"];
+                TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] = SelectedPurchaseRequest;
             }
-            TempData[User.Identity.GetUserId() + "selectedPurchaserequest"] = TempData[User.Identity.GetUserId() + "selectedPurchaserequest"];
-
+            else
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Purchase";
+                return RedirectToAction("NewPurchaseRequestEntry");
+            }
             ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
             return View();
         }
 
-        //Post PurchaseRequest
+
         [HttpPost]
-        public ActionResult NewPurchaseRequestInfo(PurchaseInformation purchaseInformation, string Normal, string Urgent, string VeryUrgent)
+        public ActionResult NewPurchaseRequsteInfo(PurchaseRequestInformation purchaseRequestInformation)
         {
-            if (Normal == "true")
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name");
+            List<PurchaseRequestVM> SelectedPurchaseRequest = new List<PurchaseRequestVM>();
+            if (TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] != null)
             {
-                purchaseInformation.isNormal = true;
-            }
-            else {
-                purchaseInformation.isNormal = false;
-            }
-            if (Urgent == "true")
-            {
-                purchaseInformation.isUrgent = true;
+                SelectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"];
             }
             else
             {
-                purchaseInformation.isUrgent = false;
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Store Transfer";
+                return RedirectToAction("NewPurchaseRequestEntry");
             }
-            if (VeryUrgent == "true")
+            purchaseRequestInformation.ApplicationUserID = User.Identity.GetUserId();
+            try
             {
-                purchaseInformation.isVeryUrgent = true;
+                int LastId = (from s in db.PurchaseRequestInformation orderby s.ID orderby s.ID descending select s.ID).First();
+                purchaseRequestInformation.PurchaseRequestNumber = "No:-" + (LastId + 1).ToString("D4");
             }
-            else {
-                purchaseInformation.isVeryUrgent = false;
+            catch
+            {
+                purchaseRequestInformation.PurchaseRequestNumber = "No:-" + 1.ToString("D4");
             }
-            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
-            //
-            if (TempData[User.Identity.GetUserId()+"selectedPurchaserequest"] == null){
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Load selected Information";
-                return RedirectToAction("PurchaseRequestList");
-            }
-
-            List<PurchaseRequestVM> selectedPurchaseRequest = new List<PurchaseRequestVM>();
-            selectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "ProductionOrders"];
-
-            TempData[User.Identity.GetUserId() + "selectedPurchaseRequest"] = selectedPurchaseRequest;
-            ViewBag.StoreID = new SelectList(db.Stores, "ID", "Name", purchaseInformation.StoreID);
-            purchaseInformation.ApplicationUserID = User.Identity.GetUserId();
-            purchaseInformation.Date = DateTime.Now;
-            purchaseInformation.Status = "Submmited";
+            purchaseRequestInformation.Date = DateTime.Now;
+            bool pass = true;
             if (ModelState.IsValid)
             {
                 try
                 {
-                    db.PurchaseInformation.Add(purchaseInformation);
+                    purchaseRequestInformation.Status = "Submitted";
+                    db.PurchaseRequestInformation.Add(purchaseRequestInformation);
                     db.SaveChanges();
-                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "Purchase Request Info is  Succesfully add to database";
-
-                    foreach (PurchaseRequestVM p in selectedPurchaseRequest)
-                    {
-                        p.Purchase.PurchaseInformtionID = purchaseInformation.ID;
-                        db.Purchases.Add(p.Purchase);
-                        db.SaveChanges();
-                        TempData[User.Identity.GetUserId() + "succsessMessage"] = "Purchase request is saved";
-                    }
-                    PurchaseInformation po = db.PurchaseInformation.Find(purchaseInformation.ID);
-                    po.PRNo = "PR-No: " + po.ID;
-                    db.Entry(po).State = EntityState.Modified;
-                    db.SaveChanges();
-                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "Purchase Request Created!";
-                    return RedirectToAction("PurchaseRequestDetails", new { id = purchaseInformation.ID });
+                    pass = true;
                 }
-                catch
+                catch (Exception e)
                 {
-
+                    ViewBag.errorMessage = "Unable to perform the request you need! view error detail" + e;
+                    pass = false;
                 }
-
+                if (pass)
+                {
+                    try
+                    {
+                        foreach (PurchaseRequestVM s in SelectedPurchaseRequest)
+                        {
+                            s.PurchaseRequest.PurchaseRequestInformationID= purchaseRequestInformation.ID;
+                            db.PurchaseRequests.Add(s.PurchaseRequest);
+                            db.SaveChanges();
+                        }
+                        ViewBag.succsessMessage = "Purchase Request item is created!.";
+                        return RedirectToAction("PurchaseRequestDetial", new { id = purchaseRequestInformation.ID });
+                    }
+                    catch (Exception e)
+                    {
+                        ViewBag.errorMessage = "Unable to perform the request you need!view error detail" + e;
+                    }
+                }
             }
-
-            return View(purchaseInformation);
+            return View();
         }
-
-        public ActionResult PurchaseRequestDetail(int? id)
+        public ActionResult PurchaseRequestDetial(int? id)
         {
-            if (id == 0)
+            //errormessage display
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+
+            if (id == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation is detected!! Please Try agian";
-                return RedirectToAction("PurchaseRequestList");
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected!";
+                return RedirectToAction("PurchaseRequsetList");
             }
-            PurchaseInformation purchaseInformation = db.PurchaseInformation.Find(id);
-            if (purchaseInformation == null)
+            PurchaseRequestInformation purchase = db.PurchaseRequestInformation.Find(id);
+
+            if (purchase == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Purchase informtion";
-                return RedirectToAction("PurchaseRequestList");
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation detected!";
+                return RedirectToAction("PurchaseRequsetList");
             }
-            return View(purchaseInformation);
+            return View(purchase);
+        }
+        //Transfer approval
+        public ActionResult PurchaseApproved(int? id)
+        {
+
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
+            if (id == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation is detected";
+                return RedirectToAction("PurchaseRequestDetail");
+            }
+
+            PurchaseRequestInformation purchaseRequestInformation = db.PurchaseRequestInformation.Find(id);
+            if (purchaseRequestInformation == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Find Product Transfer Information";
+                return RedirectToAction("PurchaseRequestDetail");
+            }
+            List<PurchaseRequstVMForError> ErrorList = new List<PurchaseRequstVMForError>();
+            bool pass = true;
+
+            foreach (PurchaseRequest purchases in purchaseRequestInformation.PurchaseRequest)
+            {
+                Item items = (from t in db.Items where t.ID == purchases.ItemID select t).First();
+                if (items == null)
+                {
+                    PurchaseRequstVMForError purchaseRequstVMForError = new PurchaseRequstVMForError()
+                    {
+                        PurchaseRequest = purchases,
+                        Error = "Unable to load Product Information Posible reason is no information registerd about the item"
+                    }; pass = false;
+                    ViewBag.errorMessage = "Some error found. see error details for more information";
+                    ErrorList.Add(purchaseRequstVMForError);
+                }
+            }
+            if (pass)
+            {
+                foreach (PurchaseRequest purchase in purchaseRequestInformation.PurchaseRequest)
+                {
+                    Item items = (from t in db.Items where t.ID == purchase.ItemID select t).First();
+                    db.Entry(purchase).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                purchaseRequestInformation.Status = "Approved";
+                purchaseRequestInformation.ApprovedBy = User.Identity.GetUserName();
+                db.Entry(purchaseRequestInformation).State = EntityState.Modified;
+                db.SaveChanges();
+                ViewBag.successMessage = "Successfully Requested!!";
+            }
+            else
+            {
+                ViewBag.errorList = ErrorList;
+            }
+
+            return View("PurchaseRequestDetail", purchaseRequestInformation);
+        }
+
+        //Transfer rejection
+        public ActionResult PurchaseRejected(int? id)
+        {
+
+            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
+            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+
+            if (id == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation is detected";
+                return RedirectToAction("PurchaseRequestDetail");
+            }
+
+            PurchaseRequestInformation purchaseRequestInformation = db.PurchaseRequestInformation.Find(id);
+            if (purchaseRequestInformation == null)
+            {
+                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to Find Purchase Request Information";
+                return RedirectToAction("PurchaseRequestDetail");
+            }
+            List<PurchaseRequstVMForError> ErrorList = new List<PurchaseRequstVMForError>();
+            bool pass = true;
+
+            foreach (PurchaseRequest purchase in purchaseRequestInformation.PurchaseRequest)
+            {
+                if (pass)
+                {
+                    purchaseRequestInformation.Status = "Rejected";
+                    purchaseRequestInformation.ApprovedBy = User.Identity.GetUserName();
+                    db.Entry(purchaseRequestInformation).State = EntityState.Modified;
+                    db.SaveChanges();
+                    ViewBag.successMessage = "Successfully Rejected!!";
+                }
+                else
+                {
+                    ViewBag.errorList = ErrorList;
+                }
+            }
+            return View("PurchaseRequestDetail", purchaseRequestInformation);
         }
 
 
-
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
