@@ -7,7 +7,7 @@
 }
 
 <div class="box box-body box-info">
-    @if (User.IsInRole("Super Admin, Admin, Sales"))
+    @if (User.IsInRole("Super Admin")|| User.IsInRole("Admin")||User.IsInRole("Finanace"))
     {
         <p>
             @Html.ActionLink("Create New", "NewSalesEntry")
@@ -15,7 +15,7 @@
     }
     else
     {
-        <p>
+        <p class="hidden">
             @Html.ActionLink("Create New", "NewSalesEntry")
         </p>
 
@@ -54,7 +54,7 @@
 
                     @if (item.Status == "Approved")
                     {
-                        @Html.ActionLink("Delivery", "SalesDeliveryList", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                        @Html.ActionLink("Delivery", "NewSalesDelivery", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
                     }
                 </td>
             </tr>

@@ -8,7 +8,7 @@
 }
 <div class="row">
     <div class="col-md-10">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
         {
             <a href="~/Order/NewOrderEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
@@ -33,7 +33,7 @@
         }
         else
         {
-            <div class="row">
+            <div class="row hidden">
                 <div class="col-md-6">
                     <a href="~/Order/OrderApproved?id=@Model.ID" class="btn btn-add disabled">Accept <span class="glyphicon glyphicon-check"></span></a>
                 </div>
@@ -103,7 +103,7 @@
                     @po.ProductSize
                 </td>
                 <td>
-                    @po.Quantity
+                    @po.Quantity @po.Item.Unit.Name
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => po.Date)

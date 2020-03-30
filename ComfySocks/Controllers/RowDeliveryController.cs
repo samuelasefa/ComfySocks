@@ -15,11 +15,11 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class RowDeliveryController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
         // GET: RowMaterialDelivery
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult RowDeliveryList(int id)
         {
@@ -36,7 +36,7 @@ namespace ComfySocks.Controllers
         }
 
 
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult NewRowDelivery(int? id)
         {
             if (id == null)
@@ -56,7 +56,7 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin,Store Manager")]
         [HttpPost]
         public ActionResult NewRowDelivery(RowDelivery rowDelivery)
         {
@@ -133,7 +133,8 @@ namespace ComfySocks.Controllers
             ViewBag.StoreRequestID = (from d in db.StoreRequest where d.StoreRequestInformationID == id select d).ToList();
             return View(rowDelivery);
         }
-        [Authorize(Roles = "Super Admin, Admin Store Manager")]
+
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Remove(int id)
         {
             if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
@@ -160,6 +161,7 @@ namespace ComfySocks.Controllers
             return View("NewRowDelivery");
         }
 
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult NewRowDeliveryInfo()
         {
             if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
@@ -177,7 +179,9 @@ namespace ComfySocks.Controllers
             TempData[User.Identity.GetUserId() + "selectedDelivery"] = TempData[User.Identity.GetUserId() + "selectedDelivery"];
             return View();
         }
+
         [System.Web.Mvc.HttpPost]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult NewRowDeliveryInfo(RowDeliveryInformation rowdeliveryInformation)
         {
             if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
@@ -233,10 +237,31 @@ namespace ComfySocks.Controllers
                         db.Entry(sr).State = EntityState.Modified;
                         db.SaveChanges();
                     }
+                    foreach (RowDelivery rowDelivery in rowdeliveryInformation.RowDeliveries)
+                    {
+                        Stock stock = (from sk in db.Stocks where sk.ItemID == rowDelivery.StoreRequest.ItemID select sk).First();
+                        db.Entry(stock).State = EntityState.Modified;
+                        db.SaveChanges();
+                        RowMaterialRepositery rowMaterialRepositery = db.RowMaterialRepositeries.Find(rowDelivery.StoreRequest.ItemID);
+                        Item i = db.Items.Find(rowMaterialRepositery.ID);
+                        float deference = rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable - (float)rowDelivery.DeliveryQuantity;
 
+                        if (deference > 0)
+                        {
+                            rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable -= (float)rowDelivery.DeliveryQuantity;
+                        }
+                        else
+                        {
+                            rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable = 0;
+                            rowMaterialRepositery.RowMaterialAavliable += deference;
+
+                        }
+                        db.Entry(rowMaterialRepositery).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
 
-                    return RedirectToAction("RowDeliveryList", "RowDelivery", new { id = ViewBag.ID });
+                    return RedirectToAction("StoreRequestDetial", "Request", new { id = rowdeliveryInformation.StoreRequestInformationID });
 
                 }
                 catch (Exception e)
@@ -249,6 +274,7 @@ namespace ComfySocks.Controllers
             return View(rowdeliveryInformation);
         }
 
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult DropDelivery(int id = 0)
         {
             int RequestID = (int)TempData[User.Identity.GetUserId() + "RequestID"];

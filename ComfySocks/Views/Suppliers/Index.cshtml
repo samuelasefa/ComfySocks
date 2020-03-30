@@ -23,7 +23,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.No)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin")|| User.IsInRole("Store Manager"))
                 {
                     <th>
                         Action
@@ -44,7 +44,7 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.No)
                 </td>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin")|| User.IsInRole("Store Manager"))
                 {
                     <td>
                         @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |

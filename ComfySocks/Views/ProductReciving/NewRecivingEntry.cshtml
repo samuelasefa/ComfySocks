@@ -1,0 +1,244 @@
+﻿@model ComfySocks.Models.ProductInfo.Product
+@{
+    ViewBag.Title = "Product Reciving Entry";
+}
+
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
+
+
+<div class="box box-info box-body">
+    @if (ViewBag.RequiredItems != null)
+    {
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red"><strong>Before starting you have to set some information about?</strong></h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.item
+                </li>
+                <li style="color:orange">
+                    @ViewBag.store
+                </li>
+            </ul>
+        </div>
+    }
+
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="col-md-12">
+                            <table class="table table-striped table-hover" id="maintable">
+                                <thead>
+                                    <tr style="background-color:#00CCD2; color:#ecf0f1">
+                                        <th>
+                                            Code
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Unit
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @foreach (ComfySocks.Models.Items.Item T in ViewBag.ProductID)
+                                    {
+                                        <tr onclick="ItemSelected('@T.ID','@T.Code')">
+                                            <td>@T.Code</td>
+                                            <td>@T.Name</td>
+                                            <td>@T.Unit.Name</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                                <tfoot>
+                                    <tr style="background-color:#00CCD2; color:#ecf0f1">
+                                        <th>
+                                            Code
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th>
+                                            Unit
+                                        </th>
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("NewRecivingEntry", "ProductReciving", FormMethod.Post))
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="form-group col-md-3 hidden">
+                                            <p style="text-align:center">Product</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <p style="text-align:center">Product Code</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.ProductCode, new { htmlAttributes = new { @class = "ProductCode form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.ProductCode, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <p style="text-align:center">Quantity</p>
+                                            <div class="col-md-12">
+                                                @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group col-md-3">
+                                            <p style="text-align:center">Remark</p>
+                                            <div class="col-md-12">
+                                                @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control input-sm", cols = 0, @rows = 1 } })
+                                                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="col-md-offset-1 col-md-10">
+                                                <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:2px; float:right; margin-left:12px" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div style=" background-color:#00CCD2; color:white; padding:10px">Product Reciving Item</div>
+                @********table here***********@
+                <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                    @if (ViewBag.selectedProduct != null)
+                    {
+                        <table class="table table-border table-striped" id="dtaTable">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Description</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Remark</th>
+
+                                    <th><i class="glyphicon glyphicon-trash"></i></th>
+                                </tr>
+                            </thead>
+                            @foreach (ComfySocks.Models.ProductInfo.ProductViewModel items in ViewBag.selectedProduct)
+                            {
+                                <tr>
+                                    <td>@items.Code</td>
+                                    <td>@items.TypeOfProduct</td>
+                                    <td>@items.Unit</td>
+                                    <th>@items.Product.Quantity</th>
+                                    <th>@items.Product.Remark</th>
+                                    <td><a href="~/ProductReciving/Remove?id=@items.Product.ItemID"><span class="fa fa-remove"></span></a></td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+                <br />
+
+                <div>
+                    @if (ViewBag.haveItem == true)
+                    {
+
+                        <a class="btn btn-primary pull-right" href="~/ProductReciving/NewRecivingInfo">
+                            Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+
+        </div>
+
+    }
+    <div>
+        @Html.ActionLink("Back to List", "ProductRecivingList", new { @id = ViewBag.ID })
+    </div>
+    <hr />
+
+</div>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+
+<script>
+    function ItemSelected(id, Code) {
+        document.getElementById("ItemID").value = id;
+        document.getElementById("ProductCode").value = Code;
+    }
+
+    //datatabale
+    $("#maintable").DataTable({
+        "info": false,
+        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        "lengthChange": false,
+    });
+</script>
+
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #ECFEFE;
+        color: #000000;
+        cursor: pointer;
+    }
+</style>

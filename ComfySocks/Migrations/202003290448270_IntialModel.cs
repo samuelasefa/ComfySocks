@@ -102,43 +102,81 @@ namespace ComfySocks.Migrations
                 .Index(t => t.UserId);
             
             CreateTable(
-                "dbo.OfficeIssueInformations",
+                "dbo.OfficeDelivery",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        OfficeDeliveryInformationID = c.Int(nullable: false),
+                        OfficeMaterialRequestID = c.Int(nullable: false),
+                        Quantity = c.Single(nullable: false),
+                        ApplicationUser_Id = c.String(maxLength: 128),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.OfficeDeliveryInformation", t => t.OfficeDeliveryInformationID)
+                .ForeignKey("dbo.OfficeMaterialRequests", t => t.OfficeMaterialRequestID)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .Index(t => t.OfficeDeliveryInformationID)
+                .Index(t => t.OfficeMaterialRequestID)
+                .Index(t => t.ApplicationUser_Id);
+            
+            CreateTable(
+                "dbo.OfficeDeliveryInformation",
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
                         Date = c.DateTime(nullable: false),
-                        OfficeIssueNumber = c.String(),
-                        RequestNumber = c.String(),
-                        Section = c.String(),
-                        ApprovedBy = c.String(nullable: false),
-                        IssuedBy = c.String(),
-                        ReciviedBy = c.String(),
-                        ApplicationUserID = c.String(maxLength: 128),
+                        OfficeDeliveryNumber = c.String(),
+                        From = c.String(),
+                        OfficeMaterialRequestInformationID = c.Int(nullable: false),
+                        Receivedby = c.String(),
+                        ApprovedBy = c.String(),
+                        ApplictionUserID = c.String(),
                         Status = c.String(),
-                        Store_ID = c.Int(),
+                        ApplicationUser_Id = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserID)
-                .ForeignKey("dbo.Store", t => t.Store_ID)
-                .Index(t => t.ApplicationUserID)
-                .Index(t => t.Store_ID);
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .ForeignKey("dbo.OfficeMaterialRequestInformations", t => t.OfficeMaterialRequestInformationID)
+                .Index(t => t.OfficeMaterialRequestInformationID)
+                .Index(t => t.ApplicationUser_Id);
             
             CreateTable(
-                "dbo.OfficeIssues",
+                "dbo.OfficeMaterialRequestInformations",
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
-                        OfficeIssueInformationID = c.Int(nullable: false),
+                        Date = c.DateTime(nullable: false),
+                        StoreRequestNumber = c.String(),
+                        ApprovedBy = c.String(nullable: false),
+                        From = c.String(),
+                        ApplicationUserID = c.String(nullable: false, maxLength: 128),
+                        StoreID = c.Int(nullable: false),
+                        Status = c.String(),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.Store", t => t.StoreID)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserID)
+                .Index(t => t.ApplicationUserID)
+                .Index(t => t.StoreID);
+            
+            CreateTable(
+                "dbo.OfficeMaterialRequests",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        OfficeMaterialRequestInformationID = c.Int(nullable: false),
                         ItemID = c.Int(nullable: false),
                         Quantity = c.Single(nullable: false),
                         Remark = c.String(),
+                        Deliverd = c.Boolean(nullable: false),
+                        RemaningDelivery = c.Single(nullable: false),
                         ApplicationUser_Id = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.ID)
                 .ForeignKey("dbo.Item", t => t.ItemID)
-                .ForeignKey("dbo.OfficeIssueInformations", t => t.OfficeIssueInformationID)
+                .ForeignKey("dbo.OfficeMaterialRequestInformations", t => t.OfficeMaterialRequestInformationID)
                 .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
-                .Index(t => t.OfficeIssueInformationID)
+                .Index(t => t.OfficeMaterialRequestInformationID)
                 .Index(t => t.ItemID)
                 .Index(t => t.ApplicationUser_Id);
             
@@ -247,6 +285,7 @@ namespace ComfySocks.Migrations
                         ApprovedBy = c.String(),
                         CheckedBy = c.String(),
                         To = c.String(),
+                        StoreRequestNumber = c.String(),
                         ApplicationUserID = c.String(maxLength: 128),
                         StoreID = c.Int(nullable: false),
                         ItemType = c.String(),
@@ -268,7 +307,6 @@ namespace ComfySocks.Migrations
                         PurchaseRequestInformationID = c.Int(nullable: false),
                         ItemID = c.Int(nullable: false),
                         ItemCode = c.String(),
-                        StoreRequestNumber = c.String(),
                         Quantity = c.Single(nullable: false),
                         Remark = c.String(),
                         ApplicationUser_Id = c.String(maxLength: 128),
@@ -310,9 +348,10 @@ namespace ComfySocks.Migrations
                         ID = c.Int(nullable: false, identity: true),
                         Date = c.DateTime(nullable: false),
                         StoreNumber = c.String(),
+                        PurchaseRequestNo = c.String(),
                         SupplierID = c.Int(nullable: false),
                         ApplicationUserID = c.String(maxLength: 128),
-                        Reciviedby = c.String(),
+                        Deliveredby = c.String(),
                         Approvedby = c.String(),
                         SubTotal = c.Single(nullable: false),
                         Tax = c.Single(nullable: false),
@@ -335,44 +374,51 @@ namespace ComfySocks.Migrations
                 .PrimaryKey(t => t.ID);
             
             CreateTable(
-                "dbo.OfficeMaterialRequests",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        OfficeMaterialRequestInformationID = c.Int(nullable: false),
-                        ItemID = c.Int(nullable: false),
-                        Quantity = c.Single(nullable: false),
-                        Remark = c.String(),
-                        Deliverd = c.Boolean(nullable: false),
-                        RemaningDelivery = c.Single(nullable: false),
-                        ApplicationUser_Id = c.String(maxLength: 128),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.Item", t => t.ItemID)
-                .ForeignKey("dbo.OfficeMaterialRequestInformations", t => t.OfficeMaterialRequestInformationID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
-                .Index(t => t.OfficeMaterialRequestInformationID)
-                .Index(t => t.ItemID)
-                .Index(t => t.ApplicationUser_Id);
-            
-            CreateTable(
-                "dbo.OfficeMaterialRequestInformations",
+                "dbo.SalesInformation",
                 c => new
                     {
                         ID = c.Int(nullable: false, identity: true),
                         Date = c.DateTime(nullable: false),
-                        StoreRequestNumber = c.String(),
-                        ApprovedBy = c.String(nullable: false),
-                        From = c.String(),
-                        ApplicationUserID = c.String(nullable: false, maxLength: 128),
-                        StoreID = c.Int(nullable: false),
+                        FsNo = c.String(),
+                        SupplierID = c.Int(nullable: false),
+                        SupplierTin = c.Int(nullable: false),
+                        CustomerID = c.Int(nullable: false),
+                        SupplierVatRegistrationNo = c.Int(nullable: false),
+                        DateOfVatRegistration = c.DateTime(),
+                        CDateOfVatRegistration = c.DateTime(),
+                        DateOfService = c.DateTime(),
+                        CustomerVatRegistrationNo = c.Int(nullable: false),
+                        AmountInWord = c.String(),
+                        ApplicationUserID = c.String(maxLength: 128),
+                        Checkedby = c.String(),
+                        Reciviedby = c.String(),
+                        Approvedby = c.String(),
                         Status = c.String(),
+                        ExciseTax = c.Single(nullable: false),
+                        Service = c.Single(nullable: false),
+                        Total = c.Single(nullable: false),
+                        VAT = c.Single(nullable: false),
+                        TotalSellingPrice = c.Single(nullable: false),
                     })
                 .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.Store", t => t.StoreID)
                 .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserID)
-                .Index(t => t.ApplicationUserID)
-                .Index(t => t.StoreID);
+                .ForeignKey("dbo.Customer", t => t.CustomerID)
+                .ForeignKey("dbo.Supplier", t => t.SupplierID)
+                .Index(t => t.SupplierID)
+                .Index(t => t.CustomerID)
+                .Index(t => t.ApplicationUserID);
+            
+            CreateTable(
+                "dbo.Customer",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        TinNumber = c.Int(nullable: false),
+                        FirstName = c.String(nullable: false),
+                        LastName = c.String(),
+                        City = c.String(),
+                    })
+                .PrimaryKey(t => t.ID);
             
             CreateTable(
                 "dbo.ProductionOrderInfo",
@@ -392,63 +438,6 @@ namespace ComfySocks.Migrations
                 .ForeignKey("dbo.Customer", t => t.CustomerID)
                 .Index(t => t.CustomerID)
                 .Index(t => t.ApplicationUserID);
-            
-            CreateTable(
-                "dbo.Customer",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        TinNumber = c.Int(nullable: false),
-                        FirstName = c.String(nullable: false),
-                        LastName = c.String(),
-                        City = c.String(),
-                    })
-                .PrimaryKey(t => t.ID);
-            
-            CreateTable(
-                "dbo.SalesInformation",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        Date = c.DateTime(nullable: false),
-                        FsNo = c.String(),
-                        InvoiceNumber = c.Int(nullable: false),
-                        CustomerID = c.Int(nullable: false),
-                        ApplicationUserID = c.String(maxLength: 128),
-                        Checkedby = c.String(),
-                        Reciviedby = c.String(),
-                        Approvedby = c.String(),
-                        Status = c.String(),
-                        SubTotal = c.Single(nullable: false),
-                        Tax = c.Single(nullable: false),
-                        GrandTotal = c.Single(nullable: false),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserID)
-                .ForeignKey("dbo.Customer", t => t.CustomerID)
-                .Index(t => t.CustomerID)
-                .Index(t => t.ApplicationUserID);
-            
-            CreateTable(
-                "dbo.Sales",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        ItemID = c.Int(nullable: false),
-                        SalesInformationID = c.Int(nullable: false),
-                        Quantity = c.Single(nullable: false),
-                        UnitPrice = c.Single(nullable: false),
-                        RemaningDelivery = c.Single(nullable: false),
-                        ApplicationUserID = c.Int(nullable: false),
-                        ApplicationUser_Id = c.String(maxLength: 128),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
-                .ForeignKey("dbo.Item", t => t.ItemID)
-                .ForeignKey("dbo.SalesInformation", t => t.SalesInformationID)
-                .Index(t => t.ItemID)
-                .Index(t => t.SalesInformationID)
-                .Index(t => t.ApplicationUser_Id);
             
             CreateTable(
                 "dbo.ProductionOrder",
@@ -471,6 +460,27 @@ namespace ComfySocks.Migrations
                 .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
                 .Index(t => t.ItemID)
                 .Index(t => t.ProductionOrderInfoID)
+                .Index(t => t.ApplicationUser_Id);
+            
+            CreateTable(
+                "dbo.Sales",
+                c => new
+                    {
+                        ID = c.Int(nullable: false, identity: true),
+                        ItemID = c.Int(nullable: false),
+                        SalesInformationID = c.Int(nullable: false),
+                        Quantity = c.Single(nullable: false),
+                        UnitPrice = c.Single(nullable: false),
+                        RemaningDelivery = c.Single(nullable: false),
+                        ApplicationUserID = c.Int(nullable: false),
+                        ApplicationUser_Id = c.String(maxLength: 128),
+                    })
+                .PrimaryKey(t => t.ID)
+                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
+                .ForeignKey("dbo.Item", t => t.ItemID)
+                .ForeignKey("dbo.SalesInformation", t => t.SalesInformationID)
+                .Index(t => t.ItemID)
+                .Index(t => t.SalesInformationID)
                 .Index(t => t.ApplicationUser_Id);
             
             CreateTable(
@@ -547,7 +557,7 @@ namespace ComfySocks.Migrations
                         Status = c.String(),
                         IssuedBy = c.String(),
                         ApprovedBy = c.String(),
-                        RecivedBy = c.String(),
+                        RecividBy = c.String(),
                         ApplicationUserID = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.ID)
@@ -593,45 +603,6 @@ namespace ComfySocks.Migrations
                 .ForeignKey("dbo.StoreRequestInformations", t => t.StoreRequestInformationID)
                 .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
                 .Index(t => t.StoreRequestInformationID)
-                .Index(t => t.ItemID)
-                .Index(t => t.ApplicationUser_Id);
-            
-            CreateTable(
-                "dbo.RowIssueInformations",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        Date = c.DateTime(nullable: false),
-                        RowIssueNumber = c.String(),
-                        ApprovedBy = c.String(nullable: false),
-                        RequestNumber = c.String(),
-                        From = c.String(),
-                        ApplicationUserID = c.String(maxLength: 128),
-                        StoreID = c.Int(nullable: false),
-                        Status = c.String(),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUserID)
-                .ForeignKey("dbo.Store", t => t.StoreID)
-                .Index(t => t.ApplicationUserID)
-                .Index(t => t.StoreID);
-            
-            CreateTable(
-                "dbo.RowIssues",
-                c => new
-                    {
-                        ID = c.Int(nullable: false, identity: true),
-                        RowIssueInformationID = c.Int(nullable: false),
-                        ItemID = c.Int(nullable: false),
-                        Quantity = c.Single(nullable: false),
-                        Remark = c.String(),
-                        ApplicationUser_Id = c.String(maxLength: 128),
-                    })
-                .PrimaryKey(t => t.ID)
-                .ForeignKey("dbo.Item", t => t.ItemID)
-                .ForeignKey("dbo.RowIssueInformations", t => t.RowIssueInformationID)
-                .ForeignKey("dbo.AspNetUsers", t => t.ApplicationUser_Id)
-                .Index(t => t.RowIssueInformationID)
                 .Index(t => t.ItemID)
                 .Index(t => t.ApplicationUser_Id);
             
@@ -730,11 +701,6 @@ namespace ComfySocks.Migrations
             DropForeignKey("dbo.SalesDelivery", "SalesID", "dbo.Sales");
             DropForeignKey("dbo.RowMaterialRepositery", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.RowMaterialRepositery", "ID", "dbo.Item");
-            DropForeignKey("dbo.RowIssues", "ApplicationUser_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.RowIssueInformations", "StoreID", "dbo.Store");
-            DropForeignKey("dbo.RowIssues", "RowIssueInformationID", "dbo.RowIssueInformations");
-            DropForeignKey("dbo.RowIssues", "ItemID", "dbo.Item");
-            DropForeignKey("dbo.RowIssueInformations", "ApplicationUserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.RowDelivery", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.RowDelivery", "StoreRequestID", "dbo.StoreRequests");
             DropForeignKey("dbo.RowDeliveryInformations", "StoreRequestInformationID", "dbo.StoreRequestInformations");
@@ -751,24 +717,24 @@ namespace ComfySocks.Migrations
             DropForeignKey("dbo.ProductlogicalAvaliable", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.ProductlogicalAvaliable", "ID", "dbo.Item");
             DropForeignKey("dbo.ProductionOrder", "ApplicationUser_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.ProductionOrder", "ProductionOrderInfoID", "dbo.ProductionOrderInfo");
-            DropForeignKey("dbo.ProductionOrder", "ItemID", "dbo.Item");
+            DropForeignKey("dbo.OfficeMaterialRequestInformations", "ApplicationUserID", "dbo.AspNetUsers");
+            DropForeignKey("dbo.OfficeMaterialRequests", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.OfficeDelivery", "ApplicationUser_Id", "dbo.AspNetUsers");
+            DropForeignKey("dbo.OfficeDelivery", "OfficeMaterialRequestID", "dbo.OfficeMaterialRequests");
+            DropForeignKey("dbo.OfficeDeliveryInformation", "OfficeMaterialRequestInformationID", "dbo.OfficeMaterialRequestInformations");
+            DropForeignKey("dbo.OfficeMaterialRequestInformations", "StoreID", "dbo.Store");
+            DropForeignKey("dbo.Stock", "StoreID", "dbo.Store");
+            DropForeignKey("dbo.StockInformation", "SupplierID", "dbo.Supplier");
+            DropForeignKey("dbo.SalesInformation", "SupplierID", "dbo.Supplier");
             DropForeignKey("dbo.Sales", "SalesInformationID", "dbo.SalesInformation");
             DropForeignKey("dbo.Sales", "ItemID", "dbo.Item");
             DropForeignKey("dbo.Sales", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.SalesInformation", "CustomerID", "dbo.Customer");
-            DropForeignKey("dbo.SalesInformation", "ApplicationUserID", "dbo.AspNetUsers");
+            DropForeignKey("dbo.ProductionOrder", "ProductionOrderInfoID", "dbo.ProductionOrderInfo");
+            DropForeignKey("dbo.ProductionOrder", "ItemID", "dbo.Item");
             DropForeignKey("dbo.ProductionOrderInfo", "CustomerID", "dbo.Customer");
             DropForeignKey("dbo.ProductionOrderInfo", "ApplicationUserID", "dbo.AspNetUsers");
-            DropForeignKey("dbo.OfficeMaterialRequestInformations", "ApplicationUserID", "dbo.AspNetUsers");
-            DropForeignKey("dbo.OfficeMaterialRequests", "ApplicationUser_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.OfficeMaterialRequestInformations", "StoreID", "dbo.Store");
-            DropForeignKey("dbo.OfficeMaterialRequests", "OfficeMaterialRequestInformationID", "dbo.OfficeMaterialRequestInformations");
-            DropForeignKey("dbo.OfficeMaterialRequests", "ItemID", "dbo.Item");
-            DropForeignKey("dbo.OfficeIssues", "ApplicationUser_Id", "dbo.AspNetUsers");
-            DropForeignKey("dbo.OfficeIssueInformations", "Store_ID", "dbo.Store");
-            DropForeignKey("dbo.Stock", "StoreID", "dbo.Store");
-            DropForeignKey("dbo.StockInformation", "SupplierID", "dbo.Supplier");
+            DropForeignKey("dbo.SalesInformation", "ApplicationUserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.Stock", "StockInformationID", "dbo.StockInformation");
             DropForeignKey("dbo.StockInformation", "ApplicationUserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.Stock", "ItemID", "dbo.Item");
@@ -784,9 +750,10 @@ namespace ComfySocks.Migrations
             DropForeignKey("dbo.Product", "ProductInformationID", "dbo.ProductInformation");
             DropForeignKey("dbo.ProductInformation", "ApplicationUserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.Store", "ApplicationUserID", "dbo.AspNetUsers");
-            DropForeignKey("dbo.OfficeIssues", "OfficeIssueInformationID", "dbo.OfficeIssueInformations");
-            DropForeignKey("dbo.OfficeIssues", "ItemID", "dbo.Item");
-            DropForeignKey("dbo.OfficeIssueInformations", "ApplicationUserID", "dbo.AspNetUsers");
+            DropForeignKey("dbo.OfficeMaterialRequests", "OfficeMaterialRequestInformationID", "dbo.OfficeMaterialRequestInformations");
+            DropForeignKey("dbo.OfficeMaterialRequests", "ItemID", "dbo.Item");
+            DropForeignKey("dbo.OfficeDelivery", "OfficeDeliveryInformationID", "dbo.OfficeDeliveryInformation");
+            DropForeignKey("dbo.OfficeDeliveryInformation", "ApplicationUser_Id", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.ItemType", "ApplicationUserID", "dbo.AspNetUsers");
             DropForeignKey("dbo.Item", "ItemTypeID", "dbo.ItemType");
@@ -802,11 +769,6 @@ namespace ComfySocks.Migrations
             DropIndex("dbo.SalesDelivery", new[] { "SalesDeliveryInformationID" });
             DropIndex("dbo.RowMaterialRepositery", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.RowMaterialRepositery", new[] { "ID" });
-            DropIndex("dbo.RowIssues", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.RowIssues", new[] { "ItemID" });
-            DropIndex("dbo.RowIssues", new[] { "RowIssueInformationID" });
-            DropIndex("dbo.RowIssueInformations", new[] { "StoreID" });
-            DropIndex("dbo.RowIssueInformations", new[] { "ApplicationUserID" });
             DropIndex("dbo.StoreRequests", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.StoreRequests", new[] { "ItemID" });
             DropIndex("dbo.StoreRequests", new[] { "StoreRequestInformationID" });
@@ -823,21 +785,17 @@ namespace ComfySocks.Migrations
             DropIndex("dbo.ProductMaterialRepositories", new[] { "ID" });
             DropIndex("dbo.ProductlogicalAvaliable", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.ProductlogicalAvaliable", new[] { "ID" });
-            DropIndex("dbo.ProductionOrder", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.ProductionOrder", new[] { "ProductionOrderInfoID" });
-            DropIndex("dbo.ProductionOrder", new[] { "ItemID" });
             DropIndex("dbo.Sales", new[] { "ApplicationUser_Id" });
             DropIndex("dbo.Sales", new[] { "SalesInformationID" });
             DropIndex("dbo.Sales", new[] { "ItemID" });
-            DropIndex("dbo.SalesInformation", new[] { "ApplicationUserID" });
-            DropIndex("dbo.SalesInformation", new[] { "CustomerID" });
+            DropIndex("dbo.ProductionOrder", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.ProductionOrder", new[] { "ProductionOrderInfoID" });
+            DropIndex("dbo.ProductionOrder", new[] { "ItemID" });
             DropIndex("dbo.ProductionOrderInfo", new[] { "ApplicationUserID" });
             DropIndex("dbo.ProductionOrderInfo", new[] { "CustomerID" });
-            DropIndex("dbo.OfficeMaterialRequestInformations", new[] { "StoreID" });
-            DropIndex("dbo.OfficeMaterialRequestInformations", new[] { "ApplicationUserID" });
-            DropIndex("dbo.OfficeMaterialRequests", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.OfficeMaterialRequests", new[] { "ItemID" });
-            DropIndex("dbo.OfficeMaterialRequests", new[] { "OfficeMaterialRequestInformationID" });
+            DropIndex("dbo.SalesInformation", new[] { "ApplicationUserID" });
+            DropIndex("dbo.SalesInformation", new[] { "CustomerID" });
+            DropIndex("dbo.SalesInformation", new[] { "SupplierID" });
             DropIndex("dbo.StockInformation", new[] { "ApplicationUserID" });
             DropIndex("dbo.StockInformation", new[] { "SupplierID" });
             DropIndex("dbo.Stock", new[] { "StoreID" });
@@ -859,11 +817,16 @@ namespace ComfySocks.Migrations
             DropIndex("dbo.ProductInformation", new[] { "ApplicationUserID" });
             DropIndex("dbo.ProductInformation", new[] { "StoreID" });
             DropIndex("dbo.Store", new[] { "ApplicationUserID" });
-            DropIndex("dbo.OfficeIssues", new[] { "ApplicationUser_Id" });
-            DropIndex("dbo.OfficeIssues", new[] { "ItemID" });
-            DropIndex("dbo.OfficeIssues", new[] { "OfficeIssueInformationID" });
-            DropIndex("dbo.OfficeIssueInformations", new[] { "Store_ID" });
-            DropIndex("dbo.OfficeIssueInformations", new[] { "ApplicationUserID" });
+            DropIndex("dbo.OfficeMaterialRequests", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.OfficeMaterialRequests", new[] { "ItemID" });
+            DropIndex("dbo.OfficeMaterialRequests", new[] { "OfficeMaterialRequestInformationID" });
+            DropIndex("dbo.OfficeMaterialRequestInformations", new[] { "StoreID" });
+            DropIndex("dbo.OfficeMaterialRequestInformations", new[] { "ApplicationUserID" });
+            DropIndex("dbo.OfficeDeliveryInformation", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.OfficeDeliveryInformation", new[] { "OfficeMaterialRequestInformationID" });
+            DropIndex("dbo.OfficeDelivery", new[] { "ApplicationUser_Id" });
+            DropIndex("dbo.OfficeDelivery", new[] { "OfficeMaterialRequestID" });
+            DropIndex("dbo.OfficeDelivery", new[] { "OfficeDeliveryInformationID" });
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.ItemType", new[] { "ApplicationUserID" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
@@ -878,8 +841,6 @@ namespace ComfySocks.Migrations
             DropTable("dbo.SalesDeliveryInformation");
             DropTable("dbo.SalesDelivery");
             DropTable("dbo.RowMaterialRepositery");
-            DropTable("dbo.RowIssues");
-            DropTable("dbo.RowIssueInformations");
             DropTable("dbo.StoreRequests");
             DropTable("dbo.StoreRequestInformations");
             DropTable("dbo.RowDeliveryInformations");
@@ -887,13 +848,11 @@ namespace ComfySocks.Migrations
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.ProductMaterialRepositories");
             DropTable("dbo.ProductlogicalAvaliable");
-            DropTable("dbo.ProductionOrder");
             DropTable("dbo.Sales");
-            DropTable("dbo.SalesInformation");
-            DropTable("dbo.Customer");
+            DropTable("dbo.ProductionOrder");
             DropTable("dbo.ProductionOrderInfo");
-            DropTable("dbo.OfficeMaterialRequestInformations");
-            DropTable("dbo.OfficeMaterialRequests");
+            DropTable("dbo.Customer");
+            DropTable("dbo.SalesInformation");
             DropTable("dbo.Supplier");
             DropTable("dbo.StockInformation");
             DropTable("dbo.Stock");
@@ -904,8 +863,10 @@ namespace ComfySocks.Migrations
             DropTable("dbo.Product");
             DropTable("dbo.ProductInformation");
             DropTable("dbo.Store");
-            DropTable("dbo.OfficeIssues");
-            DropTable("dbo.OfficeIssueInformations");
+            DropTable("dbo.OfficeMaterialRequests");
+            DropTable("dbo.OfficeMaterialRequestInformations");
+            DropTable("dbo.OfficeDeliveryInformation");
+            DropTable("dbo.OfficeDelivery");
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.ItemType");
             DropTable("dbo.AspNetUserClaims");

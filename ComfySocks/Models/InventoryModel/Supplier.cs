@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ComfySocks.Models.SalesInfo;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,7 +21,6 @@ namespace ComfySocks.Models.InventoryModel
 
         //referance
         public virtual ICollection<StockInformation> StockInformation { get; set; }
-
-
+        public virtual ICollection<SalesInformation> SalesInformation { get; set; }
     }
 }

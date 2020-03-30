@@ -12,12 +12,12 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class StoresController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Stores
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult Index()
         {
@@ -26,7 +26,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Stores/Details/5
-        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Details(int? id)
         {

@@ -14,6 +14,7 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class StocksController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -192,7 +193,7 @@ namespace ComfySocks.Controllers
                 return RedirectToAction("NewPurchaseEntry");
             }
             TempData[User.Identity.GetUserId() + "SelectedList"] = TempData[User.Identity.GetUserId() + "SelectedList"];
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "No");
             return View();
         }
 
@@ -211,7 +212,7 @@ namespace ComfySocks.Controllers
             List<StockViewModel> stocks = new List<StockViewModel>();
             stocks = (List<StockViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
             TempData[User.Identity.GetUserId() + "SelectedList"] = stocks;
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "No");
             StockInformation.Date = DateTime.Now;
                 StockInformation.ApplicationUserID = User.Identity.GetUserId();
                 try

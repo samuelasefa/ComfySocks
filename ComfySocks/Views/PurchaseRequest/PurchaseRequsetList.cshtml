@@ -41,7 +41,7 @@
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Date)</td>
                 <td>@Html.DisplayFor(modelItem => item.PurchaseRequestNumber)</td>
-                <td></td>
+                <td>@Html.DisplayFor(modelItem => item.StoreRequestNumber)</td>
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "PurchaseRequestDetial", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })

@@ -39,11 +39,8 @@
                                 @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
                                     var RequestNo = db.RowDeliveryInformation.Find(d.StoreRequestInformationID);
 
-                                    foreach (var storeRequest in db.RowDeliveryInformation)
-                                    {
-                                        <h5>@storeRequest.StoreRequestInformation.StoreRequestNumber</h5>
-                                    }
                                 }
+                                <h5>@d.StoreRequestInformation.StoreRequestNumber</h5>
 
                             </div>
                             <div style="float:right">
@@ -54,38 +51,38 @@
 
                         <div class="col-sm-12">
                             <br /><br />
-                           
-                                  <table class="table table-bordered">
-                                      <thead>
-                                          <tr>
-                                              <td>Item No</td>
-                                              <td>Type of Product</td>
-                                              <td>Code</td>
-                                              <td>OUM</td>
-                                              <td>Quantity</td>
-                                              <td>Unit Price</td>
-                                              <td>Total Price</td>
-                                          </tr>
-                                      </thead>
-                                     
-                                      @foreach (ComfySocks.Models.RowDeliveryInfo.RowDelivery item in d.RowDeliveries)
-                                      {
-                                          int i = 1;
-                                          <tr>
-                                              <td>@Html.Raw(i++)</td>
-                                              <td>@item.StoreRequest.Item.Name @item.StoreRequest.Item.ItemType.Name</td>
-                                              <td>@item.StoreRequest.Item.Code</td>
-                                              <td>@item.StoreRequest.Item.Unit.Name</td>
-                                              <td>@item.DeliveryQuantity</td>
-                                              <td>
-                                                  @{
-                                                      var items = db.Stocks.First(); @items.UnitPrice;
-                                                  }
-                                              </td>
-                                              <td>@((float)items.UnitPrice * (float)item.DeliveryQuantity)</td>
-                                          </tr>
-                                      }
-                                  </table>
+
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <td>Item No</td>
+                                        <td>Type of Product</td>
+                                        <td>Code</td>
+                                        <td>OUM</td>
+                                        <td>Quantity</td>
+                                        <td>Unit Price</td>
+                                        <td>Total Price</td>
+                                    </tr>
+                                </thead>
+
+                                @foreach (ComfySocks.Models.RowDeliveryInfo.RowDelivery item in d.RowDeliveries)
+                                {
+                                    int i = 1;
+                                    <tr>
+                                        <td>@Html.Raw(i++)</td>
+                                        <td>@item.StoreRequest.Item.Name @item.StoreRequest.Item.ItemType.Name</td>
+                                        <td>@item.StoreRequest.Item.Code</td>
+                                        <td>@item.StoreRequest.Item.Unit.Name</td>
+                                        <td>@item.DeliveryQuantity</td>
+                                        <td>
+                                            @{
+                                                var items = db.Stocks.First(); @items.UnitPrice;
+                                            }
+                                        </td>
+                                        <td>@((float)items.UnitPrice * (float)item.DeliveryQuantity)</td>
+                                    </tr>
+                                }
+                            </table>
                         </div>
 
                     </div>
@@ -103,12 +100,15 @@
                 </ul>
             </div>
         }
+       @foreach (ComfySocks.Models.RowDeliveryInfo.RowDeliveryInformation d in Model)
+        {
         <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
             <br /><br /><br /><br /><br /><br />
-            <h5 style="margin-left:50px;margin-right:50px">Issued by_______________________ </h5>
-            <h5 style="margin-left:50px;margin-right:50px">Approved by &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ___________________________</h5>
-            <h5 style="margin-left:50px;margin-right:50px">Recived the Above Goods &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;___________________________</h5>
+            <h5 style="margin-left:50px;margin-right:50px">Issued by: @d.IssuedBy</h5>
+            <h5 style="margin-left:50px;margin-right:50px">Approved by:@d.ApprovedBy</h5>
+            <h5 style="margin-left:50px;margin-right:50px">Recived the Above Goods:@d.RecividBy</h5>
         </div>
+        }
         <div id="logo" class="hidden"><img src='~/Images/logo1.png' style='margin-bottom:30px;margin-left:-10px;margin-right:-110px;height:123px' /></div>
     </div>
     <hr />

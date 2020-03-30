@@ -35,7 +35,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Purchase Requestion No._______________________</td>
+                <td>Purchase Requestion No:@Html.DisplayFor(modelItem => Model.PurchaseRequestNo)</td>
             </tr>
         </table>
         <table class="table well table-bordered">
@@ -97,13 +97,13 @@
         <div id="footer">
             <div class="row" style="margin-top:10%">
                 <div class="col-md-4" style="float:left">
-                    Deliverd by : @Model.ApplicationUser.UserName
+                    Deliverd by : @Model.Deliveredby
                 </div>
                 <div class="col-md-4">
-                    Received by : @Model.Reciviedby
+                    Received by : @Model.ApplicationUser.UserName
                 </div>
                 <div class="col-md-4">
-                    Approved by : _________________
+                    Approved by :@Model.Approvedby
                 </div>
             </div>
             <br />

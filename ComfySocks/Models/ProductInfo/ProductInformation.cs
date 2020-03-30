@@ -20,15 +20,23 @@ namespace ComfySocks.Models.ProductInfo
         [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
-        [Display(Name = "Product No.")]
+        [Display(Name = "No.")]
         public string ProductNumber { get; set; }
         [Display(Name ="To")]
         public int StoreID { get; set; }
+
+        [Display(Name ="From")]
+        public string From { get; set; }
+        [Display(Name ="FPNo.")]
+        public int FPTNO { get; set; }
         [Display(Name = "Recived By")]
         public string ApplicationUserID { get; set; }
         [Display(Name ="Deliverd  By")]
         public string Deliverdby { get; set; }
 
+        [Display(Name ="Approved By")]
+        public string Approvedby { get; set; }
+        public string Status { get; set; }
 
         //reference
         public virtual Store Store { get; set; }

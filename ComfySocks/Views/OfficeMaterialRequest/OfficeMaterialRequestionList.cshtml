@@ -44,7 +44,7 @@
                     @Html.ActionLink("View ", "OfficeMaterialRequestDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
                     @if (item.Status == "Approved")
                     {
-                        @Html.ActionLink("Delivery", "OfficeDeliveryList", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                        @Html.ActionLink("Issue", "NewOfficeMaterialDelivery", "OfficeMaterialDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
                     }
                 </td>
 

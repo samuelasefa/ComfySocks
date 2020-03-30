@@ -2,7 +2,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
             <a href="~/PurchaseRequest/NewPurchaseRequestEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
@@ -11,7 +11,7 @@
 
     </div>
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
             if (Model.Status == "Submmited")
             {
@@ -61,7 +61,7 @@
 
             <tr>
                 <td>
-                    ItemType: @Html.DisplayFor(modelItem => Model.ItemType)
+                    ItemType:______________________________________________
                 </td>
             </tr>
         </table>
@@ -73,7 +73,6 @@
                 <tr>
                     <td>Item No</td>
                     <td>Description</td>
-                    <td>Part No./Size</td>
                     <td>Unit of Meas</td>
                     <td>Quantity</td>
                     <td>SR No</td>
@@ -88,13 +87,12 @@
                 <td>
                     @purchaseRequest.Item.Name @purchaseRequest.Item.ItemType.Name
                 </td>
-                <td></td>
                 <td>@purchaseRequest.Item.Unit.Name</td>
                 <td>
                     @purchaseRequest.Quantity
                 </td>
                 <td>
-                    @purchaseRequest.StoreRequestNumber
+                    @purchaseRequest.PurchaseRequestInformation.StoreRequestNumber
                 </td>
                 <td>
                     @purchaseRequest.Remark

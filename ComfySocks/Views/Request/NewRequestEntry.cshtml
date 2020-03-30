@@ -39,26 +39,29 @@
                                             Unit
                                         </th>
                                         <th>
-                                            Qty
-                                        </th>
-                                        <th>
                                             Avaliable
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
 
-                                    @foreach (ComfySocks.Models.InventoryModel.Stock s in ViewBag.StockID)
+                                    @foreach (ComfySocks.Models.Items.Item s in ViewBag.ItemID)
                                     {
-                                        <tr onclick="ItemSelected('@s.ItemID', '@s.Item.Code')">
-                                            <td>@s.Item.Code</td>
-                                            <td>@s.Item.Name @s.Item.ItemType.Name</td>
-                                            <td>@s.Item.Unit.Name</td>
-                                            <td>@s.Quantity</td>
-                                            <td>@{var avaliable = db.AvaliableOnStocks.Find(s.ItemID);}
-                                            @avaliable.Avaliable
-                                            </td>
-                                        </tr>
+                                    <tr onclick="ItemSelected('@s.ID', '@s.Code')">
+                                        <td>@s.Code</td>
+                                        <td>@s.Name @s.ItemType.Name</td>
+                                        <td>@s.Unit.Name</td>
+                                        <td>
+                                            @try
+                                            {
+                                                @s.AvaliableOnStocks.Avaliable
+                                            }
+                                            catch
+                                            {
+                                                <h5>0</h5>
+                                            }
+                                        </td>
+                                    </tr>
                                     }
 
                                 </tbody>
@@ -74,10 +77,7 @@
                                             Unit
                                         </th>
                                         <th>
-                                           Qty
-                                        </th>
-                                        <th>
-                                          Stock
+                                            Avaliable
                                         </th>
                                     </tr>
                                 </tfoot>

@@ -1,0 +1,138 @@
+﻿@model IEnumerable<ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryInformation>
+
+<div class="box box-body box-info">
+    <div class="row">
+        <div class="col-md-10">
+            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
+            {
+                <a href="~/OfficeMaterialDelivery/NewOfficeMaterialDelivery?id=@ViewBag.ID">New <span class="glyphicon glyphicon-plus"></span></a>
+            }
+            <a href="~/OfficeMaterialRequest/OfficeMaterialRequestionList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+
+        </div>
+        @if (Model.Count() > 0)
+        {
+            foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryInformation d in Model)
+            {
+
+                <div class="col-sm-offset-9 col-sm-3" style="text-align:center">
+                    <a class="fa fa-print" onclick="Print('@d.ID')" style="margin-right:650px;">Print</a>
+                    @if (d.Status != "Rejected Delivery")
+                    {
+                        <a href="~/OfficeMaterialDelivery/DropDelivery?id=@ViewBag.ID" class="fa fa-close" style="margin-right:650px;">Cancel</a>
+                    }
+                </div>
+                <div class="col-sm-8" style="border:solid 2px black; margin-left:150px" id="@d.ID">
+                    <div style="margin-left:60px;margin-right:50px">
+                        <h3 style="color:orangered" class="col-sm-12">@d.Status</h3>
+                        <div class="col-sm-12">
+                            <div style="float:left">
+                                <h5>Section/Department: @d.From</h5>
+                                @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                                    var srt = db.OfficeMaterialRequest.Find(d.OfficeMaterialRequestInformationID);
+                                }
+                                <h5>@srt.OfficeMaterialRequestInformation.StoreRequestNumber</h5>
+                            </div>
+                            <div style="float:right">
+                                <h5>Date @d.Date.ToShortDateString()</h5>
+                                <h5>@d.OfficeDeliveryNumber</h5>
+                                @*<h5>Deliverd By @d.ApplicationUser.UserName</h5>*@
+                               
+                            </div>
+                        </div>
+
+                        <div class="col-sm-12">
+                            <br /><br />
+                            <table class="table">
+                                <tr>
+                                    <td>Item Code</td>
+                                    <td>Description </td>
+                                    <td>Unit</td>
+                                    <td>Quantity</td>
+                                    <td>Remark</td>
+
+                                </tr>
+                                @foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDelivery item in d.OfficeDeliveries)
+                                {
+                                    <tr>
+                                        <td>@item.OfficeMaterialRequest.Item.Code</td>
+                                        <td>@item.OfficeMaterialRequest.Item.Name @item.OfficeMaterialRequest.Item.ItemType.Name</td>
+                                        <td>@item.OfficeMaterialRequest.Item.Unit.Name</td>
+                                        <td>@item.Quantity @item.OfficeMaterialRequest.Item.Unit.Name</td>
+                                        @*<td>@item.Remark</td>*@
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-md-12" style="text-align:center">
+                <h3>Delivery Information</h3>
+                <h5>Nothing Deliverd yet</h5>
+                <ul style="color:rebeccapurple; list-style:none">
+                    <li>Click on New button at left corneer to add one.</li>
+
+                </ul>
+            </div>
+        }
+        @foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryInformation d in Model)
+        {
+
+        <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
+            <br /><br /><br /><br /><br /><br />
+            <h5 style="margin-left:50px;margin-right:50px">Issued by:_____________________________</h5>
+            <h5 style="margin-left:50px;margin-right:50px">Approved by:___________________________</h5>
+            <h5 style="margin-left:50px;margin-right:50px">Recivied the above Goods___________________________</h5>
+        </div>
+        }
+        <div id="logo" class="hidden"><img src='~/Images/logo1.png' style='margin-bottom:30px;margin-left:-10px;margin-right:-110px;height:123px' /></div>
+    </div>
+    <hr />
+</div>
+<script>
+
+    function Print(id) {
+        var utc = new Date().toJSON().slice(0, 10).replace(/-/g, '/');
+        var headstr = "<html><head><title></title><link href='~ / Content / bootstrap.css' rel='stylesheet'/><style>.hiddenForPrint{visibility: hidden;printvisible:visible;}a:link:after, a:visited:after {display: none;content: '';}</style ></head><body>";
+        var footstr = "</body>";
+        var logo = document.all.item("logo").innerHTML;
+        var newstr = document.getElementById(id).innerHTML;
+        var footer = document.all.item("footer").innerHTML;
+        var oldstr = document.body.innerHTML;
+        document.body.innerHTML = headstr + logo + newstr + footer + footstr;
+        window.print();
+        document.body.innerHTML = oldstr;
+        return false;
+    }
+
+</script>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}

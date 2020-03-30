@@ -3,6 +3,7 @@
     ViewBag.Title = "Sales Entry";
 }
 
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
 <div class="box box-info box-body">
     @if (ViewBag.RequiredItems != null)
@@ -48,16 +49,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (ComfySocks.Models.ProductTransferInfo.Transfer T in ViewBag.ProductID)
+                                    @foreach (ComfySocks.Models.Items.Item T in ViewBag.ProductID)
                                     {
-                                    <tr onclick="ItemSelected('@T.ItemID','@T.Item.Code')">
-                                        <td>@T.Item.Code</td>
-                                        <td>@T.Item.Name</td>
-                                        <td>@T.Item.Unit.Name</td>
-                                        <td>@T.Quantity</td>
-                                    </tr>
-                                    }
-
+                                        <tr onclick="ItemSelected('@T.ID','@T.Code')">
+                                            <td>@T.Code</td>
+                                            <td>@T.Name</td>
+                                            <td>@T.Unit.Name</td>
+                                            <td>@{var available = db.ProductlogicalAvaliables.Find(T.ID);}
+                                            @available.LogicalProductAvaliable
+                                            </td>
+                                        </tr>
+                                      }
+                                    
                                 </tbody>
                                 <tfoot>
                                     <tr style="background-color:#00CCD2; color:white">
@@ -139,41 +142,41 @@
                     @if (ViewBag.selectedSales != null)
                     {
                         float totalPrice = 0;
-                    <table class="table table-border table-striped" id="dtaTable">
-                        <thead>
+                        <table class="table table-border table-striped" id="dtaTable">
+                            <thead>
+                                <tr>
+                                    <th>ItemCode</th>
+                                    <th>Description</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>U.Price</th>
+                                    <th>T.Price</th>
+                                    <th>
+                                        <i class="glyphicon glyphicon-trash"></i>
+                                    </th>
+                                </tr>
+                            </thead>
+                            @foreach (ComfySocks.Models.SalesInfo.SalesVM items in ViewBag.selectedSales)
+                            {
+                                <tr>
+                                    <td>@items.Code</td>
+                                    <td>@items.TypeOfProduct</td>
+                                    <td>@items.Unit</td>
+                                    <td>@items.Sales.Quantity</td>
+                                    <td>@items.Sales.UnitPrice</td>
+                                    <td>@(items.Sales.UnitPrice * items.Sales.Quantity)</td>
+                                    <td hidden>@(totalPrice += (float)(items.Sales.UnitPrice * items.Sales.Quantity))</td>
+                                    <td><a href="~/Sales/Remove?id=@items.Sales.ItemID"><span class="fa fa-remove"></span></a></td>
+                                </tr>
+                            }
+
                             <tr>
-                                <th>ItemCode</th>
-                                <th>Description</th>
-                                <th>Unit</th>
-                                <th>Quantity</th>
-                                <th>U.Price</th>
-                                <th>T.Price</th>
-                                <th>
-                                    <i class="glyphicon glyphicon-trash"></i>
-                                </th>
+                                <td colspan="5"></td>
+                                <td>Total:</td>
+                                <td>@totalPrice</td>
                             </tr>
-                        </thead>
-                        @foreach (ComfySocks.Models.SalesInfo.SalesVM items in ViewBag.selectedSales)
-                        {
-                            <tr>
-                                <td>@items.Code</td>
-                                <td>@items.TypeOfProduct</td>
-                                <td>@items.Unit</td>
-                                <td>@items.Sales.Quantity</td>
-                                <td>@items.Sales.UnitPrice</td>
-                                <td>@(items.Sales.UnitPrice * items.Sales.Quantity)</td>
-                                <td hidden>@(totalPrice += (float)(items.Sales.UnitPrice * items.Sales.Quantity))</td>
-                                <td><a href="~/Sales/Remove?id=@items.Sales.ItemID"><span class="fa fa-remove"></span></a></td>
-                            </tr>
-                        }
-                        
-                        <tr>
-                            <td colspan="5"></td>
-                            <td>Total:</td>
-                            <td>@totalPrice</td>
-                        </tr>
-                        
-                    </table>
+
+                        </table>
                     }
                 </div>
                 <br />
@@ -256,12 +259,12 @@
     </script>
 }
 
-    <style>
-        .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-            background-color: #ECFEFE;
-            color: #000000;
-            cursor: pointer;
-        }
-    </style>
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #ECFEFE;
+        color: #000000;
+        cursor: pointer;
+    }
+</style>
 
 

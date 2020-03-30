@@ -8,6 +8,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles = "Super Admin, Admin, Sales, Store Manager, Finance, Production")]
     public class ReportController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

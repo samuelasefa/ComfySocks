@@ -29,13 +29,13 @@
                             <div style="float:left">
                                 <h3 style="text-align:center">DELIVERY NOTE</h3>
                                 <h5>For: @d.SalesInformation.Customer.FirstName&nbsp;@d.SalesInformation.Customer.LastName</h5>
-                                @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                                    @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
                                     var srt = db.StoreRequest.Find(d.SalesInformationID);
                                     }
-                                <h5>Sales Invoice No: CR- @d.SalesInformation.InvoiceNumber</h5>
+                                <h5>Sales Invoice No: CR- @d.SalesInformation.Supplier.No</h5>
                             </div>
                             <div style="float:right">
-                                <h5>Date @d.Date.ToShortDateString()</h5>
+                                <h5>Date @d.Date</h5>
                                 <h5>@d.DeliveryNumber</h5>
                             </div>
                         </div>
@@ -56,12 +56,13 @@
                                 </tr>
                                 @{
                                     float totalPrice = 0;
+                                    int i = 1;
                                 }
                                 @foreach (ComfySocks.Models.SalesDeliveryInfo.SalesDelivery item in d.SalesDeliveries)
                                 {
                                 <tr>
-                                    <td>@item.Sales.ID</td>
-                                    <td>@item.Sales.Item.Name @item.Sales.Item.ItemType.Name</td>
+                                    <td>@Html.Raw(i++)</td>
+                                    <td>@item.Sales.Item.Name </td>
                                     <td>@item.Sales.Item.Code</td>
                                     <td>@item.Sales.Item.Unit.Name</td>
                                     <td>@item.Quantity</td>
@@ -96,7 +97,7 @@
                 </ul>
             </div>
         }
-        <div style="float:left;position:fixed;margin-top:100%;" id="footer" class="hidden">
+        <div style="position:fixed;margin-top:100%;" id="footer" class="hidden col-md-offset-5">
             <br /><br /><br /><br /><br /><br />
             I have recived the above Item in Good Condition <br />
             <br />

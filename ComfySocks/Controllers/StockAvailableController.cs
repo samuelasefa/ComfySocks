@@ -7,6 +7,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize(Roles ="Super Admin, Admin, Sales, Store Manager, Finance, Production")]
     public class StockAvailableController : Controller
     {
         ComfySocks.Models.ApplicationDbContext db = new Models.ApplicationDbContext();

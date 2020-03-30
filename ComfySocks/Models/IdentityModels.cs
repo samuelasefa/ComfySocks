@@ -1,6 +1,6 @@
 ﻿using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.OfficeIssueInfo;
+using ComfySocks.Models.OfficeDeliveryInfo;
 using ComfySocks.Models.OfficeRequest;
 using ComfySocks.Models.Order;
 using ComfySocks.Models.ProductInfo;
@@ -9,7 +9,6 @@ using ComfySocks.Models.PurchaseRequestInfo;
 using ComfySocks.Models.Repository;
 using ComfySocks.Models.Request;
 using ComfySocks.Models.RowDeliveryInfo;
-using ComfySocks.Models.RowIssueInfo;
 using ComfySocks.Models.SalesDeliveryInfo;
 using ComfySocks.Models.SalesInfo;
 using ComfySocks.Repository;
@@ -55,10 +54,8 @@ namespace ComfySocks.Models
         public virtual ICollection<OfficeMaterialRequestInformation> OfficeMaterialRequestInformation { get; set; }
         public virtual ICollection<SalesDelivery> SalesDeliveries { get; set; }
         public virtual ICollection<SalesDeliveryInformation> SalesDeliveryInformation { get; set; }
-        public virtual ICollection<RowIssue> RowIssues { get; set; }
-        public virtual ICollection<RowIssueInformation> RowIssueInformation { get; set; }
-        public virtual ICollection<OfficeIssue> OfficeIssues { get; set; }
-        public virtual ICollection<OfficeIssueInformation> OfficeInformation { get; set; }
+        public virtual ICollection<OfficeDelivery> OfficeDeliveries { get; set; }
+        public virtual ICollection<OfficeDeliveryInformation> OfficeDeliveryInformation { get; set; }
         public virtual ICollection<PurchaseRequest> PurchaseRequests { get; set; }
         public virtual ICollection<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
@@ -162,12 +159,10 @@ namespace ComfySocks.Models
         public DbSet<Supplier> Suppliers { get; set; }
         public DbSet<SalesDelivery> SalesDeliveries { get; set; }
         public DbSet<SalesDeliveryInformation> SalesDeliveryInformation { get; set; }
-        public DbSet<RowIssue> RowIssues { get; set; }
-        public DbSet<RowIssueInformation> RowIssueInformation { get; set; }
-        public DbSet<OfficeIssue> OfficeIssues { get; set; }
         public DbSet<RowDelivery> RowDeliveries { get; set; }
         public DbSet<RowDeliveryInformation> RowDeliveryInformation { get; set; }
-        public DbSet<OfficeIssueInformation> OfficeIssueInformation { get; set; }
+        public DbSet<OfficeDelivery> OfficeDeliveries { get; set; }
+        public DbSet<OfficeDeliveryInformation> OfficeDeliveryInformation  { get; set; }
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
         public DbSet<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
     }

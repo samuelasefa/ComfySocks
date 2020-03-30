@@ -40,10 +40,9 @@ namespace ComfySocks.Controllers
                     ViewBag.stock = "Register Stock Information Frist";
                     ViewBag.RequiredItem = true;
                 }
-                
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
-                
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+               
             return View();
         }
        
@@ -126,7 +125,7 @@ namespace ComfySocks.Controllers
                 ViewBag.haveItem = true;
             }
 
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
 
             return View();
         }
@@ -150,7 +149,7 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
             return View("NewRequestEntry");
         }
 

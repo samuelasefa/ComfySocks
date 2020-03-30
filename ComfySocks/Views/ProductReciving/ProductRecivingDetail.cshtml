@@ -1,4 +1,4 @@
-﻿@model ComfySocks.Models.ProductTransferInfo.TransferInformation
+﻿@model ComfySocks.Models.ProductInfo.ProductInformation
 
 @{
     /**/
@@ -9,32 +9,32 @@
 <div class="row">
     <div class="col-md-10">
         <a href="#" class="btn btn-add" onclick="Print()">Print <span class="glyphicon glyphicon-print"></span></a>
-        <a href="~/Product/ProductList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
+        <a href="~/ProductReciving/ProductRecivingList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
 
     </div>
     <div class="col-md-2">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
-            if (Model.Status == "Transferd")
+            if (Model.Status == "Transfering")
             {
                 <div class="row">
                     <div class="col-md-6">
-                        <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                        <a href="~/ProductReciving/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
                     </div>
                     <div class="col-md-6" style="float:right">
-                        <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                        <a href="~/ProductReciving/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
                     </div>
                 </div>
             }
         }
         else
         {
-            <div class="row">
+            <div class="row hidden">
                 <div class="col-md-6">
-                    <a href="~/Product/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check disabled"></span></a>
+                    <a href="~/ProductReciving/ProductApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check disabled"></span></a>
                 </div>
                 <div class="col-md-6" style="float:right">
-                    <a href="~/Product/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle disabled"></span></a>
+                    <a href="~/ProductReciving/ProductRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle disabled"></span></a>
                 </div>
             </div>
         }
@@ -52,14 +52,14 @@
             </div>
             <div class="col-md-4" style="float:right">
                 Date: @Html.DisplayFor(modelItem => Model.Date)<br />
-                @Html.DisplayFor(modelItem => Model.FPTNo)
+                @Html.DisplayFor(modelItem => Model.ProductNumber)
             </div>
         </div>
 
         <table class="table">
             <tr>
                 <td>
-                    From:
+                    From:@Html.DisplayFor(modelItem => Model.From)
                 </td>
             </tr>
             <tr>
@@ -70,7 +70,7 @@
 
             <tr>
                 <td>
-                    FPTNo:___________________
+                    Finished Good Product No:@Html.DisplayFor(modelItem => Model.FPTNO)
                 </td>
             </tr>
         </table>
@@ -84,14 +84,14 @@
                     <td>Remark</td>
                 </tr>
             </thead>
-            @foreach (ComfySocks.Models.ProductTransferInfo.Transfer transfer in Model.Transfers)
+            @foreach (ComfySocks.Models.ProductInfo.Product product in Model.Products)
             {
                 <tr>
-                    <td>@transfer.Item.Name</td>
-                    <td>@transfer.Item.Code</td>
-                    <td>@transfer.Item.Unit.Name</td>
-                    <td>@transfer.Quantity</td>
-                    <td>@transfer.Remark</td>
+                    <td>@product.Item.Name</td>
+                    <td>@product.Item.Code</td>
+                    <td>@product.Item.Unit.Name</td>
+                    <td>@product.Quantity</td>
+                    <td>@product.Remark</td>
                 </tr>
             }
         </table>
@@ -101,7 +101,7 @@
                     Delivered by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
                 </div>
                 <div class="col-md-4" style="float:left">
-                    Received by :@Html.DisplayFor(modelItem => Model.Recivedby)
+                    Received by :@Html.DisplayFor(modelItem => Model.Deliverdby)
                 </div>
                 <div class="col-md-4" style="float:left">
                     Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)

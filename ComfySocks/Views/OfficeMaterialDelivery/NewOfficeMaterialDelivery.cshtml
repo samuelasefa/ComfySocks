@@ -1,6 +1,6 @@
-﻿@model ComfySocks.Models.OfficeIssueInfo.OfficeIssue
+﻿@model ComfySocks.Models.OfficeDeliveryInfo.OfficeDelivery
 @{
-    ViewBag.Title = "Issue Office Material";
+    ViewBag.Title = "Office Material Delivery";
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
@@ -21,7 +21,7 @@
 
     else
     {
-        using (Html.BeginForm("NewOfficeIssueEntry", "OfficeIssue", FormMethod.Post))
+        using (Html.BeginForm("NewOfficeMaterialDelivery","OfficeMaterialDelivery", FormMethod.Post))
         {
             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
             @Html.AntiForgeryToken()
@@ -50,20 +50,16 @@
                                     </thead>
                                     <tbody>
 
-                                        @foreach (ComfySocks.Models.InventoryModel.Stock s in ViewBag.StockID)
+                                        @foreach (ComfySocks.Models.OfficeRequest.OfficeMaterialRequest s in ViewBag.OfficeMaterialRequestID)
                                         {
-                                            <tr onclick="ItemSelected('@s.ItemID', '@s.Item.Code')">
+                                            <tr onclick="ItemSelected('@s.ID', '@s.Item.Code')">
                                                 <td>@s.Item.Code</td>
                                                 <td>@s.Item.Name @s.Item.ItemType.Name</td>
                                                 <td>@s.Item.Unit.Name</td>
                                                 <td>@s.Quantity</td>
-                                                <td>
-                                                    @{
-                                                        var item = db.RowMaterialRepositeries.Find(s.ItemID);
-                                                } @item.RowMaterialAavliable
-                                            </td>
-                                        </tr>
-                                    }
+                                                <td>@s.RemaningDelivery</td>
+                                            </tr>
+                                        }
 
                                     </tbody>
                                     <tfoot>
@@ -96,8 +92,8 @@
                                             <div class="form-group">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
-                                                    @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "form-control input-sm" } })
-                                                    @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                                    @Html.EditorFor(model => model.OfficeMaterialRequestID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.OfficeMaterialRequestID, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -110,7 +106,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-3">
+                                        @*<div class="col-md-3">
                                             <div class="form-group">
                                                 <p style="text-align:center">Remark</p>
                                                 <div class="col-md-12">
@@ -118,12 +114,12 @@
                                                     @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div>*@
                                         &nbsp;
-                                        <div style="float:right; margin-right:50px">
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <div class="col-md-offset-1 col-md-12">
-                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:10px" />
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:8px" />
                                                 </div>
                                             </div>
                                         </div>
@@ -134,10 +130,10 @@
                     </div>
                 </div>
                 <div class="col-sm-6">
-                    <div style="background-color:#00CCD2; color:white; padding:10px">Office Material Issue</div>
+                    <div style=" background-color:#00CCD2; color:white; padding:10px">Office Material Delivery</div>
                     @********table here***********@
                     <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
-                        @if (ViewBag.selectedOfficeIssue != null)
+                        @if (ViewBag.selectedDelivery != null)
                         {
                             <table class="table table-border table-striped" id="dtaTable">
                                 <thead>
@@ -146,19 +142,19 @@
                                         <th>Description</th>
                                         <th>Unit</th>
                                         <th>Quantity</th>
-                                        <th>Remark</th>
+                                        <th>Remaining</th>
                                         <th><i class="glyphicon glyphicon-trash"></i></th>
                                     </tr>
                                 </thead>
-                                @foreach (ComfySocks.Models.OfficeIssueInfo.OfficeIssueVM items in ViewBag.selectedOfficeIssue)
+                                @foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryVM items in ViewBag.selectedDelivery)
                                 {
                                     <tr>
                                         <td>@items.ItemCode</td>
-                                        <td>@items.ItemDescription &nbsp; @items.ItemType</td>
+                                        <td>@items.ItemDescription &nbsp; @items.Itemtype</td>
                                         <td>@items.Unit</td>
-                                        <td>@items.OfficeIssue.Quantity</td>
-                                        <td>@items.OfficeIssue.Remark</td>
-                                        <td><a href="~/OfficeIssue/Remove?id=@items.OfficeIssue.ItemID"><span class="fa fa-remove"></span></a></td>
+                                        <td>@items.OfficeDelivery.Quantity</td>
+                                        <td>@items.Remaining</td>
+                                        <td><a href="~/OfficeMaterialDelivery/Remove?id=@items.OfficeDelivery.OfficeMaterialRequestID"><span class="fa fa-remove"></span></a></td>
                                     </tr>
                                 }
                             </table>
@@ -170,7 +166,7 @@
                         @if (ViewBag.haveItem == true)
                         {
 
-                            <a class="btn btn-primary pull-right" href="~/OfficeIssue/NewOfficeIssueInfo">
+                            <a class="btn btn-primary pull-right" href="~/OfficeMaterialDelivery/NewOfficeMaterilDeliveryInfo">
                                 Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                             </a>
                         }
@@ -180,7 +176,7 @@
             </div>
             <script>
                 function ItemSelected(id, Code) {
-                    document.getElementById("ItemID").value = id, Code;
+                    document.getElementById("OfficeMaterialRequestID").value = id, Code;
                 }
 
                 //datatabale
@@ -192,12 +188,12 @@
             </script>
         }
     }
-    <br />
-    <div>
-        @Html.ActionLink("Back to List", "OfficeIssueList", new { id = ViewBag.id })
+        <br />
+        <div>
+            @Html.ActionLink("Back to List", "OfficeMaterialDeliveryList", new {id = ViewBag.id })
+        </div>
+        <hr />
     </div>
-    <hr />
-</div>
 
 <script src="~/Scripts/sweetalert.js"></script>
 <script src="~/Scripts/sweetalert.min.js"></script>
@@ -243,11 +239,11 @@
     </script>
 }
 
-<style>
-    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
-        background-color: #ECFEFE;
-        color: #000000;
-        cursor: pointer;
-    }
-</style>
+    <style>
+        .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+            background-color: #ECFEFE;
+            color: #000000;
+            cursor: pointer;
+        }
+    </style>
 

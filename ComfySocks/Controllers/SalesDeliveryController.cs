@@ -1,7 +1,11 @@
 ﻿using ComfySocks.Models;
+using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
+using ComfySocks.Models.ProductTransferInfo;
+using ComfySocks.Models.Repository;
 using ComfySocks.Models.SalesDeliveryInfo;
 using ComfySocks.Models.SalesInfo;
+using ComfySocks.Repository;
 using Microsoft.AspNet.Identity;
 using System;
 using System.Collections.Generic;
@@ -202,12 +206,12 @@ namespace ComfySocks.Controllers
                 SalesDeliveryInformation lastDeliverd = (from del in db.SalesDeliveryInformation orderby del.ID descending select del).First();
 
                 salesDeliveryInformation.SalesInformationID = saleId;
-                salesDeliveryInformation.DeliveryNumber = "No-" + lastDeliverd.ID + 1;
+                salesDeliveryInformation.DeliveryNumber = "No-" + lastDeliverd.ID.ToString("D4");
             }
             catch
             {
                 salesDeliveryInformation.SalesInformationID = saleId;
-                salesDeliveryInformation.DeliveryNumber = "No-" + 1;
+                salesDeliveryInformation.DeliveryNumber = "No-0001";
             }
             if (ModelState.IsValid)
             {
@@ -226,10 +230,32 @@ namespace ComfySocks.Controllers
                         db.Entry(s).State = EntityState.Modified;
                         db.SaveChanges();
                     }
+                    foreach (SalesDelivery salesDelivery in salesDeliveryInformation.SalesDeliveries)
+                    {
+                        Transfer transfer = (from s in db.Transfers where s.ItemID == salesDelivery.Sales.ItemID select s).First();
+                        //stock.Total -= (float)storeRequest.Quantity;
+                        db.Entry(transfer).State = EntityState.Modified;
+                        db.SaveChanges();
+                        ProductMaterialRepository productMaterialRepository = db.ProductMaterialRepositories.Find(salesDelivery.Sales.ItemID);
+                        Item i = db.Items.Find(productMaterialRepository.ID);
+                        float deference = productMaterialRepository.RecentlyReducedProductMaterialAvaliable - salesDelivery.Quantity;
 
+                        if (deference > 0)
+                        {
+                            productMaterialRepository.RecentlyReducedProductMaterialAvaliable -= (float)salesDelivery.Quantity;
+                        }
+                        else
+                        {
+                            productMaterialRepository.RecentlyReducedProductMaterialAvaliable = 0;
+                            productMaterialRepository.ProductMaterialAavliable += deference;
+
+                        }
+                        db.Entry(productMaterialRepository).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
 
-                    return RedirectToAction("SalesDeliveryList", "", new { id = salesDeliveryInformation.SalesInformationID });
+                    return RedirectToAction("SalesDetail", "Sales", new { id = salesDeliveryInformation.SalesInformationID });
 
                 }
                 catch (Exception e)
@@ -307,6 +333,18 @@ namespace ComfySocks.Controllers
 
 
         }
+
+        //to check avaliable on stock 
+        float AvalableQuantity(int item)
+        {
+            ProductMaterialRepository avalable = db.ProductMaterialRepositories.Find(item);
+            if (avalable != null)
+            {
+                return avalable.ProductMaterialAavliable;
+            }
+            return -2;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

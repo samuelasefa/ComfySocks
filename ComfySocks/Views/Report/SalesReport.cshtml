@@ -7,7 +7,19 @@
 
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 @*<link href="~/Scripts/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />*@
+
 <div class="box box-info box-body">
+    @*<div class="row">
+        <form action="~/Report/SalseReport" method="post" class="col-sm-8 col-sm-offset-2 panel">
+            <div class="col-md-4">
+                <input type="date" placeholder="From Date" id="fromdate" name="fromdate" class="form-control" />
+            </div>
+            <div class="col-md-4">
+                <input type="date" placeholder="To Date" id="to" name="to" class="form-control" />
+            </div>
+            <input type="submit" class="btn btn-info glyphicon glyphicon-search " value="Search" />
+        </form>
+    </div>*@
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead>
             <tr>
@@ -42,7 +54,7 @@
                         @Html.DisplayFor(modelItem => item.ID)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Name)
+                        @Html.DisplayFor(modelItem => item.Name) &nbsp; @Html.DisplayFor(modelItem => item.ItemType.Name)
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Code)
@@ -65,11 +77,11 @@
             }
         </tbody>
         @*<tfoot>
-            <tr>
-                <th colspan="6" class="text-right">Total:</th>
-                <th colspan="2"></th>
-            </tr>
-        </tfoot>*@
+                <tr>
+                    <th colspan="6" class="text-right">Total:</th>
+                    <th colspan="2"></th>
+                </tr>
+            </tfoot>*@
     </table>
 
 

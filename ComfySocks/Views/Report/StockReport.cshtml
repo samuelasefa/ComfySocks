@@ -4,13 +4,28 @@
 
     ViewBag.Title = "Purchase Report";
 }
+@{ 
+    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+}
 @*<link href="~/Scripts/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />*@
 <div class="box box-info box-body">
+    @*<table border="0">
+        <tbody class="row" style="text-align:center">
+            <tr class="col-md-6">
+                <td>From Date:</td>
+                <td><input type="text" id="fromDate" name="fromdate" class="form-control datepicker"></td>
+            </tr>
+            <tr class="col-md-6">
+                <td>To Date:</td>
+                <td><input type="text" id="toDate" name="todate" class="form-control datepicker"></td>
+            </tr>
+        </tbody>
+    </table>*@
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead>
             <tr>
                 <th>
-                    ID #
+                    No.
                 </th>
                 <th>
                     Description
@@ -29,12 +44,13 @@
                 </th>
             </tr>
         </thead>
-        @{ 
+        @{
             int i = 1;
         }
         @foreach (var item in Model)
         {
             <tr>
+                 
                 <td>
                     @Html.Raw(i++)
                 </td>
@@ -54,14 +70,13 @@
                 <td>
                     @try
                     {
-                        ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                        var items = db.Stocks.FirstOrDefault();
+                        var items = db.AvaliableOnStocks.FirstOrDefault();
 
-                        @Html.DisplayFor(modelItem => items.Quantity);
+                        @items.Avaliable
                     }
                     catch
                     {
-                        <h5>0 @item.Unit.Name</h5>
+                        <h5>0</h5>
                     }
                 </td>
             </tr>
@@ -104,4 +119,35 @@
             }
         ]
     });
+        //datepicker
+        $(function () {
+            $(".datepicker").datepicker({
+                format: 'MM-dd-yyyy'
+            });
+    });
+    ////Customer filltering
+    ///* Custom filtering function which will search data in column four between two values */
+    //$.fn.dataTable.ext.search.push(
+    //    function (settings, data) {
+    //        var fromDate = parseInt($('#fromDate').val(), 10);
+    //        var toDate = parseInt($('#toDate').val(), 10);
+    //        var date = parseFloat(data[0]) || 0; // use data for the age column
+
+    //        if ((isNaN(fromDate) && isNaN(toDate)) ||
+    //            (isNaN(fromDate) && date <= toDate) ||
+    //            (fromDate <= date && isNaN(toDate)) ||
+    //            (fromDate <= date && date <= toDate)) {
+    //            return true;
+    //        }
+    //        return false;
+    //    }
+    //);
+    //$(document).ready(function () {
+    //    var table = $('#dtaTable').DataTable();
+
+    //    // Event listener to the two range filtering inputs to redraw on input
+    //    $('#fromDate, #toDate').keyup(function () {
+    //        dtaTable.draw();
+    //    });
+    //});
 </script>

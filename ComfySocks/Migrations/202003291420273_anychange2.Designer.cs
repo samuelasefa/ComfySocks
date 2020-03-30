@@ -7,13 +7,13 @@ namespace ComfySocks.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.2.0-61023")]
-    public sealed partial class IntialModel : IMigrationMetadata
+    public sealed partial class anychange2 : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(IntialModel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(anychange2));
         
         string IMigrationMetadata.Id
         {
-            get { return "202003201626390_IntialModel"; }
+            get { return "202003291420273_anychange2"; }
         }
         
         string IMigrationMetadata.Source

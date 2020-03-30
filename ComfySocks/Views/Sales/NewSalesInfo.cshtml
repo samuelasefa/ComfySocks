@@ -1,65 +1,106 @@
 ﻿@model ComfySocks.Models.SalesInfo.SalesInformation
 @{
-    ViewBag.Title = "Sales Information";
+    ViewBag.Title = null;
 }
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal panel col-sm-offset-3 col-sm-6">
-        <h4>Sales Information</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+<div class="form-horizontal panel col-sm-12 row">
+    <h4>Sales Information</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    <div class="col-sm-6">
         <div class="form-group">
-            @Html.LabelFor(model => model.CustomerID, "Customer", htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.LabelFor(model => model.SupplierID, "From", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.DropDownList("SupplierID", null, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.SupplierID, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SupplierTin, htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.SupplierTin, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:0045774711" } })
+                @Html.ValidationMessageFor(model => model.SupplierTin, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.SupplierVatRegistrationNo, "Supp VAT Reg No.", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.SupplierVatRegistrationNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:9779450010" } })
+                @Html.ValidationMessageFor(model => model.SupplierVatRegistrationNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateOfVatRegistration, "Date of VAT Reg.", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.DateOfVatRegistration, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off", @placeholder = "Eg:3/9/2020" } })
+                @Html.ValidationMessageFor(model => model.DateOfVatRegistration, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <br />
+        <hr />
+
+    </div>
+    <div class="col-sm-6">
+        <div class="form-group">
+            @Html.LabelFor(model => model.CustomerID, "To", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
                 @Html.DropDownList("CustomerID", null, "--Please Select--", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CustomerID, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.InvoiceNumber, htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.LabelFor(model => model.CustomerVatRegistrationNo, "Cust VAT Reg No. ", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.EditorFor(model => model.InvoiceNumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:123456789" } })
-                @Html.ValidationMessageFor(model => model.InvoiceNumber, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.CustomerVatRegistrationNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:0021991216" } })
+                @Html.ValidationMessageFor(model => model.CustomerVatRegistrationNo, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Checkedby, htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.LabelFor(model => model.CDateOfVatRegistration, "Date of VAT Reg", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.EditorFor(model => model.Checkedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
-                @Html.ValidationMessageFor(model => model.Checkedby, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Reciviedby, htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.EditorFor(model => model.Reciviedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
-                @Html.ValidationMessageFor(model => model.Reciviedby, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Approvedby, htmlAttributes: new { @class = "control-label col-md-4" })
-            <div class="col-md-8">
-                @Html.EditorFor(model => model.Approvedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
-                @Html.ValidationMessageFor(model => model.Approvedby, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.CDateOfVatRegistration, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off", @placeholder = "Eg:3/9/2020" } })
+                @Html.ValidationMessageFor(model => model.CDateOfVatRegistration, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+            @Html.LabelFor(model => model.DateOfService, "Date of VAT Reg", htmlAttributes: new { @class = "control-label col-md-4" })
+            <div class="col-md-8">
+                @Html.EditorFor(model => model.DateOfService, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off", @placeholder = "Eg:3/9/2020" } })
+                @Html.ValidationMessageFor(model => model.DateOfService, "", new { @class = "text-danger" })
             </div>
         </div>
 
-        <div>
-            @Html.ActionLink("Back to List", "SalesList")
-        </div>
+        <br />
         <hr />
     </div>
+    <div class="row">
+        <div class="col-md-10">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AmountInWord, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @Html.EditorFor(model => model.AmountInWord, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:One Hunderd Birr Only" } })
+                    @Html.ValidationMessageFor(model => model.AmountInWord, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group" style="float:left">
+                <div class="col-md-offset-2 col-md-10">
+                    <input type="submit" value="Create" class="btn btn-default" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        @Html.ActionLink("Back to List", "SalesList")
+    </div>
+    <hr />
+</div>
 }
 
 

@@ -22,6 +22,9 @@ namespace ComfySocks.Models.InventoryModel
         [Display(Name = "Store No.")]
         public string StoreNumber { get; set; }
 
+        [Display(Name = "Purchase Request No.")]
+        public string PurchaseRequestNo { get; set; }
+
         [Required]
         [Display(Name = "Supplier's Name")]
         public int SupplierID { get; set; }
@@ -29,8 +32,8 @@ namespace ComfySocks.Models.InventoryModel
         [Display(Name = "Requsted By")]
         public string ApplicationUserID { get; set; }
 
-        [Display(Name ="Recivied By")]
-        public string Reciviedby { get; set; }
+        [Display(Name ="Delivered By")]
+        public string Deliveredby { get; set; }
 
         public string Approvedby { get; set; }
 

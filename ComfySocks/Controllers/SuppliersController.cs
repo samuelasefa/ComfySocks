@@ -12,12 +12,12 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class SuppliersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Suppliers
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult Index()
         {
@@ -25,7 +25,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Suppliers/Details/5
-        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult Details(int? id)
         {
@@ -44,7 +43,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Suppliers/Create
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Create()
         {
@@ -56,7 +55,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
         public ActionResult Create([Bind(Include = "ID,Name,No")] Supplier supplier)
         {

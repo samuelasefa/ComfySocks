@@ -41,7 +41,13 @@
         </div>
         <div class="row">
             <div class="col-md-8">
-                <h3 style="text-align:center;text-decoration:underline">Credit Sales Attachment</h3>
+                <h4 style="text-align:center">የተጨማረ እሴት ታክስ ደረሰኝ</h4>
+                <h4 style="text-align:center">Value Addes Tax Invoice</h4>
+                <h4 style="text-align:center; text-decoration:underline">የዱቤ ሽያጭ(Credit Sales)</h4>
+            </div>
+            <div class="col-md-4" style="float:right">
+                Date:@Html.DisplayFor(modelItem => Model.Date)<br />
+                @Html.DisplayFor(modelItem => Model.FsNo)
             </div>
         </div>
 
@@ -50,48 +56,82 @@
                 <tr>
                     <td>
                         <strong>
-                            Shope/Store
+                            From:
                         </strong>
+                        @Html.DisplayFor(modelItem => Model.Supplier.Name)
                     </td>
+                    &nbsp;
                     <td>
                         <strong>
-                            SalesAgent/ Reprsentative
+                            To:
                         </strong>
-                    </td>
-                    <td>
-                        <strong>
-                            Sales Person
-                        </strong>
+                        @Html.DisplayFor(modelItem => Model.Customer.FirstName) &nbsp; @Html.DisplayFor(modelItem => Model.Customer.LastName)
                     </td>
                 </tr>
             </thead>
             <tr>
-                <td>Date:@Html.DisplayFor(modelItem => Model.Date)</td>
-                <td>@Html.DisplayFor(modelItem => Model.FsNo)</td>
-                <td>Invoice Number:@Html.DisplayFor(modelItem => Model.InvoiceNumber)</td>
+                <td>
+                    <strong>Address:</strong>
+                    Town:_________S/C:__________W.______H.No_______
+                </td>
+                <td>
+                    <strong>Address:</strong>
+                    Town:@Html.DisplayFor(modelItem => Model.Customer.City)
+                    S/C:__________W.______H.No_______
+                </td>
             </tr>
             <tr>
                 <td>
                     <strong>
-                        Customer Information
+                        Supplier's TIN:
                     </strong>
+                    @Html.DisplayFor(modelItem => Model.SupplierTin)
+                </td>
+                <td>
+                    <strong>
+                        Customer's TIN:
+                    </strong>
+                    @Html.DisplayFor(modelItem => Model.Customer.TinNumber)
                 </td>
             </tr>
             <tr>
-                <td>Customer Name:@Html.DisplayFor(modelItem => Model.Customer.FirstName) @Html.DisplayFor(modelItem => Model.Customer.LastName)</td>
-                <td>TIN:@Html.DisplayFor(modelItem => Model.Customer.TinNumber)</td>
+                <td>
+                    <strong>
+                        Supplier's VAT Reg No:
+                    </strong>
+                    @Html.DisplayFor(modelItem => Model.SupplierVatRegistrationNo)
+                </td>
+                <td>
+                    <strong>
+                        Customer's VAT Reg No:
+                    </strong>
+                    @Html.DisplayFor(modelItem => Model.CustomerVatRegistrationNo)
+                </td>
             </tr>
             <tr>
-                <td><strong>Address</strong></td>
-                <td>City:@Html.DisplayFor(modelItem => Model.Customer.City)</td>
+                <td>
+                    <strong>
+                        Date of VAT Registration:
+                    </strong>
+                    @Html.DisplayFor(modelItem => Model.DateOfVatRegistration)
+                </td>
+                <td>
+                    <strong>
+                        Date of VAT Registration:
+                    </strong>
+                    @Html.DisplayFor(modelItem => Model.CDateOfVatRegistration)
+                    <br />
+                    <strong>Date Of Service:</strong>
+                    @Html.DisplayFor(modelItem => Model.DateOfService)
+                </td>
             </tr>
 
         </table>
         <table class="table well table-bordered">
             <thead>
                 <tr>
-                    <td>Item Description</td>
-                    <td>Item Code</td>
+                    <td>S.No</td>
+                    <td>Description</td>
                     <td>Unit</td>
                     <td>Quantity</td>
                     <td>Unit Price</td>
@@ -99,17 +139,18 @@
                 </tr>
             </thead>
             @{
-                
+                int i = 1;
                 float totalPrice = 0;
-                float Tax = 0;
-                float GrandTotal = 0;
+                double VAT = 0;
+                float ExciseTax = 0;
+                float Total = 0;
+                float TotalSellingPrice = 0;
             }
             @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
             {
             <tr>
-                <td>
-                    @sales.Item.Name
-                </td>
+                <td>@Html.Raw(i++)</td>
+
                 <td>@sales.Item.Code</td>
                 <td>@sales.Item.Unit.Name</td>
                 <td>
@@ -124,41 +165,56 @@
                 <td class="hidden">
                     @(totalPrice += (float)(sales.UnitPrice * sales.Quantity))
                 </td>
-                <td hidden>@(Tax = sales.SalesInformation.Tax)</td>
-                <td hidden>@(GrandTotal = sales.SalesInformation.GrandTotal)</td>
+                <td hidden>@(ExciseTax = sales.SalesInformation.ExciseTax)</td>
+                <td hidden>@(Total = sales.SalesInformation.Total)</td>
+                <td hidden>@(VAT = sales.SalesInformation.VAT)</td>
+                <td hidden>@(TotalSellingPrice = sales.SalesInformation.TotalSellingPrice)</td>
 
             </tr>
             }
             <tr>
                 <td colspan="4"></td>
+                <td>Excise Tax(8%):</td>
+                <td>@ExciseTax</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>Excise Tax:</td>
+                <td>----</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>Excise Tax:</td>
+                <td>----</td>
+            </tr>
+            <tr>
+                <td colspan="4"></td>
                 <td>Total:</td>
-                <td>@totalPrice</td>
+                <td>@Total</td>
+            </tr>
+            <tr>
+            <tr>
+                <td colspan="4"></td>
+                <td>VAT(15%):</td>
+                <td>@VAT</td>
             </tr>
             <tr>
                 <td colspan="4"></td>
-                <td>TAX(15%):</td>
-                <td>@Tax</td>
-            </tr>
-            <tr>
-                <td colspan="4"></td>
-                <td>GrandTotal:</td>
-                <td>@GrandTotal</td>
+                <td>Total Selling Price Including VAT :</td>
+                <td>@TotalSellingPrice</td>
             </tr>
 
         </table>
         <div id="footer">
+            <div>
+                Amount In Words: @Html.DisplayFor(modelItem => Model.AmountInWord)
+            </div>
             <div class="row" style="margin-top:10%">
-                <div class="col-md-3" style="float:left">
+                <div class="col-md-8" style="float:left">
                     Prepared by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
                 </div>
-                <div class="col-md-3" style="float:left">
-                    Approved by :@Html.DisplayFor(modelItem => Model.Approvedby)
-                </div>
-                <div class="col-md-3" style="float:left">
-                    Checked by :@Html.DisplayFor(modelItem => Model.Checkedby)
-                </div>
-                <div class="col-md-3" style="float:left">
-                    Received by :@Html.DisplayFor(modelItem => Model.Reciviedby)
+                <div class="col-md-4">
+                    Cashier's Signature :___________________
                 </div>
             </div>
             <br />
@@ -173,7 +229,7 @@
 
     function Print() {
         var height = document.getElementById("printable").clientHeight;
-        var pages = 1000 - (height % 950);
+        var pages = 1590 - (height % 500);
         document.getElementById("footer").style.marginTop = pages + "px";
         //document.getElementById("logo-img").style.width = 100 + "vw";
         print2()

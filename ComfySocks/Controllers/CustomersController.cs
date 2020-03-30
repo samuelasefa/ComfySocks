@@ -42,6 +42,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Customers/Create
+        [Authorize(Roles ="Super Admin, Admin")]
         public ActionResult Create()
         {
             return View();
@@ -52,6 +53,8 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Create([Bind(Include = "ID,TinNumber,FirstName,LastName,City,SubCity")] Customer customer)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -72,6 +75,8 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Customers/Edit/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Edit(int? id)
         {
             if (id == null)
@@ -93,6 +98,8 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Edit([Bind(Include = "ID,TinNumber,FirstName,LastName,City,SubCity")] Customer customer)
         {
             if (ModelState.IsValid)
@@ -109,6 +116,8 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Customers/Delete/5
+        [Authorize(Roles = "Super Admin, Admin")]
+
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -128,6 +137,7 @@ namespace ComfySocks.Controllers
         // POST: Customers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Super Admin, Admin")]
 
         public ActionResult DeleteConfirmed(int id)
         {

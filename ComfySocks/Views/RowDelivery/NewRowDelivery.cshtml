@@ -38,10 +38,10 @@
                                         Unit
                                     </th>
                                     <th>
-                                        Qty
+                                        Req-Qty
                                     </th>
                                     <th>
-                                        Avaliable
+                                        Rem-Qty
                                     </th>
                                 </tr>
                             </thead>
@@ -55,8 +55,9 @@
                                         <td>@s.Item.Unit.Name</td>
                                         <td>@s.Quantity</td>
                                         <td>
-                                            @{var avaliable = db.AvaliableOnStocks.Find(s.ItemID);}
-                                        @avaliable.Avaliable
+                                            @s.RemaningDelivery
+                                            @*@{var avaliable = db.AvaliableOnStocks.Find(s.ItemID);}
+                                        @avaliable.Avaliable*@
                                     </td>
                                 </tr>
                             }
@@ -64,7 +65,7 @@
                             </tbody>
                             <tfoot>
                                 <tr style="background-color:#00CCD2; color:#ecf0f1">
-                          
+
                                     <th>
                                         Code
                                     </th>
@@ -75,10 +76,10 @@
                                         Unit
                                     </th>
                                     <th>
-                                        Qty
+                                        Req-Qty
                                     </th>
                                     <th>
-                                        Stock
+                                        Rem-Qty
                                     </th>
                                 </tr>
                             </tfoot>
@@ -149,6 +150,7 @@
                                     <th>Description</th>
                                     <th>Unit</th>
                                     <th>Quantity</th>
+                                    <th style="color:red">Remaining</th>
                                     <th>Remark</th>
                                     <th><i class="glyphicon glyphicon-trash"></i></th>
                                 </tr>
@@ -160,6 +162,7 @@
                                     <td>@items.ItemDescription &nbsp; @items.ItemType</td>
                                     <td>@items.Unit</td>
                                     <td>@items.RowDelivery.DeliveryQuantity</td>
+                                    <td>@items.Remaining</td>
                                     <td>@items.RowDelivery.Remark</td>
                                     <td><a href="~/RowDelivery/Remove?id=@items.RowDelivery.StoreRequestID"><span class="fa fa-remove"></span></a></td>
                                 </tr>

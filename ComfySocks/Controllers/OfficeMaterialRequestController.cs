@@ -13,6 +13,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class OfficeMaterialRequestController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -42,7 +43,7 @@ namespace ComfySocks.Controllers
                 }
                 
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
             
             return View();
         }
@@ -126,7 +127,7 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
             
 
             return View();
@@ -153,7 +154,7 @@ namespace ComfySocks.Controllers
                 ViewBag.haveItem = true;
                
             }
-            ViewBag.StockID = (from S in db.Stocks where S.Item.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
+            ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
             return View("NewOfficeMaterialRequest");
         }
 

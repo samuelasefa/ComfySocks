@@ -12,6 +12,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class PurchaseRequestController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

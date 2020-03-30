@@ -12,6 +12,7 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class ItemTypesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

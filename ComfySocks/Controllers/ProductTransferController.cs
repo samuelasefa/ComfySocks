@@ -24,7 +24,7 @@ namespace ComfySocks.Controllers
             //errormessage display
             if (TempData[User.Identity.GetUserId()+"errorMessage"]!= null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            var transfers = (from transfer in db.TransferInformation where transfer.Status == "Transfering" || transfer.Status == "Transferd" || transfer.Status =="Rejected" orderby transfer.ID descending select transfer).ToList();
+            var transfers = (from transfer in db.TransferInformation where transfer.Status == "Transfering" || transfer.Status == "Transferd" || transfer.Status =="Rejected" orderby transfer.FPTNo ascending select transfer).ToList();
 
             return View(transfers);
         }
@@ -177,7 +177,7 @@ namespace ComfySocks.Controllers
             transferInformation.ApplicationUserID = User.Identity.GetUserId();
             try
             {
-                int LastId = (from s in db.TransferInformation orderby s.ID orderby s.ID descending select s.ID).First();
+                int LastId = (from s in db.TransferInformation orderby s.ID ascending select s.ID).First();
                 transferInformation.FPTNo = "No:-" + (LastId + 1).ToString("D4");
             }
             catch

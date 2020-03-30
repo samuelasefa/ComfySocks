@@ -12,12 +12,12 @@ using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
+    [Authorize]
     public class UnitsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Units
-        [Authorize(Roles="Super Admin, Admin Store Manager")]
         public ActionResult UnitList()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -34,7 +34,6 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Units/Details/5
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
         public ActionResult Details(int? id)
         {
             if (id == null)
@@ -52,7 +51,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Units/Create
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create()
         {
             //error Message display
@@ -67,7 +66,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create([Bind(Include = "ID,Name,ProductUnit,ApplicationUserID")] Unit unit)
         {
             //error Message display
@@ -92,7 +91,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Units/Edit/5
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Edit(int? id)
         {
             //error Message display
@@ -124,7 +123,7 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Edit([Bind(Include = "ID,Name,ProductUnit,ApplicationUserID")] Unit unit)
         {
             //error Message display
@@ -147,7 +146,7 @@ namespace ComfySocks.Controllers
         }
 
         // GET: Units/Delete/5
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Delete(int? id)
         {
             if (id == null)
@@ -173,7 +172,7 @@ namespace ComfySocks.Controllers
         // POST: Units/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin, Store Manger")]
+        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult DeleteConfirmed(int id)
         {
             Unit unit = db.Units.Find(id);

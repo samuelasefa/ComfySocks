@@ -25,7 +25,7 @@ namespace ComfySocks.Models.RowDeliveryInfo
 
         public string IssuedBy { get; set; }
         public string ApprovedBy { get; set; }
-        public string RecivedBy { get; set; }
+        public string RecividBy { get; set; }
 
         public string ApplicationUserID { get; set; }
         //reference

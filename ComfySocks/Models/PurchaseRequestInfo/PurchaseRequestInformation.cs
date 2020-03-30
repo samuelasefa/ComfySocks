@@ -31,7 +31,10 @@ namespace ComfySocks.Models.PurchaseRequestInfo
             [Display(Name = "To")]
             public string To { get; set; }
 
-            public string ApplicationUserID { get; set; }
+            [Display(Name = "SR-No.")]
+            public string StoreRequestNumber { get; set; }
+
+        public string ApplicationUserID { get; set; }
 
             [Display(Name = "From:Project")]
             public int StoreID { get; set; }

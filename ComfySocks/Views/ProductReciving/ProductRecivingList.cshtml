@@ -1,9 +1,21 @@
-﻿@model IEnumerable<ComfySocks.Models.ProductTransferInfo.TransferInformation>
+﻿@model IEnumerable<ComfySocks.Models.ProductInfo.ProductInformation>
 @{
-    ViewBag.Title = "Product List";
+    ViewBag.Title = "Finished Good Reciving List";
 }
 
 <div class="box box-info box-body">
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+    {
+        <p>
+            @Html.ActionLink("Create New", "NewRecivingEntry", new { @id = ViewBag.ID })
+        </p>
+    }
+    else
+    {
+        <p class="hidden">
+            @Html.ActionLink("Create New", "NewRecivingEntry", new { @id = ViewBag.ID })
+        </p>
+    }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style=" background-color:#00CCD2; color:white" ;>
             <tr>
@@ -33,7 +45,7 @@
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
                 <td>
-                    @Html.ActionLink("View", "ProductDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
+                    @Html.ActionLink("View", "ProductRecivingDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
 
                 </td>
             </tr>

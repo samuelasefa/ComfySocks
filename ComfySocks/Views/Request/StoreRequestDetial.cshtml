@@ -11,7 +11,7 @@
 
     </div>
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
             if (Model.Status == "Submmited")
             {
@@ -26,6 +26,17 @@
             }
 
         }
+        else
+        {
+            <div class="row hidden">
+                <div class="col-md-6">
+                    <a href="~/Request/RequestApproved?id=@Model.ID">Accept <span class="glyphicon glyphicon-check"></span></a>
+                </div>
+                <div class="col-md-6" style="float:right">
+                    <a href="~/Request/RequestRejected?id=@Model.ID">Reject <span class="glyphicon glyphicon-remove-circle"></span></a>
+                </div>
+            </div>
+}
     </div>
 </div>
 <div class="box box-info" id="printable">
@@ -46,7 +57,7 @@
         <table class="table">
             <tr>
                 <td>
-                    From:@Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
+                    From:@Html.DisplayFor(modelItem => Model.From)
                 </td>
             </tr>
             <tr>

@@ -19,9 +19,6 @@ namespace ComfySocks.Models.PurchaseRequestInfo
 
         public string ItemCode { get; set; }
 
-        [Display(Name = "SR-No.")]
-        public string StoreRequestNumber { get; set; }
-
         public float Quantity { get; set; }
         public string Remark { get; set; }
         

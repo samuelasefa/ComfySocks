@@ -36,7 +36,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
                 {
 
                     <th>Action</th>
@@ -64,15 +64,19 @@
                     <td>
                         @Html.DisplayFor(modelItem => item.Unit.Name)
                     </td>
-                    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
                     {
                         <td>
                             @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
                             @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        </td>
+                    }
+                    else if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                    {
+                        <td>
                             @Html.ActionLink("Delete", "Delete", new { id = item.ID })
                         </td>
                     }
-
                 </tr>
             }
         </tbody>
@@ -94,7 +98,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
                 {
                     <th>Action</th>
                 }

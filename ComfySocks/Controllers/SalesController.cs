@@ -13,7 +13,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize(Roles ="Super Admin, Admin")]
+    [Authorize]
     public class SalesController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -27,6 +27,8 @@ namespace ComfySocks.Controllers
 
             return View(salesinfo);
         }
+
+        [Authorize(Roles = "Super Admin, Admin, Finance")]
         public ActionResult NewSalesEntry()
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -38,14 +40,15 @@ namespace ComfySocks.Controllers
                 {
                     ViewBag.custumer = "Register Customer frist";
                 }
-
             }
-            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
+            ViewBag.ProductID = (from S in db.Items where S.StoreType == StoreType.ProductItem orderby S.ID descending select S).ToList();
 
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Super Admin, Admin, Finance")]
+
         public ActionResult NewSalesEntry(Sales sales)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -121,10 +124,13 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
+            ViewBag.ProductID = (from S in db.Items where S.StoreType == StoreType.ProductItem orderby S.ID descending select S).ToList();
+           
 
             return View();
         }
+
+        [Authorize(Roles = "Super Admin, Admin, Finance")]
 
         public ActionResult Remove(int id)
         {
@@ -148,9 +154,11 @@ namespace ComfySocks.Controllers
                 ViewBag.haveItem = true;
             ViewBag.selectedSales = selectedSales;
             TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
-            ViewBag.ProductID = (from S in db.Transfers where S.TransferInformation.Status == "Recivied" orderby S.ID descending select S).ToList();
+            ViewBag.ProductID = (from S in db.Items where S.StoreType == StoreType.ProductItem orderby S.ID descending select S).ToList();
             return View("NewSalesEntry");
         }
+
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult NewSalesInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -167,17 +175,21 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Sales request";
                 return RedirectToAction("NewSalesEntry");
             }
-            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
+            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName","LastName");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
             return View();
         }
 
         [HttpPost]
+        [Authorize(Roles = "Super Admin, Admin, Finance")]
+
         public ActionResult NewSalesInfo(SalesInformation salesInformation)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
             ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
 
             List<SalesVM> selectedSales = new List<SalesVM>();
 
@@ -194,11 +206,11 @@ namespace ComfySocks.Controllers
             try
             {
                 int LastId = (from sr in db.SalesInformation orderby sr.ID descending select sr.ID).First();
-                salesInformation.FsNo = "No:-" + (LastId + 1).ToString("D10");
+                salesInformation.FsNo = "No:-" + (LastId + 1).ToString("D4");
             }
             catch
             {
-                salesInformation.FsNo = "No:-" + 1.ToString("D10");
+                salesInformation.FsNo = "No:-" + 1.ToString("D4");
             }
             float totalPrice = 0;
             salesInformation.Date = DateTime.Now;
@@ -229,10 +241,12 @@ namespace ComfySocks.Controllers
                             db.SaveChanges();
                             totalPrice += (float)s.Sales.Quantity * (float)s.Sales.UnitPrice;
                             double Tax = 1.15;
+                            double ETax = 0.08;
                             SalesInformation si = db.SalesInformation.Find(salesInformation.ID);
-                            si.SubTotal = totalPrice;
-                            si.GrandTotal = totalPrice * (float)Tax;
-                            si.Tax = si.GrandTotal - si.SubTotal;
+                            si.ExciseTax = totalPrice * (float)ETax;
+                            si.Total = totalPrice + si.ExciseTax;
+                            si.TotalSellingPrice = si.Total * (float)Tax;
+                            si.VAT = si.TotalSellingPrice - si.Total;
                             db.Entry(si).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -266,6 +280,7 @@ namespace ComfySocks.Controllers
 
 
         //Request is approved 
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult SaleApproved(int? id)
         {
             if (id == null)
@@ -283,11 +298,6 @@ namespace ComfySocks.Controllers
             bool pass = true;
             foreach (Sales sales in salesInformation.Sales)
             {
-                //StoreRequest request = (from sr in db.StoreRequest where sr.ItemID == storeRequest.ItemID select sr).First();
-                //request.Quantity += storeRequest.Quantity;
-                //db.Entry(request).State = EntityState.Modified;
-                //db.SaveChanges();
-                //Stock stock = (from s in db.Stocks where s.ItemID == sales.ItemID select s).First();
                 ProductlogicalAvaliable productlogicalAvaliable = db.ProductlogicalAvaliables.Find(sales.ItemID);
                 if (sales == null)
                 {
@@ -351,6 +361,7 @@ namespace ComfySocks.Controllers
             return View("SalesDetail", salesInformation);
         }
 
+        [Authorize(Roles = "Super Admin, Admin")]
         public ActionResult SalesRejected(int? id)
         {
             if (id == null)

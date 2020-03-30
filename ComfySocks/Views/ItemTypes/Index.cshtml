@@ -27,7 +27,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin")|| User.IsInRole("Store Manager"))
                 {
                     <th>Action</th>
                 }
@@ -41,7 +41,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager")|| User.IsInRole("Admin"))
                 {
                     <th>Action</th>
                 }
@@ -50,22 +50,28 @@
 
         @foreach (var item in Model)
         {
-            <tr>
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.ID)
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
                 </td>
+            }
+            else if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+            {
                 <td>
-                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
                 </td>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                {
-                    <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-                    </td>
-                }
-            </tr>
+            }
+        </tr>
         }
 
     </table>
