@@ -28,7 +28,7 @@ namespace ComfySocks.Controllers
             ViewBag.ID = id;
 
             TempData[User.Identity.GetUserId() + "OfficeRequestID"] = id;
-            var OfficeMaterialDelivery = (from d in db.OfficeDeliveryInformation where d.OfficeMaterialRequestInformationID == id orderby d.ID descending select d).ToList();
+            var OfficeMaterialDelivery = (from d in db.OfficeDeliveryInformation where d.OfficeMaterialRequestInformationID == id orderby d.Date descending select d).ToList();
 
             return View(OfficeMaterialDelivery);
         }
@@ -51,7 +51,19 @@ namespace ComfySocks.Controllers
             ViewBag.OfficeMaterialRequestID = (from d in db.OfficeMaterialRequest where d.OfficeMaterialRequestInformationID == id select d).ToList();
             ViewBag.id = id;
             TempData[User.Identity.GetUserId() + "OfficeRequestInfoID"] = id;
+            if (id != null)
+            {
+                List<OfficeDeliveryVM> selectedDelivery = new List<OfficeDeliveryVM>();
+                selectedDelivery = (List<OfficeDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
+                TempData[User.Identity.GetUserId() + "selectedDelivery"] = selectedDelivery;
+                ViewBag.selectedDelivery = selectedDelivery;
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
+            }
             return View();
+
+            
         }
 
         [Authorize(Roles = "Super Admin, Admin,Store Manager")]
@@ -82,7 +94,7 @@ namespace ComfySocks.Controllers
                     TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to lode Request information! Try again";
                     TempData[User.Identity.GetUserId() + "errorMessage"] = "RowMaterial ID is = " + officeDelivery.OfficeMaterialRequestID;
                     TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
-                    return RedirectToAction("OfficeMaterialDeliveryList", new { id = id });
+                    return RedirectToAction("OfficeMaterialDeliveryList");
                 }
 
                 foreach (OfficeDeliveryVM d in selectedDelivery)
@@ -97,7 +109,7 @@ namespace ComfySocks.Controllers
                         else
                         {
                             d.OfficeDelivery.Quantity += officeDelivery.Quantity;
-                            d.Remaining -= (float)officeDelivery.Quantity;
+                            d.Remaining -= officeDelivery.Quantity;
                         }
                         found = true;
                     }
@@ -117,7 +129,7 @@ namespace ComfySocks.Controllers
                         deliveryVM.ItemDescription = I.Name;
                         deliveryVM.Unit = omr.Item.Unit.Name;
                         deliveryVM.OfficeDelivery = officeDelivery;
-                        deliveryVM.Remaining = omr.RemaningDelivery - (float)officeDelivery.Quantity;
+                        deliveryVM.Remaining = omr.RemaningDelivery - officeDelivery.Quantity;
                         selectedDelivery.Add(deliveryVM);
                     }
                 }
@@ -216,7 +228,7 @@ namespace ComfySocks.Controllers
             catch
             {
                 officeDeliveryInformation.OfficeMaterialRequestInformationID = RequestId;
-                officeDeliveryInformation.OfficeDeliveryNumber = "No-" + 1.ToString("D5");
+                officeDeliveryInformation.OfficeDeliveryNumber = "No-" + 0.ToString("D5");
             }
             if (ModelState.IsValid)
             {
@@ -242,11 +254,11 @@ namespace ComfySocks.Controllers
                         db.SaveChanges();
                         RowMaterialRepositery rowMaterialRepositery = db.RowMaterialRepositeries.Find(officeDelivery.OfficeMaterialRequest.ItemID);
                         Item i = db.Items.Find(rowMaterialRepositery.ID);
-                        float deference = rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable - (float)officeDelivery.Quantity;
+                        var deference = rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable - officeDelivery.Quantity;
 
                         if (deference > 0)
                         {
-                            rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable -= (float)officeDelivery.Quantity;
+                            rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable -= officeDelivery.Quantity;
                         }
                         else
                         {
@@ -259,7 +271,7 @@ namespace ComfySocks.Controllers
                     }
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
 
-                    return RedirectToAction("OfficeMaterialRequestDetail", "OfficeMaterialRequest", new { id = officeDeliveryInformation.OfficeMaterialRequestInformationID });
+                    return RedirectToAction("OfficeMaterialDeliveryList", "OfficeMaterialDelivery", new { id = officeDeliveryInformation.ID });
 
                 }
                 catch (Exception e)
@@ -301,7 +313,7 @@ namespace ComfySocks.Controllers
                     pass = false;
                     break;
                 }
-                storeRequest.RemaningDelivery += (float)d.Quantity;
+                storeRequest.RemaningDelivery += d.Quantity;
 
                 db.Entry(storeRequest).State = EntityState.Modified;
                 db.SaveChanges();
@@ -318,7 +330,7 @@ namespace ComfySocks.Controllers
                         pass = false;
                         break;
                     }
-                    storeRequest.RemaningDelivery -= (float)d.Quantity;
+                    storeRequest.RemaningDelivery -= d.Quantity;
                     db.Entry(storeRequest).State = EntityState.Modified;
                     db.SaveChanges();
                     RedusedDelivery.Add(d);

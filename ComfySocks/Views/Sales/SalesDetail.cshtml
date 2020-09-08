@@ -8,7 +8,7 @@
 
 <div class="row">
     <div class="col-md-10">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin")|| User.IsInRole("Finance"))
         {
             <a href="~/Sales/NewSalesEntry">New <span class="glyphicon glyphicon-plus"></span></a>
         }
@@ -16,7 +16,7 @@
         <a href="~/Sales/SalesList" class="btn btn-add">Back To List <span class="glyphicon glyphicon-circle-arrow-left"></span></a>
     </div>
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
         {
             if (Model.Status == "Submmited")
             {
@@ -34,7 +34,7 @@
     </div>
 </div>
 
-<div class="box box-info" id="printable">
+<div class="box box-info" id="printable" style="border-radius:10px">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -58,26 +58,31 @@
                         <strong>
                             From:
                         </strong>
-                        @Html.DisplayFor(modelItem => Model.Supplier.Name)
+                        @Html.DisplayFor(modelItem => Model.Supplier.FullName) 
                     </td>
                     &nbsp;
                     <td>
                         <strong>
                             To:
                         </strong>
-                        @Html.DisplayFor(modelItem => Model.Customer.FirstName) &nbsp; @Html.DisplayFor(modelItem => Model.Customer.LastName)
+                        @Html.DisplayFor(modelItem => Model.Customer.FullName) 
                     </td>
                 </tr>
             </thead>
             <tr>
                 <td>
                     <strong>Address:</strong>
-                    Town:_________S/C:__________W.______H.No_______
+                    Town:@Html.DisplayFor(modelItem => Model.Supplier.City)
+                    S/C:@Html.DisplayFor(modelItem => Model.Supplier.SubCity)
+                    W:@Html.DisplayFor(modelItem => Model.Supplier.Woreda)
+                    H.No:@Html.DisplayFor(modelItem => Model.Supplier.HouseNo)
                 </td>
                 <td>
                     <strong>Address:</strong>
                     Town:@Html.DisplayFor(modelItem => Model.Customer.City)
-                    S/C:__________W.______H.No_______
+                    S/C:@Html.DisplayFor(modelItem => Model.Customer.SubCity)
+                    W:@Html.DisplayFor(modelItem => Model.Customer.woreda)
+                    H.No:@Html.DisplayFor(modelItem => Model.Customer.HouseNo)
                 </td>
             </tr>
             <tr>
@@ -85,7 +90,7 @@
                     <strong>
                         Supplier's TIN:
                     </strong>
-                    @Html.DisplayFor(modelItem => Model.SupplierTin)
+                    @Html.DisplayFor(modelItem => Model.Supplier.TinNumber)
                 </td>
                 <td>
                     <strong>
@@ -99,13 +104,13 @@
                     <strong>
                         Supplier's VAT Reg No:
                     </strong>
-                    @Html.DisplayFor(modelItem => Model.SupplierVatRegistrationNo)
+                    @Html.DisplayFor(modelItem => Model.Supplier.No)
                 </td>
                 <td>
                     <strong>
                         Customer's VAT Reg No:
                     </strong>
-                    @Html.DisplayFor(modelItem => Model.CustomerVatRegistrationNo)
+                    @Html.DisplayFor(modelItem => Model.Customer.No)
                 </td>
             </tr>
             <tr>
@@ -113,16 +118,16 @@
                     <strong>
                         Date of VAT Registration:
                     </strong>
-                    @Html.DisplayFor(modelItem => Model.DateOfVatRegistration)
+                    @Html.DisplayFor(modelItem => Model.Supplier.Date)
                 </td>
                 <td>
                     <strong>
                         Date of VAT Registration:
                     </strong>
-                    @Html.DisplayFor(modelItem => Model.CDateOfVatRegistration)
+                    @Html.DisplayFor(modelItem => Model.Customer.Date)
                     <br />
                     <strong>Date Of Service:</strong>
-                    @Html.DisplayFor(modelItem => Model.DateOfService)
+                    ________________________________
                 </td>
             </tr>
 
@@ -140,11 +145,11 @@
             </thead>
             @{
                 int i = 1;
-                float totalPrice = 0;
-                double VAT = 0;
-                float ExciseTax = 0;
-                float Total = 0;
-                float TotalSellingPrice = 0;
+                decimal totalPrice = 0;
+                decimal VAT = 0;
+                decimal ExciseTax = 0;
+                decimal Total = 0;
+                decimal TotalSellingPrice = 0;
             }
             @foreach (ComfySocks.Models.SalesInfo.Sales sales in Model.Sales)
             {
@@ -160,10 +165,10 @@
                     @sales.UnitPrice
                 </td>
                 <th>
-                    @(sales.Quantity * sales.UnitPrice)
+                    @((decimal)sales.Quantity * sales.UnitPrice)
                 </th>
                 <td class="hidden">
-                    @(totalPrice += (float)(sales.UnitPrice * sales.Quantity))
+                    @(totalPrice += (sales.UnitPrice * (decimal)sales.Quantity))
                 </td>
                 <td hidden>@(ExciseTax = sales.SalesInformation.ExciseTax)</td>
                 <td hidden>@(Total = sales.SalesInformation.Total)</td>
@@ -211,7 +216,7 @@
             </div>
             <div class="row" style="margin-top:10%">
                 <div class="col-md-8" style="float:left">
-                    Prepared by :@Html.DisplayFor(modelItem => Model.ApplicationUser.UserName)
+                    Prepared by :@Html.DisplayFor(modelItem => Model.ApplicationUser.FullName)
                 </div>
                 <div class="col-md-4">
                     Cashier's Signature :___________________

@@ -44,7 +44,7 @@
         }
     </div>
 </div>
-<div class="box box-info" id="printable" style="margin-bottom:20px">
+<div class="box box-info" id="printable" style="margin-bottom:20px; border-radius:10px">
     <div style="margin:40px">
         <div>
              <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -79,7 +79,7 @@
             <tr>
                 <td>
                     <strong>1)Customer Name: </strong>
-                    @Html.DisplayFor(modelItem => Model.Customer.FirstName)
+                    @Html.DisplayFor(modelItem => Model.Customer.FullName)
                 </td>
             </tr>
             <tr>

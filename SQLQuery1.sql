@@ -1,1 +1,0 @@
-﻿Alter Database ComfySocks set Enable_Broker

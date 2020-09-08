@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using ComfySocks.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -29,15 +32,6 @@ namespace ComfySocks.Controllers
 
             return View();
         }
-
-        //public JsonResult GetRequestNotification()
-        //{
-        //    var notificationRegisterTime = Session["LastUpdated"] != null ? Convert.ToDateTime(Session["LastUpdated"]) : DateTime.Now;
-        //    NotificationComponent NC = new NotificationComponent();
-        //    var list = NC.GetStoreRequest(notificationRegisterTime);
-        //    //update session here for get only new added contacts (notification)
-        //    Session["LastUpdate"] = DateTime.Now;
-        //    return new JsonResult { Data = list, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
-        //}
+        
     }
 }

@@ -109,10 +109,9 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unit Is Not Found";
                 return RedirectToAction("UnitList");
             }
-            Item unitItem = (from ut in db.Items where ut.UnitID == id select ut).First();
-            if (unitItem != null)
+            if (unit != null)
             {
-                ViewBag.errorMessage = "You can not Update Unit related Item is found";
+                ViewBag.infoMessage = "If You Change Unit Name All related Item Is Changed";
             }
             //return RedirectToAction("UnitList");
             return View(unit);

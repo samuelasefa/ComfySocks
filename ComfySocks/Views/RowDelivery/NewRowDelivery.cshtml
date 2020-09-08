@@ -1,11 +1,12 @@
 ﻿@model ComfySocks.Models.RowDeliveryInfo.RowDelivery
 @{
-    ViewBag.Title = "New Row Material Delivery Entry";
+    ViewBag.Title = null ;
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">New Row Material Delivery Entry</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -56,11 +57,9 @@
                                         <td>@s.Quantity</td>
                                         <td>
                                             @s.RemaningDelivery
-                                            @*@{var avaliable = db.AvaliableOnStocks.Find(s.ItemID);}
-                                        @avaliable.Avaliable*@
-                                    </td>
-                                </tr>
-                            }
+                                        </td>
+                                    </tr>
+                                }
 
                             </tbody>
                             <tfoot>
@@ -96,12 +95,21 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 hidden">
                                             <div class="form-group">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.StoreRequestID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
                                                     @Html.ValidationMessageFor(model => model.StoreRequestID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -152,7 +160,6 @@
                                     <th>Quantity</th>
                                     <th style="color:red">Remaining</th>
                                     <th>Remark</th>
-                                    <th><i class="glyphicon glyphicon-trash"></i></th>
                                 </tr>
                             </thead>
                             @foreach (ComfySocks.Models.RowDeliveryInfo.RowDeliveryVM items in ViewBag.selectedDelivery)
@@ -164,7 +171,6 @@
                                     <td>@items.RowDelivery.DeliveryQuantity</td>
                                     <td>@items.Remaining</td>
                                     <td>@items.RowDelivery.Remark</td>
-                                    <td><a href="~/RowDelivery/Remove?id=@items.RowDelivery.StoreRequestID"><span class="fa fa-remove"></span></a></td>
                                 </tr>
                             }
                         </table>
@@ -176,7 +182,7 @@
                     @if (ViewBag.haveItem == true)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/RowDelivery/NewRowDeliveryInfo">
+                        <a class="btn btn-info pull-right" href="~/RowDelivery/NewRowDeliveryInfo">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -186,7 +192,8 @@
         </div>
         <script>
             function ItemSelected(id, Code) {
-                document.getElementById("StoreRequestID").value = id, Code;
+                document.getElementById("StoreRequestID").value = id;
+                document.getElementById("ItemCode").value = Code;
             }
 
             //datatabale
@@ -194,14 +201,16 @@
                 "info": false,
                 "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                 "lengthChange": false,
+                "paging": false,
+                "scrollCollapse": true,
+                "scrollY": "150px"
             });
         </script>
     }
-    <br />
+    <hr />
     <div>
         @Html.ActionLink("Back to List", "RowDeliveryList", new { id = ViewBag.ID })
     </div>
-    <hr />
 
 </div>
 

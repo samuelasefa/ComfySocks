@@ -85,7 +85,7 @@ namespace ComfySocks.Controllers
                 if ((from it in db.ItemTypes where it.Name == itemType.Name select it).Count() == 0) {
                     db.ItemTypes.Add(itemType);
                     db.SaveChanges();
-                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New ItemType is Created";
+                    ViewBag.succsessMessage = "New ItemType is Created";
                     return RedirectToAction("Index");
                 }
                 ViewBag.errorMessage = "Duplicate ItemType";
@@ -114,6 +114,10 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
                 return RedirectToAction("Index");
             }
+            if (itemType != null)
+            {
+                ViewBag.infoMessage = "If You Change ItemType Name All related Item Is Changed";
+            }
             return View(itemType);
         }
 
@@ -124,7 +128,7 @@ namespace ComfySocks.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
-        public ActionResult Edit([Bind(Include = "ID,Name,ApplicationUserID")] ItemType itemType)
+        public ActionResult Edit([Bind(Include = "ID,Name")] ItemType itemType)
         {
             //error Message display
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
@@ -137,6 +141,7 @@ namespace ComfySocks.Controllers
                 if ((from it in db.ItemTypes where it.Name == itemType.Name select it).Count() == 0) {
                     db.Entry(itemType).State = EntityState.Modified;
                     db.SaveChanges();
+                    ViewBag.succsessMessage = "ItemType Update is Done.";
                     return RedirectToAction("Index");
                 }
                 ViewBag.errorMessage = "Duplicate itemType";
@@ -147,16 +152,17 @@ namespace ComfySocks.Controllers
         // GET: ItemTypes/Delete/5
         [Authorize(Roles = "Super Admin, Admin, Store Manager")]
 
-        public ActionResult Delete(int? id)
+        public ActionResult Delete(int? id, bool? saveChangesError = false)
         {
-            //error Message display
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
             if (id == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected!!";
                 return RedirectToAction("Index");
+            }
+            if (saveChangesError.GetValueOrDefault()) {
+                ViewBag.errorMessage = "Delete failed. Try agian and if the problem persists see your system adminstrator";
             }
             ItemType itemType = db.ItemTypes.Find(id);
             if (itemType == null)
@@ -177,10 +183,18 @@ namespace ComfySocks.Controllers
             //error Message display
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
-            ItemType itemType = db.ItemTypes.Find(id);
-            db.ItemTypes.Remove(itemType);
-            db.SaveChanges();
+            try
+            {
+                ItemType itemType = db.ItemTypes.Find(id);
+                db.ItemTypes.Remove(itemType);
+                db.SaveChanges();
+                ViewBag.succsessMessage = "Succesfully Deleted!";
+            }
+            catch (DataException)
+            {
+                return RedirectToAction("Delete", new { id = id, saveChangesError = true });
+            }
+            
             return RedirectToAction("Index");
         }
 

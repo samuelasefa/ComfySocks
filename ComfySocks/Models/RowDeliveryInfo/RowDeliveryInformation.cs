@@ -16,6 +16,7 @@ namespace ComfySocks.Models.RowDeliveryInfo
         }
 
         public int ID { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
         [Display(Name ="Section/Department")]
         public string Section { get; set; }

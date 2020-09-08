@@ -14,13 +14,10 @@ namespace ComfySocks.Models.ProductTransferInfo
         public int ID { get; set; }
 
         [Required(ErrorMessage ="Please Enter Date")]
-        [DisplayFormat(DataFormatString ="{0:MM-dd-yyyy}",ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString ="{0:dd-MM-yyyy}",ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         public string From { get; set; }
-
-        [Display(Name = "Type of Product")]
-        public int TempProductStockInfoID { get; set; }
 
         [Display(Name ="No")]
         public string FPTNo { get; set; }

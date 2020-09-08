@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryInformation>
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div class="row">
         <div class="col-md-10">
             @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
@@ -17,33 +17,24 @@
 
                 <div class="col-sm-offset-9 col-sm-3" style="text-align:center">
                     <a class="fa fa-print" onclick="Print('@d.ID')" style="margin-right:650px;">Print</a>
-                    @if (d.Status != "Rejected Delivery")
-                    {
-                        <a href="~/OfficeMaterialDelivery/DropDelivery?id=@ViewBag.ID" class="fa fa-close" style="margin-right:650px;">Cancel</a>
-                    }
                 </div>
                 <div class="col-sm-8" style="border:solid 2px black; margin-left:150px" id="@d.ID">
                     <div style="margin-left:60px;margin-right:50px">
-                        <h3 style="color:orangered" class="col-sm-12">@d.Status</h3>
                         <div class="col-sm-12">
                             <div style="float:left">
-                                <h5>Section/Department: @d.From</h5>
-                                @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                                    var srt = db.OfficeMaterialRequest.Find(d.OfficeMaterialRequestInformationID);
-                                }
-                                <h5>@srt.OfficeMaterialRequestInformation.StoreRequestNumber</h5>
+                                <h3 style="text-align:center">Store Issue Voucher</h3>
+                                <h5>Section/Department: @d.Section</h5>
+                                <h5>@d.OfficeMaterialRequestInformation.StoreRequestNumber</h5>
                             </div>
                             <div style="float:right">
-                                <h5>Date @d.Date.ToShortDateString()</h5>
+                                <h5>Date:@Html.DisplayFor(modelItem => d.Date)</h5>
                                 <h5>@d.OfficeDeliveryNumber</h5>
-                                @*<h5>Deliverd By @d.ApplicationUser.UserName</h5>*@
-                               
                             </div>
                         </div>
 
                         <div class="col-sm-12">
                             <br /><br />
-                            <table class="table">
+                            <table class="table table-bordered">
                                 <tr>
                                     <td>Item Code</td>
                                     <td>Description </td>
@@ -59,13 +50,19 @@
                                         <td>@item.OfficeMaterialRequest.Item.Name @item.OfficeMaterialRequest.Item.ItemType.Name</td>
                                         <td>@item.OfficeMaterialRequest.Item.Unit.Name</td>
                                         <td>@item.Quantity @item.OfficeMaterialRequest.Item.Unit.Name</td>
-                                        @*<td>@item.Remark</td>*@
+                                        <td>@item.Remark</td>
                                     </tr>
                                 }
                             </table>
                         </div>
 
                     </div>
+                </div>
+                <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
+                    <br /><br /><br /><br /><br /><br />
+                    <h5 style="margin-left:50px;margin-right:50px">Issued by: @d.Issuedby</h5>
+                    <h5 style="margin-left:50px;margin-right:50px">Approved by:@d.ApprovedBy</h5>
+                    <h5 style="margin-left:50px;margin-right:50px">Recivied the above Goods:@d.Receivedby</h5>
                 </div>
             }
         }
@@ -80,16 +77,7 @@
                 </ul>
             </div>
         }
-        @foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryInformation d in Model)
-        {
 
-        <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
-            <br /><br /><br /><br /><br /><br />
-            <h5 style="margin-left:50px;margin-right:50px">Issued by:_____________________________</h5>
-            <h5 style="margin-left:50px;margin-right:50px">Approved by:___________________________</h5>
-            <h5 style="margin-left:50px;margin-right:50px">Recivied the above Goods___________________________</h5>
-        </div>
-        }
         <div id="logo" class="hidden"><img src='~/Images/logo1.png' style='margin-bottom:30px;margin-left:-10px;margin-right:-110px;height:123px' /></div>
     </div>
     <hr />

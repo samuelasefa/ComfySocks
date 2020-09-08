@@ -1,0 +1,209 @@
+﻿@model IEnumerable<ComfySocks.Models.InventoryModel.Stock>
+
+
+@{
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext(); }
+<link href="~/Scripts/AdminLTE/plugins/iCheck/square/red.css" rel="stylesheet" />
+<link href="~/Scripts/AdminLTE/plugins/iCheck/minimal/minimal.css" rel="stylesheet" />
+<script src="~/Scripts/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+<div class="box box-info" style="border-radius:5px">
+    <form method="post" action="StockReportList">
+        <table class="table">
+            <tr>
+                <td>
+                    <label>From</label><br />
+                    <input type="text" class="datepicker form-control" name="fromDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td>
+                    <label>To</label><br />
+                    <input type="text" class="datepicker form-control" name="toDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td></td>
+                <td>
+                    <label></label>
+                    <br />
+                    <input type="submit" value="Search" class="btn btn-info fa fa-search">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Maiandra GD'">Stock Report</h4>
+    <table class="table table-bordered table-striped" id="datatable">
+        <thead style="background-color:#00CCD2; color:white">
+            <tr>
+                <th>
+                    Sq No
+                </th>
+                <th>
+                    Stock Description
+                </th>
+                <th>
+                    Code
+                </th>
+                <th>
+                    Unit
+                </th>
+                <th>
+                    Begining Balance
+                </th>
+                <th>
+                    OnTransit
+                </th>
+                <th>
+                    TotalStock
+                </th>
+                <th>
+                    Monthly Consumption
+                </th>
+                <th>
+                    Ending Balance
+                </th>
+            </tr>
+        </thead>
+        @{
+        }
+        @foreach (var item in Model)
+        {
+            if (item.Item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial || item.Item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
+            {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ID)
+            </td>
+            <td>
+
+                @Html.DisplayFor(modelItem => item.Item.Name)
+                @Html.DisplayFor(modelItem => item.Item.ItemType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Item.Code)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Item.Unit.Name)
+            </td>
+            <td>
+                @try
+                {
+                    @item.Item.RowMaterialRepositery.RowMaterialAavliable
+                }
+                catch
+                {
+                    <h5>0</h5>
+                }
+            </td>
+            <td>
+                @try
+                {
+                    @item.Item.LogicalOnTransit.OnTransitAvaliable
+                }
+                catch
+                {
+                    <h5>0</h5>
+                }
+            </td>
+            <td>
+                @try
+                {
+                    @(item.Item.RowMaterialRepositery.RowMaterialAavliable + item.Item.LogicalOnTransit.OnTransitAvaliable);
+                }
+                catch
+                {
+                <h5>@item.Item.RowMaterialRepositery.RowMaterialAavliable</h5>
+                }
+            </td>
+            <td>
+                @try
+                {
+                    @item.Item.MonthlyConsumption.Consumption
+                }
+                catch
+                {
+                    <h5>0</h5>
+                }
+            </td>
+            <td>
+                @{ 
+                    var consumption = db.LogicalOnTransit.Find(item.ItemID);
+                }
+                @try
+                {
+                    @((item.Item.RowMaterialRepositery.RowMaterialAavliable + item.Item.LogicalOnTransit.OnTransitAvaliable) - item.Item.MonthlyConsumption.Consumption)
+                }
+                catch
+                {
+                <h5>@item.Item.RowMaterialRepositery.RowMaterialAavliable</h5>
+                }
+            </td>
+        </tr>
+            }
+
+        }
+
+    </table>
+    <div>
+        <h5 style="text-align:center; text-decoration:underline">To Generate New Report Go to Setting Click Generate Stock Report</h5>
+    </div>
+
+
+</div>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.flash.min.js"></script>
+<script src="~/Scripts/DataTables/JSZip-2.5.0/jszip.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.html5.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.print.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd'
+        });
+        var table = $('#datatable').DataTable({
+            "displayLength": 10,
+            "scrollCollapse": true,
+            "scrollY":"250px",
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    className: 'copyButton',
+                    text: '<i class="fa fa-clone"></i> Copy',
+                    title: 'Stock Report'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fa fa-file-excel-o"></i> Excel',
+                    title: 'Stock Report'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+                    title: 'Stock Report'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fa fa-print"></i> Print',
+                    title:'Stock Report'
+                }
+            ],
+        });
+
+    });
+</script>
+
+<script>
+    //datepicker
+    $(function () {
+        $(".datepicker").datepicker({
+            format: 'dd-MM-yyyy'
+        });
+    });
+</script>

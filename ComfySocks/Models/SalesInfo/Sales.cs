@@ -14,13 +14,15 @@ namespace ComfySocks.Models.SalesInfo
         public int ID { get; set; }
         [Display(Name ="Item")]
         public int ItemID { get; set; }
+        public string ProductCode { get; set; }
+
         public int SalesInformationID { get; set; }
         public float Quantity { get; set; }
-        public float UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
 
         public float RemaningDelivery { get; set; }
 
-        public int ApplicationUserID { get; set; }
+        public string ApplicationUserID { get; set; }
         //reference
         public virtual ApplicationUser ApplicationUser{ get; set; }
         public virtual Item Item { get; set; }

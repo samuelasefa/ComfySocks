@@ -1,11 +1,12 @@
 ﻿@model ComfySocks.Models.PurchaseRequestInfo.PurchaseRequest
 @{
-    ViewBag.Title = "Purchase Request";
+    ViewBag.Title = null;
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">Purchase Request</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -29,9 +30,6 @@
                             <thead>
                                 <tr style="background-color:#00CCD2; color:#ecf0f1">
                                     <th>
-                                        Item No
-                                    </th>
-                                    <th>
                                         Code
                                     </th>
                                     <th>
@@ -47,19 +45,16 @@
                                 @foreach (ComfySocks.Models.Items.Item s in ViewBag.PurchaseRequestID)
                                 {
                                     <tr onclick="ItemSelected('@s.ID','@s.Code')">
-                                        <td>@s.ID</td>
                                         <td>@s.Code</td>
                                         <td>@s.Name @s.ItemType.Name</td>
                                         <td>@s.Unit.Name</td>
-                                </tr>
-                            }
+                                    </tr>
+                                }
 
                             </tbody>
                             <tfoot>
                                 <tr style="background-color:#00CCD2; color:#ecf0f1">
-                                    <th>
-                                        Item No
-                                    </th>
+                                   
                                     <th>
                                         Code
                                     </th>
@@ -68,7 +63,8 @@
                                     </th>
                                     <th>
                                         Unit
-                                    </th>                                </tr>
+                                    </th>
+                                </tr>
                             </tfoot>
 
                         </table>
@@ -170,7 +166,7 @@
                     @if (ViewBag.haveItem == true)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/PurchaseRequest/NewPurchaseRequsteInfo">
+                        <a class="btn btn-info pull-right" href="~/PurchaseRequest/NewPurchaseRequsteInfo">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -189,14 +185,16 @@
                 "info": false,
                 "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                 "lengthChange": false,
+                "scrollY": "150px",
+                "scrollCollapse": true,
+                "paging": false
             });
         </script>
     }
-    <br />
+    <hr />
     <div>
         @Html.ActionLink("Back to List", "PurchaseRequsetList")
     </div>
-    <hr />
 
 </div>
 

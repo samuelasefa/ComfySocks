@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<ComfySocks.Models.Order.ProductionOrderInfo>
 
 @{
-    ViewBag.Title = "Production Order List";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Malgun Gothic'">Production Order List</h4>
     @if (User.IsInRole("Super Admin")||User.IsInRole("Admin"))
     {
         <p>
@@ -41,7 +42,7 @@
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Customer.FirstName)
+                    @Html.DisplayFor(modelItem => item.Customer.FullName)
                 </td>
 
                 <td>

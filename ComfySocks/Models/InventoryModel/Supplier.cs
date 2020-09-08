@@ -12,11 +12,21 @@ namespace ComfySocks.Models.InventoryModel
     public partial class Supplier
     {
         public int ID { get; set; }
-        [Required]
-        [Display(Name ="Supplier's Name")]
-        public string Name { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
+        [Required(ErrorMessage ="*Please Enter Name to the field?")]
+        [Display(Name ="Full Name/Name of Company")]
+        public string FullName { get; set; }
+        [Required(ErrorMessage ="*Please Enter the Tin Number?")]
+        [Display(Name ="TIN Number")]
+        [StringLength(10, ErrorMessage ="*The Tin Number Must be 10?")]
+        public string TinNumber { get; set; }
+        public string City { get; set; }
+        public string SubCity { get; set; }
+        public string Woreda { get; set; }
+        public string HouseNo { get; set; }
 
-        [Display(Name ="Supplier's Invoice No.")]
+        [Display(Name ="Invoice No.")]
         public string No { get; set; }
 
         //referance

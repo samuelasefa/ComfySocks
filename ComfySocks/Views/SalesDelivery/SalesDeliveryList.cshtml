@@ -1,6 +1,6 @@
 ﻿@model IEnumerable<ComfySocks.Models.SalesDeliveryInfo.SalesDeliveryInformation>
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div class="row">
         <div class="col-md-10">
             @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
@@ -15,28 +15,28 @@
             foreach (ComfySocks.Models.SalesDeliveryInfo.SalesDeliveryInformation d in Model)
             {
 
-        <div class="col-sm-offset-9 col-sm-3" style="text-align:center">
-            <a class="fa fa-print" onclick="Print('@d.ID')" style="margin-right:650px;">Print</a>
-            @if (d.Status != "Rejected Delivery")
-            {
-                <a href="~/SalesDelivery/DropDelivery?id=@ViewBag.ID" class="fa fa-close" style="margin-right:650px;">Cancel</a>
-            }
-        </div>
+                <div class="col-sm-offset-9 col-sm-3" style="text-align:center">
+                    <a class="fa fa-print" onclick="Print('@d.ID')" style="margin-right:650px;">Print</a>
+                    @if (d.Status != "Rejected Delivery")
+                    {
+                        <a href="~/SalesDelivery/DropDelivery?id=@ViewBag.ID" class="fa fa-close" style="margin-right:650px;">Return</a>
+                    }
+                </div>
                 <div class="col-sm-8" style="border:solid 2px black; margin-left:150px" id="@d.ID">
                     <div style="margin-left:60px;margin-right:50px">
                         <h3 style="color:orangered" class="col-sm-12">@d.Status</h3>
                         <div class="col-sm-12">
                             <div style="float:left">
                                 <h3 style="text-align:center">DELIVERY NOTE</h3>
-                                <h5>For: @d.SalesInformation.Customer.FirstName&nbsp;@d.SalesInformation.Customer.LastName</h5>
-                                    @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                                <h5>For: @d.SalesInformation.Customer.FullName</h5>
+                                @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
                                     var srt = db.StoreRequest.Find(d.SalesInformationID);
-                                    }
+                                }
                                 <h5>Sales Invoice No: CR- @d.SalesInformation.Supplier.No</h5>
                             </div>
                             <div style="float:right">
-                                <h5>Date @d.Date</h5>
-                                <h5>@d.DeliveryNumber</h5>
+                                <h5>Date:@Html.DisplayFor(modelItem => d.Date)</h5>
+                                <h5>@d.SalesInformation.FsNo</h5>
                             </div>
                         </div>
 
@@ -55,54 +55,68 @@
 
                                 </tr>
                                 @{
-                                    float totalPrice = 0;
+                                    decimal totalPrice = 0;
                                     int i = 1;
                                 }
                                 @foreach (ComfySocks.Models.SalesDeliveryInfo.SalesDelivery item in d.SalesDeliveries)
                                 {
-                                <tr>
-                                    <td>@Html.Raw(i++)</td>
-                                    <td>@item.Sales.Item.Name </td>
-                                    <td>@item.Sales.Item.Code</td>
-                                    <td>@item.Sales.Item.Unit.Name</td>
-                                    <td>@item.Quantity</td>
-                                    <td>@item.Sales.UnitPrice</td>
-                                    <td>@(item.Quantity * item.Sales.UnitPrice)</td>
-                                    <td hidden>@(totalPrice += (float)(item.Sales.UnitPrice * item.Quantity))</td>
-                                    <td>@item.Remark</td>
-                                </tr>
+                                    <tr>
+                                        <td>@Html.Raw(i++)</td>
+                                        <td>@item.Sales.Item.Name </td>
+                                        <td>@item.Sales.Item.Code</td>
+                                        <td>@item.Sales.Item.Unit.Name</td>
+                                        <td>@item.Quantity</td>
+                                        <td>@item.Sales.UnitPrice</td>
+                                        <td>@((decimal)item.Quantity * item.Sales.UnitPrice)</td>
+                                        <td hidden>@(totalPrice += (item.Sales.UnitPrice *(decimal)item.Quantity))</td>
+                                        <td>@item.Remark</td>
+                                    </tr>
                                 }
-                                
+
                                 <tr>
                                     <td colspan="5"></td>
                                     <td>Total:</td>
                                     <td>@totalPrice</td>
                                 </tr>
-                                
+
                             </table>
                         </div>
 
                     </div>
                 </div>
-            }
-        }
-        else
-        {
-            <div class="col-md-12" style="text-align:center">
-                <h3>Delivery Information</h3>
-                <h5>Nothing Deliverd yet</h5>
-                <ul style="color:rebeccapurple; list-style:none">
-                    <li>Click on New button at left corneer to add one.</li>
+                 <br />
+                 <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
+                     <p>I have recived the above Item in Good Condition</p>
+                     <br /><br /><br /><br /><br /><br />
+                     <h5 style="margin-left:50px;margin-right:50px">Issued by:@d.Issuedby</h5>
+                     <h5 style="margin-left:50px;margin-right:50px">Approved by:@d.Approvedby</h5>
+                     <h5 style="margin-left:50px;margin-right:50px">Deliverd by:@d.Deliverdby</h5>
+                     <h5 style="margin-left:50px;margin-right:50px">Recived by:@d.Receivedby</h5>
+                 </div>
+                 <div class="hidden"style="text-align:center">
+                     <h5 style="text-align:center">
+                         If you have any questions about this quotation, please contact
+                     </h5>
+                     <h5 style=" text-align:center">
+                         info@comfysocksmanufuctring.com/ and stay tunned!!!
+                     </h5>
+                     <h5 style="text-align:center">
+                         Thank You For Your Business!
+                     </h5>
+                 </div>
+}
+}
+else
+{
+    <div class="col-md-12" style="text-align:center">
+        <h3>Delivery Information</h3>
+        <h5>Nothing Deliverd yet</h5>
+        <ul style="color:rebeccapurple; list-style:none">
+            <li>Click on New button at left corneer to add one.</li>
 
-                </ul>
-            </div>
-        }
-        <div style="position:fixed;margin-top:100%;" id="footer" class="hidden col-md-offset-5">
-            <br /><br /><br /><br /><br /><br />
-            I have recived the above Item in Good Condition <br />
-            <br />
-            _____________________________________________________
-        </div>
+        </ul>
+    </div>
+}
         <div id="logo" class="hidden"><img src='~/Images/logo1.png' style='margin-bottom:30px;margin-left:-10px;margin-right:-110px;height:123px' /></div>
     </div>
     <hr />

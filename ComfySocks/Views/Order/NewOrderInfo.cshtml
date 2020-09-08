@@ -1,51 +1,50 @@
 ﻿@model ComfySocks.Models.Order.ProductionOrderInfo
 @{
-    ViewBag.Title = "Order Information";
+    ViewBag.Title = null;
 }
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
 
-<div class="form-horizontal panel col-sm-offset-3 col-sm-6">
-    <h4>Production Order Info</h4>
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic';text-align:center">Production Order Info</h4>
     <hr />
     @Html.ValidationSummary(true, "", new { @class = "text-danger" })
     <div class="form-group">
-        @Html.LabelFor(model => model.CustomerID, "Customer", htmlAttributes: new { @class = "control-label col-md-4" })
-        <div class="col-md-8">
+        @Html.LabelFor(model => model.CustomerID, "Customer", htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
             @Html.DropDownList("CustomerID", null, "--Please Select--", htmlAttributes: new { @class = "form-control" })
+            <br />
             @Html.ValidationMessageFor(model => model.CustomerID, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-4" })
-        <div class="col-md-8">
-            @Html.EditorFor(model => model.From, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Marketing Manager", autocomplete = "off" } })
+        @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.From, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Marketing Manager" } })
+            <br />
             @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
-        @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-4" })
-        <div class="col-md-8">
-            @Html.EditorFor(model => model.To, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Production Division", autocomplete = "off" } })
+        @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.To, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Production Division"} })
+            <br />
             @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
         </div>
     </div>
     <div class="form-group">
         <div class="col-md-offset-2 col-md-10">
-            <input type="submit" value="Create" class="btn btn-default" />
+            <input type="submit" value="Create" onclick="this.form.submit();  this.disabled = true; this.value = 'sending...'; return false" class="btn btn-info" />
         </div>
     </div>
     <hr />
     <div>
-        @Html.ActionLink("Back", "NewOrderEntry")
+        @Html.ActionLink("Back To List", "NewOrderEntry")
     </div>
-    <br />
-
 </div>
-  
-    
 }
 
 @section Scripts {
@@ -79,7 +78,7 @@
     //datepicker
     $(function () {
         $(".datepicker").datepicker({
-            format: 'MM-dd-yyyy'
+            format: 'dd-mm-yyyy'
         });
     });
 </script>

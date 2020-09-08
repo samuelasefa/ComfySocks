@@ -1,13 +1,12 @@
 ﻿@model ComfySocks.Models.InventoryModel.Store
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
-    <h3>Are you sure you want to delete this?</h3>
+<div class="box box-body box-info" style="border-radius:10px">
+    <h3 style="font-family:'Maiandra GD'">Are you sure you want to delete this?</h3>
     <div>
-        <h4>Store</h4>
         <hr />
         <dl class="dl-horizontal">
 
@@ -28,13 +27,13 @@
             </dd>
 
         </dl>
-
+        <hr />
         @using (Html.BeginForm())
         {
             @Html.AntiForgeryToken()
 
             <div class="form-actions no-color">
-                <input type="submit" value="Delete" class="btn btn-default" /> |
+                <input type="submit" value="Delete" class="btn btn-info" /> |
                 @Html.ActionLink("Back to List", "Index")
             </div>
         }

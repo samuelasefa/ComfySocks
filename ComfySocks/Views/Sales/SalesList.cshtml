@@ -6,8 +6,8 @@
                 ViewBag.Title = "Sales List";
 }
 
-<div class="box box-body box-info">
-    @if (User.IsInRole("Super Admin")|| User.IsInRole("Admin")||User.IsInRole("Finanace"))
+<div class="box box-body box-info" style="border-radius:10px">
+    @if (User.IsInRole("Super Admin")||User.IsInRole("Finance"))
     {
         <p>
             @Html.ActionLink("Create New", "NewSalesEntry")
@@ -45,16 +45,19 @@
         {
             <tr>
                 <td>@Html.DisplayFor(modelItem => item.Date)</td>
-                <td>@Html.DisplayFor(modelItem => item.Customer.FirstName) @Html.DisplayFor(modelItem => item.Customer.LastName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Customer.FullName)
                 <td>@Html.DisplayFor(modelItem => item.FsNo)</td>
                 <td>@Html.DisplayFor(modelItem => item.Customer.TinNumber)</td>
                 <td>@Html.DisplayFor(modelItem => item.Status)</td>
                 <td>
                     @Html.ActionLink("View ", "SalesDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
 
-                    @if (item.Status == "Approved")
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
                     {
-                        @Html.ActionLink("Delivery", "NewSalesDelivery", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                        if (item.Status == "Approved")
+                        {
+                            @Html.ActionLink("Delivery", "NewSalesDelivery", "SalesDelivery", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-truck" })
+                        }
                     }
                 </td>
             </tr>

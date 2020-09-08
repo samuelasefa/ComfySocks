@@ -12,14 +12,14 @@ namespace ComfySocks.Models.OfficeDeliveryInfo
     {
 
         public int ID { get; set; }
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name ="No")]
         public string OfficeDeliveryNumber { get; set; }
 
         [Display(Name ="Section/Department")]
-        public string From { get; set; }
+        public string Section { get; set; }
 
         [Display(Name ="Requestion No")]
         public int OfficeMaterialRequestInformationID { get; set; }
@@ -30,6 +30,7 @@ namespace ComfySocks.Models.OfficeDeliveryInfo
         public string ApprovedBy { get; set; }
 
         [Display(Name ="Issued by")]
+        public string Issuedby { get; set; }
         public string ApplictionUserID { get; set; }
 
         public string Status { get; set; }

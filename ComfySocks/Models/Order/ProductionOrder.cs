@@ -29,13 +29,13 @@ namespace ComfySocks.Models.Order
 
         [Required]
         [Display(Name = "Product Size")]
-        public ProductSize ProductSize { get; set; }
+        public ProductSize? ProductSize { get; set; }
 
         [Required]
         [Display(Name ="Product Order Quantity")]
         public float Quantity { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         [Display(Name ="Expected Delivery Date")]
         public DateTime? Date { get; set; }
 

@@ -11,7 +11,7 @@
 
     </div>
     <div class="col-md-2">
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
         {
             if (Model.Status == "Submmited")
             {
@@ -28,7 +28,7 @@
         }
     </div>
 </div>
-<div class="box box-info" id="printable">
+<div class="box box-info" id="printable" style="border-radius:10px">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />

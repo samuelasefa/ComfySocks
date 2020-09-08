@@ -1,0 +1,269 @@
+﻿@model ComfySocks.Models.ProductRecivingInfo.Product
+@{
+    ViewBag.Title = null;
+
+}
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
+
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">New Product Reciving Entry</h4>
+    @if (ViewBag.RequiredItems != null)
+    {
+        <div class="jumbotron">
+            <h3 style="text-align:center;color:red"><strong>Before starting you have to set some information about?</strong></h3>
+            <ul class="list-style-none" style="text-align:center;list-style:none">
+                <li style="color:orange">
+                    @ViewBag.Stock
+                </li>
+
+            </ul>
+        </div>
+    }
+
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="row">
+                    <div class="col-md-12">
+                        <table class="table table-striped table-hover" id="maintable">
+                            <thead>
+                                <tr style="background-color:#00CCD2; color:#ecf0f1">
+                                    <th>
+                                        Code
+                                    </th>
+                                    <th>
+                                        Type Of Product
+                                    </th>
+                                    <th>
+                                        Unit
+                                    </th>
+                                    <th>
+                                        Transferd-Qty
+                                    </th>
+                                    <th>
+                                        Rem-Qty
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (ComfySocks.Models.ProductTransferInfo.Transfer s in ViewBag.TransferID)
+                                {
+                                    <tr onclick="ItemSelected('@s.ID', '@s.Item.Code')">
+                                        <td>@s.Item.Code</td>
+                                        <td>@s.Item.Name</td>
+                                        <td>@s.Item.Unit.Name</td>
+                                        <td>@s.Quantity</td>
+                                        <td>
+                                            @s.RemaningDelivery
+                                           
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                            <tfoot>
+                                <tr style="background-color:#00CCD2; color:#ecf0f1">
+
+                                    <th>
+                                        Code
+                                    </th>
+                                    <th>
+                                        Description
+                                    </th>
+                                    <th>
+                                        Unit
+                                    </th>
+                                    <th>
+                                        Transferd-Qty
+                                    </th>
+                                    <th>
+                                        Rem-Qty
+                                    </th>
+                                </tr>
+                            </tfoot>
+
+                        </table>
+                    </div>
+
+                    <div class="col-md-12">
+                        @using (Html.BeginForm("NewProductReciving", "FinishedProduct", FormMethod.Post))
+                        {
+                            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                            @Html.AntiForgeryToken()
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="row">
+                                        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                                        <div class="col-md-3 hidden">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.TransferID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.TransferID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Quantity</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ProductQuantity, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ProductQuantity, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Remark</p>
+                                                <div class="col-md-12">
+                                                    @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control input-sm", col = 1, @row = 1 } })
+                                                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="float:right; margin-right:50px">
+                                            <div class="form-group">
+                                                <div class="col-md-offset-1 col-md-12">
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:10px" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div style=" background-color:#00CCD2; color:white; padding:10px">Product Reciving List</div>
+                @********table here***********@
+                <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
+                    @if (ViewBag.selectedReciving != null)
+                    {
+                        <table class="table table-border table-striped" id="dtaTable">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Type Of Product</th>
+                                    <th>Unit</th>
+                                    <th>Quantity</th>
+                                    <th>Remaining</th>
+                                    <th>Remark</th>
+                                </tr>
+                            </thead>
+                            @foreach (ComfySocks.Models.ProductRecivingInfo.ProductVM items in ViewBag.selectedReciving)
+                            {
+                                <tr>
+                                    <td>@items.Code</td>
+                                    <td>@items.TypeOfProduct</td>
+                                    <td>@items.Unit</td>
+                                    <td>@items.Product.ProductQuantity</td>
+                                    <td>@items.Remaining</td>
+                                    <td>@items.Product.Remark</td>
+                                </tr>
+                            }
+                        </table>
+                    }
+                </div>
+                <br />
+
+                <div>
+                    @if (ViewBag.haveItem == true)
+                    {
+
+                        <a class="btn btn-info pull-right" href="~/FinishedProduct/NewProductRecivingInfo">
+                            Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
+                        </a>
+                    }
+
+                </div>
+            </div>
+        </div>
+        <script>
+            function ItemSelected(id, Code) {
+                document.getElementById("TransferID").value = id;
+                document.getElementById("ItemCode").value = Code;
+            }
+
+            //datatabale
+            $("#maintable").DataTable({
+                "info": false,
+                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "lengthChange": false,
+                "paging": false,
+                "scrollCollapse": true,
+                "scrollY": "150px"
+            });
+        </script>
+    }
+    <hr />
+    <div>
+        @Html.ActionLink("Back to List", "ProductRecivingList", new { id = ViewBag.ID })
+    </div>
+
+</div>
+
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Opps...", "@ViewBag.errorMessage", "error");
+                    return false;
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("Congratulation", "@ViewBag.succsessMessage", "success");
+                    return false;
+                }
+    </script>
+}
+
+@if (ViewBag.infoMessage != null)
+{
+    <script>
+        window.onload = function () {
+                sweetAlert("Success", "@ViewBag.infoMessage", "info");
+                return false;
+        }
+    </script>
+}
+@if (ViewBag.RequiredItems != null)
+{
+    <script>
+        window.onload = function () {
+            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            return false;
+        }
+    </script>
+}
+
+<style>
+    .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+        background-color: #ECFEFE;
+        color: #000000;
+        cursor: pointer;
+    }
+</style>
+

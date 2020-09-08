@@ -8,11 +8,9 @@ using System.Web;
 using System.Web.Mvc;
 using ComfySocks.Models;
 using ComfySocks.Models.Order;
-using Microsoft.AspNet.Identity;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize]
     public class CustomersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -26,23 +24,19 @@ namespace ComfySocks.Controllers
         // GET: Customers/Details/5
         public ActionResult Details(int? id)
         {
-            
             if (id == null)
             {
-                TempData[User.Identity.GetUserId()+"errorMessage"] = "Invalid navigation is Detected";
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Customer customer = db.Customers.Find(id);
             if (customer == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
-                return RedirectToAction("Index");
+                return HttpNotFound();
             }
             return View(customer);
         }
 
         // GET: Customers/Create
-        [Authorize(Roles ="Super Admin, Admin")]
         public ActionResult Create()
         {
             return View();
@@ -53,42 +47,30 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
-
-        public ActionResult Create([Bind(Include = "ID,TinNumber,FirstName,LastName,City,SubCity")] Customer customer)
+        public ActionResult Create([Bind(Include = "ID,TinNumber,Date,FullName,No,City,SubCity,woreda,HouseNo")] Customer customer)
         {
-            if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
-
+            customer.Date = DateTime.Now;
             if (ModelState.IsValid)
             {
-                if ((from c in db.Customers where c.ID == customer.ID && c.TinNumber == customer.TinNumber orderby c.ID descending select c).Count() == 0)
-                {
-                    db.Customers.Add(customer);
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                ViewBag.errorMessage = "Duplicate Customer is Found";
+                db.Customers.Add(customer);
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
 
             return View(customer);
         }
 
         // GET: Customers/Edit/5
-        [Authorize(Roles = "Super Admin, Admin")]
-
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid Navigation Is Detected";
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Customer customer = db.Customers.Find(id);
             if (customer == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
-                return RedirectToAction("Index");
+                return HttpNotFound();
             }
             return View(customer);
         }
@@ -98,38 +80,29 @@ namespace ComfySocks.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
-
-        public ActionResult Edit([Bind(Include = "ID,TinNumber,FirstName,LastName,City,SubCity")] Customer customer)
+        public ActionResult Edit([Bind(Include = "ID,TinNumber,Date,FullName,No,City,SubCity,woreda,HouseNo")] Customer customer)
         {
+            customer.Date = DateTime.Now;
             if (ModelState.IsValid)
             {
-                if ((from c in db.Customers where c.ID == customer.ID && c.TinNumber == customer.TinNumber orderby c.ID descending select c).Count() == 0)
-                {
-                    db.Entry(customer).State = EntityState.Modified;
-                    db.SaveChanges();
-                    return RedirectToAction("Index");
-                }
-                ViewBag.errorMessage = "Duplicate update Found";
+                db.Entry(customer).State = EntityState.Modified;
+                db.SaveChanges();
+                return RedirectToAction("Index");
             }
             return View(customer);
         }
 
         // GET: Customers/Delete/5
-        [Authorize(Roles = "Super Admin, Admin")]
-
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Invalid navigation is detected";
-                return RedirectToAction("Index");
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Customer customer = db.Customers.Find(id);
             if (customer == null)
             {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Not Found";
-                return RedirectToAction("Index");
+                return HttpNotFound();
             }
             return View(customer);
         }
@@ -137,8 +110,6 @@ namespace ComfySocks.Controllers
         // POST: Customers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Super Admin, Admin")]
-
         public ActionResult DeleteConfirmed(int id)
         {
             Customer customer = db.Customers.Find(id);

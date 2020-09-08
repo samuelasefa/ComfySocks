@@ -1,7 +1,9 @@
 ﻿
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
+
 
     <div class="row page-titles">
+        <h4 style="text-align:center;font-family:'Maiandra GD'">User Managment</h4>
         <div class="col-sm-5 col-8 align-self-center">
         </div>
         <div class="col-sm-6  align-self-center text-danger">
@@ -11,15 +13,15 @@
         <div class="col-sm-1  align-self-center ">
             @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
             {
-                <a href="~/Account/Register" class="btn btn-add">New  <span class="glyphicon glyphicon-tag"></span></a>
+                <a href="~/Account/Register" class="btn btn-add">New  <span class="glyphicon glyphicon-plus-sign"></span></a>
             }
             else
             {
-                <a href="~/Account/Register" class="btn btn-add disabled">New  <span class="glyphicon glyphicon-tag"></span></a>
+                <a href="~/Account/Register" class="btn btn-add disabled">New  <span class="glyphicon glyphicon-plus-sign"></span></a>
             }
         </div>
     </div>
-        <table class="table">
+        <table class="table table-bordered table-responsive">
             <thead style="background-color:#00CCD2; color:white">
                 <tr>
                     <td>Full Name</td>

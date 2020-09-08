@@ -22,17 +22,28 @@ namespace ComfySocks.Controllers
             //errormessage display
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            var purchaseRequest = (from purchase in db.PurchaseRequestInformation orderby purchase.ID descending select purchase).ToList();
+            var purchaseRequest = (from purchase in db.PurchaseRequestInformation orderby purchase.Date descending select purchase).ToList();
 
             return View(purchaseRequest);
         }
 
         // controller of Finshed product transfer
-        public ActionResult NewPurchaseRequestEntry()
+        public ActionResult NewPurchaseRequestEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             ViewBag.PurchaseRequestID = (from p in db.Items where p.StoreType == StoreType.OfficeMaterial || p.StoreType == StoreType.RowMaterial  orderby p.ID select p).ToList();
+
+            if (id != 0)
+            {
+                List<PurchaseRequestVM> SelectedPurchaseRequest = new List<PurchaseRequestVM>();
+                SelectedPurchaseRequest = (List<PurchaseRequestVM>)TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"];
+                TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] = SelectedPurchaseRequest;
+                ViewBag.SelectedPurchaseRequest = SelectedPurchaseRequest;
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "SelectedPurchaseRequest"] = null;
+            }
             return View();
         }
 
@@ -175,6 +186,7 @@ namespace ComfySocks.Controllers
                 return RedirectToAction("NewPurchaseRequestEntry");
             }
             purchaseRequestInformation.ApplicationUserID = User.Identity.GetUserId();
+           
             try
             {
                 int LastId = (from s in db.PurchaseRequestInformation orderby s.ID orderby s.ID descending select s.ID).First();

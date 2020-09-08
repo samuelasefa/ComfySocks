@@ -30,11 +30,11 @@ namespace ComfySocks
 
                 //create super admin user
                 var user = new ApplicationUser {
-                    UserName = "ComfySocks",
+                    UserName = "SystemAdmin",
                     Email = "Info@ComfySocks.com",
                     FullName = "Comfy Socks Manufacturing PLC", IsActive = true
                 };
-                var result = userManager.Create(user, "!1234Aa");
+                var result = userManager.Create(user, "Incorrect@44");
 
                 userManager.AddToRole(user.Id, "Super Admin");
                 

@@ -18,13 +18,13 @@ namespace ComfySocks.Models.OfficeDeliveryInfo
         [Required]
         [Display(Name ="Request ID")]
         public int OfficeMaterialRequestID { get; set; }
-
+        public string ItemCode { get; set; }
         [Required]
         [Display(Name ="Deliverd Quantity")]
         public float Quantity { get; set; }
 
+        public string Remark { get; set; }
 
-       
         //referance
         public virtual OfficeMaterialRequest OfficeMaterialRequest { get; set; }
         public virtual OfficeDeliveryInformation OfficeDeliveryInformation { get; set; }
@@ -37,7 +37,6 @@ namespace ComfySocks.Models.OfficeDeliveryInfo
         public string Itemtype { get; set; }
         public string ItemCode { get; set; }
         public string Unit { get; set; }
-        public string Remark { get; set; }
         public float Remaining { get; set; }
     }
 

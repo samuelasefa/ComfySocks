@@ -23,7 +23,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var items = db.Items.Include(i => i.ItemType).Include(i => i.Unit);
+            var items = db.Items.Include(i => i.ItemType).Include(i => i.Unit).OrderBy(i => i.ID);
           
 
             if (items.ToList().Count > 0)
@@ -97,18 +97,20 @@ namespace ComfySocks.Controllers
         [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Create(Item item)
         {
-           item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
-                    if ((from c in db.Items where c.Code == item.Code select c).Count() == 0)
-                    {
+                var itemtype = db.ItemTypes.Find(item.ItemTypeID); 
+                if ((from c in db.Items where c.Name == item.Name && c.ItemType.Name == itemtype.Name && c.Code == item.Code  select c).Count() == 0)
+                {
+                    db.Items.Add(item);
+                    db.SaveChanges();
+                    TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
+                    ModelState.Clear();
+                    return RedirectToAction("Create");
+                }
+                    ViewBag.errorMessage = "Duplication is Occured";
+                
 
-                        db.Items.Add(item);
-                        db.SaveChanges();
-                        TempData[User.Identity.GetUserId() + "succsessMessage"] = "New  Item is created";
-                        return RedirectToAction("Create");
-                    }
-                ViewBag.errorMessage = "Duplicate item Code";
             }
 
             ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name", item.ItemTypeID);
@@ -142,7 +144,6 @@ namespace ComfySocks.Controllers
         [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult Edit(Item item)
         {
-            item.ApplicationUserID = User.Identity.GetUserId();
             if (ModelState.IsValid)
             {
                 db.Entry(item).State = EntityState.Modified;
@@ -178,7 +179,6 @@ namespace ComfySocks.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Item item = db.Items.Find(id);
-
             if (item == null)
             {
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Item to remove";
@@ -189,9 +189,12 @@ namespace ComfySocks.Controllers
             else
             {
                 db.Items.Remove(item);
+                db.Entry(item).State = EntityState.Modified;
                 db.SaveChanges();
                 TempData[User.Identity.GetUserId() + "successMessage"] = "Item is Removed";
             }
+            ViewBag.ItemTypeID = new SelectList(db.ItemTypes, "ID", "Name", item.ItemTypeID);
+            ViewBag.UnitID = new SelectList(db.Units, "ID", "Name", item.UnitID);
             return RedirectToAction("Index");
         }
 

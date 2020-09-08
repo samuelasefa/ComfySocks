@@ -15,6 +15,7 @@ namespace ComfySocks.Models.RowDeliveryInfo
         [Display(Name="Requestion No")]
         [Required]
         public int StoreRequestID { get; set; }
+        public string ItemCode { get; set; }
         public double DeliveryQuantity { get; set; }
 
         public string Remark { get; set; }
@@ -31,7 +32,7 @@ namespace ComfySocks.Models.RowDeliveryInfo
         public string Code { get; set; }
         public string Unit { get; set; }
 
-        public float UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
         public float Remaining { get; set; }
     }
 }

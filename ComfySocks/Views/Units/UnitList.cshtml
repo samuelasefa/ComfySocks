@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<ComfySocks.Models.Items.Unit>
 
 @{
-    ViewBag.Title = "Unit List";
+    ViewBag.Title = null;
 }
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Maiandra GD'">Unit List</h4>
     @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
     {
         <p>
@@ -17,54 +18,87 @@
             @Html.ActionLink("Create New", "Create")
         </p>
     }
-    <table class="table">
-        <thead>
-            <tr style="background-color:#00CCD2; color:white">
-                <th>
-                    @Html.DisplayNameFor(model => model.ID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Name)
-                </th>
-                @if (User.IsInRole("Admin") || User.IsInRole("Super Admin")||User.IsInRole("Store Manager"))
-                {
-                    <th>Action</th>
-                }
-            </tr>
-        </thead>
-        @if (Model.Count() == 0)
-        {
-            <div class="jumbotron">
-                <p style="text-align:center;color:red">Please Insert Unit Information First!!</p>
-            </div>
-        }
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ID)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Name)
-                </td>
-                @if (User.IsInRole("Store Manager") || User.IsInRole("Super Admin"))
-                {
+    @if (Model.Count() == 0)
+    {
+        <div class="jumbotron" style="border-radius:10px">
+            <p style="text-align:center;color:red">Please Insert Unit Information First!!</p>
+        </div>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped" id="dtaTable">
+            <thead>
+                <tr style="background-color:#00CCD2; color:white">
+                    <th>
+                        No#
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tfoot>
+                <tr style="background-color:#00CCD2; color:white">
+                    <th>
+                        No#
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </tfoot>
+            @{ int i = 1; }
+            @foreach (var item in Model)
+            {
+                <tr>
                     <td>
-                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        @Html.Raw(i++)
                     </td>
-                }
-                else if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                {
                     <td>
-                        @Html.ActionLink("Delete", "Delete", new { id = item.ID }) |
-                        @Html.ActionLink("Details", "Details", new { id = item.ID })
+                        @Html.DisplayFor(modelItem => item.Name)
                     </td>
-                }
+                    @if (User.IsInRole("Super Admin"))
+                    {
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                        </td>
+                    }
+                    else if (User.IsInRole("Store Manager") || User.IsInRole("Admin"))
+                    {
+                        <td>
+                            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                            @Html.ActionLink("Details", "Details", new { id = item.ID })
+                        </td>
+                    }
 
-            </tr>
-        }
 
-    </table>
+
+                </tr>
+            }
+
+        </table>
+    }
 
 </div>
+
+<script>
+    $(document).ready(function () {
+        $("#dtaTable").DataTable(
+            {
+                paging: false,
+                scrollY: true
+            }
+        );
+        
+    })
+</script>

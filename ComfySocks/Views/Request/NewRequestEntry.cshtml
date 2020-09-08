@@ -1,11 +1,12 @@
 ﻿@model ComfySocks.Models.Request.StoreRequest
 @{ 
-    ViewBag.Title = "Row Material Request";
+    ViewBag.Title = null;
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">New RowMaterial Request Entry</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -86,7 +87,7 @@
                         </div>
                    
                     <div class="col-md-12">
-                        @using (Html.BeginForm("NewRequestEntry", "Request", FormMethod.Post))
+                        @using (Html.BeginForm("NewRequestEntry", "Request"))
                         {
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             @Html.AntiForgeryToken()
@@ -95,11 +96,18 @@
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                         <div class="col-md-3">
-                                            <div class="form-group">
+                                            <div class="form-group hidden">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
                                                     @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item Code</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -172,7 +180,7 @@
                     @if (ViewBag.haveItem == true)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/Request/NewStoreRequsteInfo">
+                        <a class="btn btn-info pull-right" href="~/Request/NewStoreRequsteInfo">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -182,22 +190,28 @@
         </div>
         <script>
             function ItemSelected(id, Code) {
-                document.getElementById("ItemID").value = id, Code;
+                document.getElementById("ItemID").value = id;
+                document.getElementById("ItemCode").value = Code;
             }
+            document.getElementById("ItemID").value = '';
+            document.getElementById("ItemCode").value = '';
+
 
             //datatabale
             $("#maintable").DataTable({
                 "info": false,
-                "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+                "lengthMenu": [[4, 10, 25, 50, -1], [4, 10, 25, 50, "All"]],
                 "lengthChange": false,
+                "scrollCollapse": true,
+                "paging": false,
+                "scrollY":"150px"
             });
         </script>
     }
-        <br />
+        <hr />
     <div>
         @Html.ActionLink("Back to List", "StoreRequestionList")
     </div>
-    <hr />
 
 </div>
 

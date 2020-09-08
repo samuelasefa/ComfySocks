@@ -16,6 +16,7 @@ namespace ComfySocks.Models.Request
         [Required]
         [Display(Name = "Item")]
         public int ItemID { get; set; }
+        public string ItemCode { get; set; }
 
         public float Quantity { get; set; }
         public string Remark { get; set; }

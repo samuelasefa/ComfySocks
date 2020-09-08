@@ -1,0 +1,158 @@
+﻿@model IEnumerable<ComfySocks.Models.SalesInfo.Sales>
+@{
+    /**/
+
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext(); }
+<link href="~/Scripts/AdminLTE/plugins/iCheck/square/red.css" rel="stylesheet" />
+<link href="~/Scripts/AdminLTE/plugins/iCheck/minimal/minimal.css" rel="stylesheet" />
+<script src="~/Scripts/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+<div class="box box-info" style="border-radius:5px">
+    <form method="post" action="SalseReport">
+        <table class="table">
+            <tr>
+                <td>
+                    <label>Select</label><br />
+                    <select class="form-control" name="option">
+                        <option>--Select--</option>
+                        @*<option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>*@
+                        <option value="thisWeek">This Week</option>
+                        <option value="thisMonth">This Month</option>
+                        <option value="lastMonth">Last Month</option>
+                        <option value="thisYear">This Year</option>
+                        <option value="lastYear">Last Year</option>
+                    </select>
+                </td>
+                <td>
+                    <label>From</label><br />
+                    <input type="text" class="datepicker form-control" name="fromDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td>
+                    <label>To</label><br />
+                    <input type="text" class="datepicker form-control" name="toDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td></td>
+                <td>
+                    <label></label>
+                    <br />
+                    <input type="submit" value="Search" class="btn btn-info btn-block">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Malgun Gothic'">Sales Report</h4>
+    <table class="table table-responsive table-striped table-bordered" id="datatable">
+        <thead style="background-color:#00ccD2;color:white;text-align:center">
+            <tr class="dataTableHead">
+                <th>
+                    S/No
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>
+                    Code
+                </th>
+                <th>
+                    Unit
+                </th>
+                <th>
+                    Sales Quantity
+                </th>
+                <th>
+                    Sales Price
+                </th>
+                <th>
+                    Total Price
+                </th>
+            </tr>
+        </thead>
+        @{
+            int i = 1;
+            decimal TotalPrice = 0;
+            decimal VAT = 0;
+            decimal GrandTotal = 0;
+        }
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.Raw(i++)</td>
+                <td>
+                    @item.Item.Name
+                </td>
+                <td>
+                    @item.Item.Code
+                </td>
+                <td>
+                    @item.Item.Unit.Name
+                </td>
+                <td>
+                    @item.Quantity
+                </td>
+                <td>@item.UnitPrice</td>
+                <td>@(TotalPrice = item.UnitPrice * (decimal)item.Quantity)</td>
+            </tr>
+        }
+    </table>
+</div>
+
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.flash.min.js"></script>
+<script src="~/Scripts/DataTables/JSZip-2.5.0/jszip.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.html5.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.print.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd'
+        });
+        var table = $('#datatable').DataTable({
+            "scrollCollapse": true,
+            "scrollY": "250px",
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    className: 'copyButton',
+                    text: '<i class="fa fa-clone"></i> Copy',
+                    title: 'Sales Report'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fa fa-file-excel-o"></i> Excel',
+                    title: 'Sales Report'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+                    title: 'Sales Report'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fa fa-print"></i> Print',
+                    title: 'Sales Report'
+                }
+            ],
+        });
+
+    });
+</script>
+
+<script>
+    //datepicker
+    $(function () {
+        $(".datepicker").datepicker({
+            format: 'dd-MM-yyyy'
+        });
+    });
+</script>

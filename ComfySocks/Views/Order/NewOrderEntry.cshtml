@@ -1,11 +1,11 @@
 ﻿@model ComfySocks.Models.Order.ProductionOrder
 
 @{
-    ViewBag.Title = "Production Order";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
-
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Malgun Gothic'">Production Order</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -34,7 +34,7 @@
                     <div class="form-group">
                         @Html.LabelFor(model => model.ItemID, "Product Code", htmlAttributes: new { @class = "control-label col-md-5" })
                         <div class="col-md-7">
-                            @Html.DropDownList("ItemID", null, htmlAttributes: new { @class = "form-control" })
+                            @Html.DropDownList("ItemID", null,"--Please Select--", htmlAttributes: new { @class = "form-control" })
                             @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
                         </div>
                     </div>
@@ -48,21 +48,21 @@
                     <div class="form-group">
                         @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-5" })
                         <div class="col-md-7">
-                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.EditorFor(model => model.Quantity, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:1000" } })
                             @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
                         </div>
                     </div>
                     <div class="form-group">
                         @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-5" })
                         <div class="col-md-7">
-                            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off" } })
+                            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", autocomplete = "off", @placeholder = "Eg:6/8/2020" } })
                             @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
                         </div>
                     </div>
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-10">
-                            <input type="submit" value="AddToList" class="btn btn-default" />
+                            <input type="submit" value="AddToList" class="btn btn-info" />
                         </div>
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                     @if (ViewBag.haveItem == true)
                     {
                         <div>
-                            <a class="btn btn-primary pull-right" href="~/Order/NewOrderInfo">
+                            <a class="btn btn-info pull-right" href="~/Order/NewOrderInfo">
                                 Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                             </a>
                         </div>
@@ -109,12 +109,11 @@
             </div>
         }
     }
-
-
+    <hr />
     <div>
         @Html.ActionLink("Back to List", "OrderHistory")
     </div>
-    <hr />
+   
 </div>
 
 <script src="~/Scripts/sweetalert.js"></script>
@@ -154,7 +153,7 @@
         //datepicker
         $(function () {
             $(".datepicker").datepicker({
-                format: 'mm-dd-yyyy'
+                format: 'dd-mm-yyyy'
             });
         });
     </script>

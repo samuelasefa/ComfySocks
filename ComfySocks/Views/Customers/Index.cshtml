@@ -1,78 +1,76 @@
 ﻿@model IEnumerable<ComfySocks.Models.Order.Customer>
 
 @{
-    ViewBag.Title = "Customer";
+    /**/
+
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
-    @if (User.IsInRole("Admin") || User.IsInRole("Super Admin"))
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Maiandra GD'">List of Customer</h4>
+    @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
     {
         <p>
-            @Html.ActionLink("Create New", "Create")
-        </p>
-    }
-    else
-    {
-        <p class="hidden">
             @Html.ActionLink("Create New", "Create")
         </p>
     }
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
-
                 <th>
-                    @Html.DisplayNameFor(model => model.FirstName)
+                    @Html.DisplayNameFor(model => model.ID)
                 </th>
                 <th>
-                    @Html.DisplayNameFor(model => model.LastName)
+                    @Html.DisplayNameFor(model => model.FullName)
                 </th>
                 <th>
                     @Html.DisplayNameFor(model => model.TinNumber)
                 </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.City)
-                </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
                 {
-                    <th>Action</th>
+                    <th>
+                        Action
+                    </th>
                 }
             </tr>
-
         </thead>
+
         @foreach (var item in Model)
         {
-        <tr>
-
-            <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TinNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.City)
-            </td>
-            @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-            {
+            <tr>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    @Html.DisplayFor(modelItem => item.ID)
                 </td>
-            }
-        </tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TinNumber)
+                </td>
+
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                    </td>
+                }else if(User.IsInRole("Store Manager") || User.IsInRole("Sales")|| User.IsInRole("Finance") || User.IsInRole("Production"))
+                {
+                    <td>
+                        @Html.ActionLink("Details", "Details", new { id = item.ID })
+                    </td>
+                }
+            </tr>
         }
 
     </table>
 
 </div>
-
 <script>
     $(document).ready(function () {
-        $("#dtaTable").DataTable({});
+        $("#dtaTable").DataTable({})
     })
+
 </script>

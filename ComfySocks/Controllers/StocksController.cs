@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
+using ComfySocks.Models.Repository;
 using ComfySocks.Repository;
 using Microsoft.AspNet.Identity;
 
@@ -25,7 +26,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var StockInfo = (from s in db.StockInformation select s).Include(e => e.Stocks).Include(e => e.ApplicationUser);
+            var StockInfo = (from s in db.StockInformation select s).Include(e => e.Stocks).Include(e => e.ApplicationUser).OrderByDescending(e=>e.Date);
             ViewBag.center = true;
 
             return View(StockInfo.ToList());
@@ -97,7 +98,7 @@ namespace ComfySocks.Controllers
                 {
                     SelectedList = (List<StockViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
                     foreach (StockViewModel items in SelectedList)
-                    {
+                    { 
                         if (items.Stock.ItemID == stock.ItemID && items.Stock.StoreID == stock.StoreID)
                         {
                             items.Stock.Quantity += stock.Quantity;
@@ -208,7 +209,7 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find Selected Stock Information. try agin";
                 return RedirectToAction("NewPurchaseEntry");
             }
-            float totalPrice = 0;
+            decimal totalPrice = 0;
             List<StockViewModel> stocks = new List<StockViewModel>();
             stocks = (List<StockViewModel>)TempData[User.Identity.GetUserId() + "SelectedList"];
             TempData[User.Identity.GetUserId() + "SelectedList"] = stocks;
@@ -238,31 +239,17 @@ namespace ComfySocks.Controllers
                         try
                         {
                             List<Stock> S = (from i in db.Stocks where items.Stock.ItemID <= i.ID select i).ToList();
-                            totalPrice += (float)items.Stock.Quantity * (float)items.Stock.UnitPrice;
+                            totalPrice += (decimal)items.Stock.Quantity * items.Stock.UnitPrice;
                             db.Entry(S).State = EntityState.Modified;
                             db.SaveChanges();
-                            //items.Stock.Total += S.Total + items.Stock.Quantity;
-                            //items.Stock.ProwTotal += S.ProwTotal + items.Stock.Quantity;
                         }
                         catch
                         {
                             items.Stock.Total +=  items.Stock.Quantity;
                             items.Stock.ProwTotal += items.Stock.Quantity;
                         }
-                        double Tax = 1.15;
-                        stockInformation.SubTotal = totalPrice;
-                        stockInformation.GrandTotal = totalPrice * (float)Tax;
-                        stockInformation.Tax = stockInformation.GrandTotal - stockInformation.SubTotal;
-                        db.Entry(stockInformation).State = EntityState.Modified;
-                        db.SaveChanges();
-                        Item I = db.Items.Find(items.Stock.ItemID);
-                        items.Stock.StockInformationID = StockInformation.ID;
-                        db.Stocks.Add(items.Stock);
-                        db.SaveChanges();
-
                         AvaliableOnStock AV = db.AvaliableOnStocks.Find(items.Stock.ItemID);
                         RowMaterialRepositery repositery = db.RowMaterialRepositeries.Find(items.Stock.ItemID);
-
                         if (AV == null && repositery == null)
                         {
                             AV = new AvaliableOnStock()
@@ -275,7 +262,7 @@ namespace ComfySocks.Controllers
                                 ID = items.Stock.ItemID,
                                 RowMaterialAavliable = items.Stock.Quantity
                             };
-                            db.AvaliableOnStocks.Add(AV); 
+                            db.AvaliableOnStocks.Add(AV);
                             db.RowMaterialRepositeries.Add(repositery);
                             db.SaveChanges();
                         }
@@ -288,7 +275,15 @@ namespace ComfySocks.Controllers
                             db.SaveChanges();
                         }
                         insertedStock.Add(items.Stock);
-
+                        double Tax = 1.15;
+                        stockInformation.SubTotal = totalPrice;
+                        stockInformation.GrandTotal = totalPrice * (decimal)Tax;
+                        stockInformation.Tax = stockInformation.GrandTotal - stockInformation.SubTotal;
+                        db.Entry(stockInformation).State = EntityState.Modified;
+                        db.SaveChanges();
+                        items.Stock.StockInformationID = StockInformation.ID;
+                        db.Stocks.Add(items.Stock);
+                        db.SaveChanges();
                     }
                     catch (Exception)
                     {
@@ -298,9 +293,10 @@ namespace ComfySocks.Controllers
                             db.Stocks.Remove(item);
                             db.SaveChanges();
                             Item I = db.Items.Find(item.ItemID);
-
                             AvaliableOnStock AV = db.AvaliableOnStocks.Find(item.ItemID);
+                            RowMaterialRepositery repositery = db.RowMaterialRepositeries.Find(item.ItemID);
                             AV.Avaliable -= items.Stock.Quantity;
+                            repositery.RowMaterialAavliable -= items.Stock.Quantity;
                             db.Entry(AV).State = EntityState.Modified;
                             db.SaveChanges();
                         }
@@ -309,9 +305,35 @@ namespace ComfySocks.Controllers
                         TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to register stock information";
                         return RedirectToAction("NewPurchaseEntry");
                     }
+                    try
+                    {
+                        LogicalOnTransit onTransit = db.LogicalOnTransit.Find(items.Stock.ItemID);
+                        if (onTransit.OnTransitAvaliable > 0)
+                        {
+                            float deference = onTransit.RecentlyReduced - items.Stock.Quantity;
+                            if (deference > 0)
+                            {
+                                onTransit.OnTransitAvaliable -= (float)items.Stock.Quantity;
+                            }
+                            else
+                            {
+                                onTransit.RecentlyReduced = 0;
+                                onTransit.OnTransitAvaliable += deference;
+                            }
+                            db.Entry(onTransit).State = EntityState.Modified;
+                            db.SaveChanges();
+
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        ViewBag.errorMessage = "Error is occured";
+                    }
+                        
+                    
                 }
                 TempData[User.Identity.GetUserId() + "succsessMessage"] = "Stock information is Saved";
-                return RedirectToAction("NewPurchaseEntry");
+                return RedirectToAction("StockDetails");
 
             }
             else

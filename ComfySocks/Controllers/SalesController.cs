@@ -1,7 +1,6 @@
 ﻿using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductInfo;
 using ComfySocks.Models.ProductTransferInfo;
 using ComfySocks.Models.SalesInfo;
 using Microsoft.AspNet.Identity;
@@ -23,13 +22,13 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var salesinfo = (from sales in db.SalesInformation orderby sales.ID ascending select sales).Include(J => J.Customer).ToList();
+            var salesinfo = (from sales in db.SalesInformation orderby sales.Date descending select sales).Include(J => J.Customer).ToList();
 
             return View(salesinfo);
         }
 
-        [Authorize(Roles = "Super Admin, Admin, Finance")]
-        public ActionResult NewSalesEntry()
+        [Authorize(Roles = "Super Admin, Finance")]
+        public ActionResult NewSalesEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
@@ -43,11 +42,21 @@ namespace ComfySocks.Controllers
             }
             ViewBag.ProductID = (from S in db.Items where S.StoreType == StoreType.ProductItem orderby S.ID descending select S).ToList();
 
+            if (id != 0)
+            {
+                List<SalesVM> selectedSales = new List<SalesVM>();
+                selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
+                TempData[User.Identity.GetUserId() + "selectedSales"] = selectedSales;
+                ViewBag.selectedSales = selectedSales;
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "selectedSales"] = null;
+            }
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin, Finance")]
+        [Authorize(Roles = "Super Admin, Finance")]
 
         public ActionResult NewSalesEntry(Sales sales)
         {
@@ -130,7 +139,7 @@ namespace ComfySocks.Controllers
             return View();
         }
 
-        [Authorize(Roles = "Super Admin, Admin, Finance")]
+        [Authorize(Roles = "Super Admin, Finance")]
 
         public ActionResult Remove(int id)
         {
@@ -158,12 +167,19 @@ namespace ComfySocks.Controllers
             return View("NewSalesEntry");
         }
 
-        [Authorize(Roles = "Super Admin, Admin")]
+        [Authorize(Roles = "Super Admin,Finance")]
         public ActionResult NewSalesInfo()
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             List<SalesVM> selectedSales = new List<SalesVM>();
+            {
+                ViewBag.customer = "";
+                if (db.Customers.ToList().Count == 0)
+                {
+                    ViewBag.custumer = "Register Customer frist";
+                }
+            }
             if (TempData[User.Identity.GetUserId() + "selectedSales"] != null)
             {
                 selectedSales = (List<SalesVM>)TempData[User.Identity.GetUserId() + "selectedSales"];
@@ -175,21 +191,21 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Sales request";
                 return RedirectToAction("NewSalesEntry");
             }
-            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName","LastName");
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FullName");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "FullName");
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Super Admin, Admin, Finance")]
+        [Authorize(Roles = "Super Admin,Finance")]
 
         public ActionResult NewSalesInfo(SalesInformation salesInformation)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
-            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "Name");
+            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FullName");
+            ViewBag.SupplierID = new SelectList(db.Suppliers, "ID", "FullName");
 
             List<SalesVM> selectedSales = new List<SalesVM>();
 
@@ -212,7 +228,7 @@ namespace ComfySocks.Controllers
             {
                 salesInformation.FsNo = "No:-" + 1.ToString("D4");
             }
-            float totalPrice = 0;
+            decimal totalPrice = 0;
             salesInformation.Date = DateTime.Now;
             bool pass = true;
             if (ModelState.IsValid)
@@ -239,13 +255,13 @@ namespace ComfySocks.Controllers
                             s.Sales.RemaningDelivery = (float)s.Sales.Quantity;
                             db.Sales.Add(s.Sales);
                             db.SaveChanges();
-                            totalPrice += (float)s.Sales.Quantity * (float)s.Sales.UnitPrice;
+                            totalPrice += (decimal)s.Sales.Quantity * s.Sales.UnitPrice;
                             double Tax = 1.15;
                             double ETax = 0.08;
                             SalesInformation si = db.SalesInformation.Find(salesInformation.ID);
-                            si.ExciseTax = totalPrice * (float)ETax;
+                            si.ExciseTax = totalPrice * (decimal)ETax;
                             si.Total = totalPrice + si.ExciseTax;
-                            si.TotalSellingPrice = si.Total * (float)Tax;
+                            si.TotalSellingPrice = si.Total * (decimal)Tax;
                             si.VAT = si.TotalSellingPrice - si.Total;
                             db.Entry(si).State = EntityState.Modified;
                             db.SaveChanges();

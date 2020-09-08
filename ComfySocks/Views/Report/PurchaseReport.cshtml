@@ -1,0 +1,223 @@
+﻿@model IEnumerable<ComfySocks.Models.InventoryModel.Stock>
+@{
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext(); }
+<link href="~/Scripts/AdminLTE/plugins/iCheck/square/red.css" rel="stylesheet" />
+<link href="~/Scripts/AdminLTE/plugins/iCheck/minimal/minimal.css" rel="stylesheet" />
+<script src="~/Scripts/AdminLTE/plugins/iCheck/icheck.min.js"></script>
+<div class="box box-info" style="border-radius:5px">
+    <form method="post" action="PurchaseReport">
+        <table class="table">
+            <tr>
+                <td>
+                    <label>Select</label><br />
+                    <select class="form-control" name="option">
+                        <option>--Select--</option>
+                        @*<option value="today">Today</option>
+                            <option value="yesterday">Yesterday</option>*@
+                        <option value="thisWeek">This Week</option>
+                        <option value="thisMonth">This Month</option>
+                        <option value="lastMonth">Last Month</option>
+                        <option value="thisYear">This Year</option>
+                        <option value="lastYear">Last Year</option>
+                    </select>
+                </td>
+                <td>
+                    <label>From</label><br />
+                    <input type="text" class="datepicker form-control" name="fromDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td>
+                    <label>To</label><br />
+                    <input type="text" class="datepicker form-control" name="toDate" autocomplete="off" placeholder="Eg:2020-06-09" />
+                </td>
+                <td></td>
+                <td>
+                    <label></label>
+                    <br />
+                    <input type="submit" value="Search" class="btn btn-info btn-block">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Malgun Gothic'">Purchase Report</h4>
+    <table class="table table-responsive table-striped table-bordered" id="datatable">
+        <thead style="background-color:#00ccD2;color:white;text-align:center">
+            <tr class="dataTableHead">
+                <th>
+                    S/No
+                </th>
+                <th>
+                    Description
+                </th>
+                <th>Item Type</th>
+                <th>
+                    PR.No
+                </th>
+                <th>
+                    GRV.No
+                </th>
+                <th>
+                    SI.No
+                </th>
+                <th>
+                    Unit
+                </th>
+                <th>
+                    Quantity
+                </th>
+                <th>
+                    Unit Price
+                </th>
+                <th>
+                    Total Price
+                </th>
+                <th>
+                    VAT(15%)
+                </th>
+                <th>
+                    Grand Total
+                </th>
+            </tr>
+        </thead>
+        @{
+            int i = 1;
+            decimal TotalPrice = 0;
+            decimal GrandTotal = 0;
+            decimal VAT = 0;
+        }
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>@Html.Raw(i++)</td>
+            <td>
+                @item.Item.Name
+            </td>
+            <td>@item.Item.ItemType.Name</td>
+
+            <td>
+                @{ var purchaseNo = db.PurchaseRequests.Find(item.StockInformationID);}
+                @try
+                {
+                    @purchaseNo.PurchaseRequestInformation.PurchaseRequestNumber
+                }
+                catch (Exception)
+                {
+                    <p>---</p>
+                }
+            </td>
+            <td>
+                @{ var grno = db.StockInformation.Find(item.StockInformationID);}
+                @try
+                {
+                    @Html.DisplayFor(modelItem => grno.StoreNumber)
+                }
+                catch (Exception)
+                {
+                    <p>---</p>
+                }
+            </td>
+            <td>
+                @{ var issueNo = db.RowDeliveryInformation.Find(item.StockInformationID);}
+                @try
+                {
+                    @issueNo.StoreIssueNumber
+                }
+                catch (Exception)
+                {
+                    <p>---</p>
+                }
+            </td>
+            <td>@item.Item.Unit.Name</td>
+            <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+            <td>@Html.DisplayFor(modelItem => item.UnitPrice)</td>
+            <td>@(TotalPrice = (decimal)item.Quantity * item.UnitPrice)</td>
+            <td>
+                @(VAT = TotalPrice/100 * 15)
+            </td>
+            <td>@( GrandTotal = (TotalPrice + VAT))</td>
+        </tr>
+        }
+    </table>
+</div>
+
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/dataTables.buttons.min.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.flash.min.js"></script>
+<script src="~/Scripts/DataTables/JSZip-2.5.0/jszip.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/pdfmake.min.js"></script>
+<script src="~/Scripts/DataTables/pdfmake-0.1.36/vfs_fonts.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.html5.js"></script>
+<script src="~/Scripts/DataTables/Buttons-1.6.1/js/buttons.print.js"></script>
+
+<script>
+    $(document).ready(function () {
+        $(".datepicker").datepicker({
+            format: 'yyyy-mm-dd'
+        });
+        var groupColumn = 2;
+        var table = $('#datatable').DataTable({
+            "columnDefs": [
+                { "visible": false, "targets": groupColumn }
+            ],
+            "order": [[groupColumn, 'asc']],
+            "displayLength": 5,
+            "scrollCollapse": true,
+            "scrollY":"300px",
+            "dom": 'Bfrtip',
+            "buttons": [
+                {
+                    extend: 'copy',
+                    className: 'copyButton',
+                    text: '<i class="fa fa-clone"></i> Copy',
+                    title:'Purchase Report'
+                },
+                {
+                    extend: 'excel',
+                    text: '<i class="fa fa-file-excel-o"></i> Excel',
+                    title: 'Purchase Report'
+                },
+                {
+                    extend: 'pdf',
+                    text: '<i class="fa fa-file-pdf-o"></i> Pdf',
+                    title: 'Purchase Report'
+                },
+                {
+                    extend: 'print',
+                    text: '<i class="fa fa-print"></i> Print',
+                    title: 'Purchase Report'
+                }
+            ],
+            "drawCallback": function (settings) {
+                var api = this.api();
+                var rows = api.rows({ page: 'current' }).nodes();
+                var last = null;
+
+                api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
+                    if (last !== group) {
+                        $(rows).eq(i).before(
+                            '<tr class="group text-light" style="background-color:#ECFEFE; color:#000000;text-style:bold"><td colspan="12">' + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + group + '</td></tr>'
+                        );
+
+                        last = group;
+                    }
+                });
+            }
+        });
+
+        // Order by the grouping
+        $('#dtaTable tbody').on('click', 'tr.group', function () {
+            var currentOrder = table.order()[0];
+            if (currentOrder[0] === groupColumn && currentOrder[1] === 'asc') {
+                table.order([groupColumn, 'desc']).draw();
+            }
+            else {
+                table.order([groupColumn, 'asc']).draw();
+            }
+        });
+    });
+</script>

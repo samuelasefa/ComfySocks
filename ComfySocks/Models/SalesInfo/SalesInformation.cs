@@ -13,36 +13,15 @@ namespace ComfySocks.Models.SalesInfo
     public partial class SalesInformation
     {
         public int ID { get; set; }
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
         public string FsNo { get; set; }
 
         [Display(Name ="From")]
         public int SupplierID { get; set; }
 
-        [Display(Name ="Supplier TIN")]
-        public int SupplierTin { get; set; }
-
         [Display(Name ="To")]
         public int CustomerID { get; set; }
-
-        [Display(Name="Supplier's VAT Reg. No")]
-        public int SupplierVatRegistrationNo { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Date Of VAT Registration")]
-        public DateTime? DateOfVatRegistration { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name = "Date Of VAT Registration")]
-        public DateTime? CDateOfVatRegistration { get; set; }
-
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
-        [Display(Name ="Date Of Service")]
-        public DateTime? DateOfService { get; set; }
-
-        [Display(Name ="Customer VAT Reg. No")]
-        public int CustomerVatRegistrationNo { get; set; }
 
         [Display(Name ="AmountInWord")]
         public string AmountInWord { get; set; }
@@ -53,20 +32,17 @@ namespace ComfySocks.Models.SalesInfo
         [Display(Name ="Checked By")]
         public string Checkedby { get; set; }
 
-        [Display(Name ="Recived By")]
-        public string Reciviedby { get; set; }
-
         [Display(Name ="Approved By")]
         public string Approvedby { get; set; }
 
         public string Status { get; set; }
 
-        public float ExciseTax { get; set; }
-        public float Service { get; set; }
-        public float Total { get; set; }
-        public float VAT { get; set; }
+        public decimal ExciseTax { get; set; }
+        public decimal Service { get; set; }
+        public decimal Total { get; set; }
+        public decimal VAT { get; set; }
         [Display(Name ="Total Selling Price Including")]
-        public float TotalSellingPrice  { get; set; }
+        public decimal TotalSellingPrice  { get; set; }
         //reference
         public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual Customer Customer { get; set; }

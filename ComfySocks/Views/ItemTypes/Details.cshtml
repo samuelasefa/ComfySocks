@@ -1,12 +1,12 @@
 ﻿@model ComfySocks.Models.Items.ItemType
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div>
-        <h4>ItemType</h4>
+        <h4 style="text-align:center;font-family:'Malgun Gothic'">Details of ItemType</h4>
         <hr />
         <dl class="dl-horizontal">
             <dt>
@@ -35,6 +35,7 @@
 
         </dl>
     </div>
+    <hr />
     <p>
         @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
         {

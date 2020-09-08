@@ -12,15 +12,21 @@ namespace ComfySocks.Models.Order
     public partial class Customer
     {
         public int ID { get; set; }
-        [Display(Name="TIN No.")]
-        public int TinNumber { get; set; }
+        [Display(Name="TIN Number.")]
+        public string TinNumber { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
         [Required]
-        [Display(Name ="First Name")]
-        public string FirstName { get; set; }
-        [Display(Name="Last Name")]
-        public string LastName { get; set; }
-        [Display(Name ="City")]
+        [Display(Name ="Full Name")]
+        public string FullName { get; set; }
+        
+        public string No { get; set; }
+
         public string City{ get; set; }
+        public string SubCity { get; set; }
+        public string woreda { get; set; }
+        public string HouseNo { get; set; }
         //referance to Productionorderinfo
         public virtual ICollection<SalesInformation> SalesInformation { get; set; }
         public virtual ICollection<ProductionOrderInfo> ProductionOrderInfos { get; set; }

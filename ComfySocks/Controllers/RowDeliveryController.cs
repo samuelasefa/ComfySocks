@@ -1,6 +1,7 @@
 ﻿using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
+using ComfySocks.Models.Repository;
 using ComfySocks.Models.Request;
 using ComfySocks.Models.RowDeliveryInfo;
 using ComfySocks.Models.SalesInfo;
@@ -30,7 +31,7 @@ namespace ComfySocks.Controllers
             ViewBag.ID = id;
 
             TempData[User.Identity.GetUserId() + "RequestID"] = id;
-            var RowMaterialDelivery = (from d in db.RowDeliveryInformation where d.StoreRequestInformationID == id orderby d.ID descending select d).ToList();
+            var RowMaterialDelivery = (from d in db.RowDeliveryInformation where d.StoreRequestInformationID == id orderby d.Date descending select d).ToList();
 
             return View(RowMaterialDelivery);
         }
@@ -84,7 +85,7 @@ namespace ComfySocks.Controllers
                     TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to lode Request information! Try again";
                     TempData[User.Identity.GetUserId()+"errorMessage"]="RowMaterial ID is = "+ rowDelivery.StoreRequestID;
                     TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
-                    return RedirectToAction("RowDeliveryList", new { id = id });
+                    return RedirectToAction("RowDeliveryList");
                 }
 
                 foreach (RowDeliveryVM d in selectedDelivery)
@@ -133,34 +134,7 @@ namespace ComfySocks.Controllers
             ViewBag.StoreRequestID = (from d in db.StoreRequest where d.StoreRequestInformationID == id select d).ToList();
             return View(rowDelivery);
         }
-
-        [Authorize(Roles = "Super Admin, Admin, Store Manager")]
-        public ActionResult Remove(int id)
-        {
-            if (TempData[User.Identity.GetUserId() + "selectedDelivery"] == null)
-            {
-                TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to find selected Request. try again.";
-                return RedirectToAction("NewRowDelivery");
-            }
-            List<RowDeliveryVM> selectedDelivery = new List<RowDeliveryVM>();
-            selectedDelivery = (List<RowDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
-            foreach (var s in selectedDelivery)
-            {
-                if (s.RowDelivery.StoreRequestID == id)
-                {
-                    selectedDelivery.Remove(s);
-                    ViewBag.succsessMessage = "Row Delivery successfully Removed";
-                    break;
-                }
-            }
-            if (selectedDelivery.Count > 0)
-                ViewBag.haveItem = true;
-            ViewBag.selectedDelivery = selectedDelivery;
-            TempData[User.Identity.GetUserId() + "selectedDelivery"] = selectedDelivery;
-            ViewBag.StoreRequestID = (from d in db.StoreRequest where d.StoreRequestInformationID == id select d).ToList();
-            return View("NewRowDelivery");
-        }
-
+        
         [Authorize(Roles = "Super Admin, Admin, Store Manager")]
         public ActionResult NewRowDeliveryInfo()
         {
@@ -205,20 +179,19 @@ namespace ComfySocks.Controllers
                 ViewBag.errorMessage = "The date information you provide is not valid!.";
                 return View(rowdeliveryInformation);
             }
-            RowDeliveryVM d = deliverylist.FirstOrDefault();
+            RowDeliveryVM d = deliverylist.First();
             rowdeliveryInformation.ApplicationUserID = User.Identity.GetUserId();
 
             try
             {
                 RowDeliveryInformation lastDeliverd = (from del in db.RowDeliveryInformation orderby del.ID descending select del).First();
-
                 rowdeliveryInformation.StoreRequestInformationID = RequestId;
-                rowdeliveryInformation.StoreIssueNumber = "NO-" + lastDeliverd.ID.ToString("D5");
+                rowdeliveryInformation.StoreIssueNumber = "No-" + lastDeliverd.ID.ToString("D5");
             }
             catch
-            {
+            {   
                 rowdeliveryInformation.StoreRequestInformationID = RequestId;
-                rowdeliveryInformation.StoreIssueNumber = "No-"+ 1.ToString("D5");
+                rowdeliveryInformation.StoreIssueNumber = "No-"+ 0.ToString("D5");
             }
             if (ModelState.IsValid)
             {
@@ -243,9 +216,24 @@ namespace ComfySocks.Controllers
                         db.Entry(stock).State = EntityState.Modified;
                         db.SaveChanges();
                         RowMaterialRepositery rowMaterialRepositery = db.RowMaterialRepositeries.Find(rowDelivery.StoreRequest.ItemID);
+                        MonthlyConsumption monthly = db.MonthlyConsumptions.Find(rowDelivery.StoreRequest.ItemID);
                         Item i = db.Items.Find(rowMaterialRepositery.ID);
                         float deference = rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable - (float)rowDelivery.DeliveryQuantity;
-
+                        if (monthly == null)
+                        {
+                            monthly = new MonthlyConsumption()
+                            {
+                                ID = rowDelivery.StoreRequest.ItemID,
+                                Consumption = (float)rowDelivery.DeliveryQuantity
+                            };
+                            db.MonthlyConsumptions.Add(monthly);
+                            db.SaveChanges();
+                        }
+                        else {
+                            monthly.Consumption += (float)rowDelivery.DeliveryQuantity;
+                            db.Entry(monthly).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                         if (deference > 0)
                         {
                             rowMaterialRepositery.RecentlyReducedRowMaterialAvaliable -= (float)rowDelivery.DeliveryQuantity;
@@ -261,7 +249,7 @@ namespace ComfySocks.Controllers
                     }
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
 
-                    return RedirectToAction("StoreRequestDetial", "Request", new { id = rowdeliveryInformation.StoreRequestInformationID });
+                    return RedirectToAction("RowDeliveryList", "RowDelivery", new { id = rowdeliveryInformation.ID });
 
                 }
                 catch (Exception e)

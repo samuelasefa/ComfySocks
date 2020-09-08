@@ -22,7 +22,7 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var productionOrderInfos = db.ProductionOrderInfos.Include(c=> c.Customer);
+            var productionOrderInfos = db.ProductionOrderInfos.Include(c=> c.Customer).OrderByDescending(c => c.Date);
 
             return View(productionOrderInfos.ToList());
         }
@@ -68,7 +68,7 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.Customer = "Register Customer Information Frist!!,";
             }
-            ViewBag.ItemID = new SelectList((from i in db.Items where i.StoreType == Models.Items.StoreType.ProductItem orderby i.Code select i), "ID", "Code");
+            ViewBag.ItemID = new SelectList((from i in db.Items where i.StoreType == Models.Items.StoreType.ProductItem orderby i.ID select i), "ID", "Code");
             return View();
         }
 
@@ -173,7 +173,7 @@ namespace ComfySocks.Controllers
             }
             TempData[User.Identity.GetUserId() + "ProductionOrders"] = TempData[User.Identity.GetUserId() + "ProductionOrders"];
 
-            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName");
+            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FullName");
             return View();
         }
         [HttpPost]
@@ -191,7 +191,7 @@ namespace ComfySocks.Controllers
             productionOrders = (List<ProductionOrderVM>)TempData[User.Identity.GetUserId() + "ProductionOrders"];
 
             TempData[User.Identity.GetUserId() + "ProductionOrders"] = productionOrders;
-            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FirstName", productionOrderInfo.CustomerID);
+            ViewBag.CustomerID = new SelectList(db.Customers, "ID", "FullName", productionOrderInfo.CustomerID);
             productionOrderInfo.ApplicationUserID = User.Identity.GetUserId();
             productionOrderInfo.Date = DateTime.Now;
             productionOrderInfo.Status = "Submmited";

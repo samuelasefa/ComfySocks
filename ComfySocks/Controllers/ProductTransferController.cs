@@ -14,7 +14,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize(Roles = "Super Admin, Production, Store Manager")]
+    [Authorize(Roles = "Super Admin, Production, Store Manager, Finance, Sales, Admin")]
     public class ProductTransferController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -24,17 +24,38 @@ namespace ComfySocks.Controllers
             //errormessage display
             if (TempData[User.Identity.GetUserId()+"errorMessage"]!= null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
-            var transfers = (from transfer in db.TransferInformation where transfer.Status == "Transfering" || transfer.Status == "Transferd" || transfer.Status =="Rejected" orderby transfer.FPTNo ascending select transfer).ToList();
+            var transfers = (from transfer in db.TransferInformation where transfer.Status == "Transfering" || transfer.Status == "Transferd" || transfer.Status =="Rejected" orderby transfer.Date descending select transfer).ToList();
 
             return View(transfers);
         }
 
         // controller of Finshed product transfer
-        public ActionResult NewTransferEntry()
+        public ActionResult NewTransferEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
+            //required item
+            {
+                var item = (from i in db.Items where i.StoreType == StoreType.ProductItem select i).ToList();
+
+                ViewBag.item = "";
+
+                if (item.Count() == 0) {
+                    ViewBag.item = "Please Product Item Information Frist";
+                    ViewBag.RequiredItems = true;
+                }
+            }
             ViewBag.TransferID = (from t in db.Items where t.StoreType == StoreType.ProductItem orderby t.ID select t).ToList();
+            if (id != 0)
+            {
+                List<TransferVM> selectedTransfer = new List<TransferVM>();
+                selectedTransfer = (List<TransferVM>)TempData[User.Identity.GetUserId() + "selectedTransfer"];
+                TempData[User.Identity.GetUserId() + "selectedTransfer"] = selectedTransfer;
+                ViewBag.selectedTransfer = selectedTransfer;
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "selectedTransfer"] = null;
+            }
             return View();
         }
 
@@ -52,8 +73,9 @@ namespace ComfySocks.Controllers
                 selectedTransfer = (List<TransferVM>)TempData[User.Identity.GetUserId() + "selectedTransfer"];     
             }
             transfer.TransferInformationID = 1;
+            transfer.RemaningDelivery = (float)transfer.Quantity;
 
-               var item = db.Transfers.Find(transfer.ItemID);
+            var item = db.Transfers.Find(transfer.ItemID);
 
             if (ModelState.IsValid)
             {
@@ -175,16 +197,18 @@ namespace ComfySocks.Controllers
                 return RedirectToAction("NewTransferEntry");
             }
             transferInformation.ApplicationUserID = User.Identity.GetUserId();
+            
             try
             {
-                int LastId = (from s in db.TransferInformation orderby s.ID ascending select s.ID).First();
+                int LastId = (from s in db.TransferInformation orderby s.ID descending select s.ID).First();
                 transferInformation.FPTNo = "No:-" + (LastId + 1).ToString("D4");
             }
             catch
             {
-                transferInformation.FPTNo = "No:-" +1.ToString("D4");
+                transferInformation.FPTNo = "No:-"+ 1.ToString("D4");
             }
             transferInformation.Date = DateTime.Now;
+            TransferInformation transferinfo = (TransferInformation)TempData[User.Identity.GetUserId() + "transferinfo"];
             bool pass = true;
             if (ModelState.IsValid)
             {
@@ -193,6 +217,7 @@ namespace ComfySocks.Controllers
                     transferInformation.Status = "Transfering";
                     db.TransferInformation.Add(transferInformation);
                     db.SaveChanges();
+                    ModelState.Clear();
                     pass = true;
                 }
                 catch (Exception e)
@@ -209,6 +234,8 @@ namespace ComfySocks.Controllers
                             s.Transfer.TransferInformationID = transferInformation.ID;
                             db.Transfers.Add(s.Transfer);
                             db.SaveChanges();
+                            ModelState.Clear();
+                            Response.Redirect(Request.Url.ToString(), false);
                         }
                         ViewBag.succsessMessage = "Transfer item is created!.";
                         return RedirectToAction("TransferDetail", new { id = transferInformation.ID });
@@ -216,6 +243,13 @@ namespace ComfySocks.Controllers
                     catch (Exception e)
                     {
                         ViewBag.errorMessage = "Unable to perform the request you need!view error detail" + e;
+                    }
+                    TransferInformation transfer = (from s in db.TransferInformation where s.FPTNo == transferInformation.FPTNo select s).First();
+                    if (transfer != null)
+                    {
+                        ViewBag.errorMessage = "Duplicated Transfer Number";
+                        TempData[User.Identity.GetUserId() + "transferinfo"] = transferinfo;
+                        return View();
                     }
                 }
             }
@@ -279,35 +313,26 @@ namespace ComfySocks.Controllers
                 foreach (Transfer transfer in transferInformation.Transfers)
                 {
                     Item items= (from t in db.Items where t.ID == transfer.ItemID select t).First();
-                    transfer.Total += (float)transfer.Quantity;
-                    transfer.PPT += (float)transfer.Quantity;
                     db.Entry(transfer).State = EntityState.Modified;
                     db.SaveChanges();
-                    ProductlogicalAvaliable productlogical = db.ProductlogicalAvaliables.Find(transfer.ItemID);
-                    ProductMaterialRepository productMaterial = db.ProductMaterialRepositories.Find(transfer.ItemID);
-                    if (productMaterial == null && productlogical == null)
-                    {
-                        productMaterial = new ProductMaterialRepository()
-                        {
-                            ID = transfer.ItemID,
-                            ProductMaterialAavliable = transfer.Quantity
-                        };
-                        productlogical = new ProductlogicalAvaliable()
-                        {
-                            ID = transfer.ItemID,
-                            LogicalProductAvaliable = transfer.Quantity
-                        };
-                        db.ProductMaterialRepositories.Add(productMaterial);
-                        db.ProductlogicalAvaliables.Add(productlogical);
-                        db.SaveChanges();
-                    }
-                    else {
-                        productMaterial.ProductMaterialAavliable += transfer.Quantity;
-                        productlogical.LogicalProductAvaliable += transfer.Quantity;
-                        db.Entry(productMaterial).State = EntityState.Modified;
-                        db.Entry(productlogical).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
+
+                    //ProductlogicalAvaliable productlogical = db.ProductlogicalAvaliables.Find(transfer.ItemID);
+                    //if (productlogical == null)
+                    //{
+                    //    productlogical = new ProductlogicalAvaliable()
+                    //    {
+                    //        ID = transfer.ItemID,
+                    //        LogicalProductAvaliable = transfer.Quantity
+                    //    };
+                    //    db.ProductlogicalAvaliables.Add(productlogical);
+                    //    db.SaveChanges();
+                    //}
+                    //else
+                    //{
+                    //    productlogical.LogicalProductAvaliable += transfer.Quantity;
+                    //    db.Entry(productlogical).State = EntityState.Modified;
+                    //    db.SaveChanges();
+                    //}
                 }
                 transferInformation.Status = "Transferd";
                 transferInformation.Approvedby = User.Identity.GetUserName();

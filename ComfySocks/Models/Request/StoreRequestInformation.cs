@@ -9,8 +9,8 @@ namespace ComfySocks.Models.Request
     {
             public int ID { get; set; }
             [Required(ErrorMessage = "Request Date is required")]
-            [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
-            public DateTime Date { get; set; }
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
+        public DateTime Date { get; set; }
 
             [Display(Name = "SR-No.")]
             public string StoreRequestNumber { get; set; }

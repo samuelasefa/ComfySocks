@@ -2,10 +2,15 @@
 
 @{
 
-    ViewBag.Title = "Stock Avaliable";
+    ViewBag.Title = null;
 }
+@{ 
+    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+}
+
 @*<link href="~/Scripts/DataTables/Buttons-1.6.1/css/buttons.dataTables.min.css" rel="stylesheet" />*@
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="text-align:center;font-family:'Maiandra GD'">Stock Avaliable</h4>
     <table class="table table-bordered table-striped" id="dtaTable">
         <thead style="background-color:#00CCD2; color:white">
             <tr>
@@ -13,7 +18,7 @@
                     Sq No
                 </th>
                 <th>
-                   Stock Description
+                    Stock Description
                 </th>
                 <th>
                     Code
@@ -24,6 +29,12 @@
                 <th>
                     Avaliable On Stock
                 </th>
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    <th>
+                        Acition
+                    </th>
+                }
             </tr>
         </thead>
 
@@ -34,7 +45,15 @@
                 @Html.DisplayFor(modelItem => item.ID)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Name) &nbsp;  @Html.DisplayFor(modelItem => item.ItemType.Name)
+                @Html.DisplayFor(modelItem => item.Name) &nbsp;
+                @if (item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial || item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
+                {
+                    @Html.DisplayFor(modelItem => item.ItemType.Name)
+                }
+                else
+                {
+                    <p class="hidden">@Html.DisplayFor(modelItem => item.ItemType.Name)</p>
+                }
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Code)
@@ -42,7 +61,7 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Unit.Name)
             </td>
-            @if(item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial ||item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
+            @if (item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial || item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
             {
                 <td>
                     @try
@@ -55,7 +74,7 @@
                     }
                 </td>
             }
-            else if(item.StoreType == ComfySocks.Models.Items.StoreType.ProductItem)
+            else if (item.StoreType == ComfySocks.Models.Items.StoreType.ProductItem)
             {
                 <td>
                     @try
@@ -68,8 +87,24 @@
                     }
                 </td>
             }
+            @if (Request.IsAuthenticated)
+            {
+                if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+                {
+                    if (item.StoreType == ComfySocks.Models.Items.StoreType.RowMaterial || item.StoreType == ComfySocks.Models.Items.StoreType.OfficeMaterial)
+                    {
+                        <td>@Html.ActionLink("Edit", "EditRowMaterialQuantity", new { id = item.ID }, new { @class = "btn btn-sm btn-info fa fa-edit" })</td>
+
+                    }
+                    else if (item.StoreType == ComfySocks.Models.Items.StoreType.ProductItem)
+                    {
+                        <td>@Html.ActionLink("Edit", "EditProductQuantity", new { id = item.ID }, new { @class = "btn btn-sm btn-info fa fa-edit" })</td>
+                    }
+                }
+            }
         </tr>
         }
+     
 
     </table>
 

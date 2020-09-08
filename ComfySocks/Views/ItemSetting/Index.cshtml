@@ -1,10 +1,11 @@
 ﻿@model IEnumerable<ComfySocks.Models.Items.Item>
 
 @{
-    ViewBag.Title = "Items List";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'; text-align:center">Item Lists</h4>
     @if (User.IsInRole("Store Manager") || User.IsInRole("Super Admin"))
     {
         <p>
@@ -17,9 +18,10 @@
             @Html.ActionLink("Create New", "Create")
         </p>
     }
-    <table class="table table-bordered table-responsive" id="dtaTable">
+    <table style="border-radius:10px" class="table table-bordered table-responsive" id="dtaTable">
         <thead style="background-color:#00CCD2; color: white">
             <tr>
+                <th>S/No</th>
                 <th>
                     @Html.DisplayNameFor(model => model.StoreType)
                 </th>
@@ -36,7 +38,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager")|| User.IsInRole("Sales") || User.IsInRole("Production") || User.IsInRole("Finance"))
                 {
 
                     <th>Action</th>
@@ -44,44 +46,58 @@
             </tr>
         </thead>
         <tbody>
+            @{ 
+                int i = 1;
+            }
             @foreach (var item in Model)
             {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StoreType)
-                    </td>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ID)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StoreType)
+                </td>
 
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Name)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.ItemType.Name)
-                    </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ItemType.Name)
+                </td>
 
+                <td>
+                    @Html.DisplayFor(modelItem => item.Code)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Unit.Name)
+                </td>
+                @if (User.IsInRole("Super Admin"))
+                {
                     <td>
-                        @Html.DisplayFor(modelItem => item.Code)
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.ID })
                     </td>
+                }
+                else if (User.IsInRole("Store Manager"))
+                {
                     <td>
-                        @Html.DisplayFor(modelItem => item.Unit.Name)
+                        @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                        @Html.ActionLink("Details", "Details", new { id = item.ID })
                     </td>
-                    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
-                    {
-                        <td>
-                            @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                            @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                        </td>
-                    }
-                    else if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
-                    {
-                        <td>
-                            @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-                        </td>
-                    }
-                </tr>
+                } else if (User.IsInRole("Sales")|| User.IsInRole("Production")|| User.IsInRole("Finance"))
+                {
+                    <td>@Html.ActionLink("Details","Details", new { id = item.ID })</td>
+                }
+            </tr>
             }
         </tbody>
         <tfoot style="background-color:#00CCD2; color:white">
             <tr>
+                <th>
+                    S/No
+                </th>
                 <th>
                     @Html.DisplayNameFor(model => model.StoreType)
                 </th>
@@ -98,7 +114,7 @@
                 <th>
                     @Html.DisplayNameFor(model => model.Unit.Name)
                 </th>
-                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager")|| User.IsInRole("Sales") || User.IsInRole("Production") || User.IsInRole("Finance"))
                 {
                     <th>Action</th>
                 }
@@ -110,13 +126,16 @@
 @*<script src="~/Scripts/DataTables/DataTables-1.10.20/js/jquery.dataTables.min.js"></script>*@
 <script>
         $(document).ready(function() {
-            var groupColumn = 0;
+            var groupColumn = 1;
             var table = $('#dtaTable').DataTable({
                 "columnDefs": [
                     { "visible": false, "targets": groupColumn }
                 ],
                 "order": [[groupColumn, 'asc']],
-                "displayLength": 5,
+                "displayLength": 10,
+                "scrollCollapse": true,
+                "paging": true,
+                "scrollY": "720px",
                 "drawCallback": function (settings) {
                     var api = this.api();
                     var rows = api.rows({ page: 'current' }).nodes();
@@ -125,7 +144,7 @@
                     api.column(groupColumn, { page: 'current' }).data().each(function (group, i) {
                         if (last !== group) {
                             $(rows).eq(i).before(
-                                '<tr class="group text-light" style="background-color:#ECFEFE; color:#000000; text-style:bold"><td colspan="5">' + group + '</td></tr>'
+                                '<tr class="group text-light" style="background-color:#ECFEFE; color:#000000; text-style:bold; font-family:Elephant;text-align:center"><td colspan="6">' + group + '</td></tr>'
                             );
 
                             last = group;

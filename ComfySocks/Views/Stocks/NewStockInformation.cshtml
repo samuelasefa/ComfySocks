@@ -5,21 +5,21 @@
 
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
 
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
     <div class="form-horizontal">
-        <h4>Stock  Information</h4>
+        <h4 style="text-align:center;font-family:'Malgun Gothic'">Stock  Information</h4>
         <hr />
 
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             <p class="control-label col-md-4">Delivered By</p>
             <div class="col-md-8">
-                @Html.EditorFor(model => model.Deliveredby, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Deliveredby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
                 <br />
                 @Html.ValidationMessageFor(model => model.Deliveredby, "", new { @class = "text-danger" })
             </div>
@@ -28,7 +28,7 @@
         <div class="form-group">
             <p class="control-label col-md-4">Approved By</p>
             <div class="col-md-8">
-                @Html.EditorFor(model => model.Approvedby, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Approvedby, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon" } })
                 <br />
                 @Html.ValidationMessageFor(model => model.Approvedby, "", new { @class = "text-danger" })
             </div>
@@ -36,7 +36,7 @@
         <div class="form-group">
             <p class="control-label col-md-4">Purchase Request No.</p>
             <div class="col-md-8">
-                @Html.EditorFor(model => model.PurchaseRequestNo, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.PurchaseRequestNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:1234" } })
                 <br />
                 @Html.ValidationMessageFor(model => model.PurchaseRequestNo, "", new { @class = "text-danger" })
             </div>
@@ -44,13 +44,13 @@
         <div class="form-group">
             @Html.LabelFor(model => model.SupplierID, "Supplier", htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-8">
-                @Html.DropDownList("SupplierID", null, htmlAttributes: new { @class = "form-control" })
+                @Html.DropDownList("SupplierID", null,"--Please Select--", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.SupplierID, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
-            <div class="col-sm-offset-8">
-                <input type="submit" value="Add Stock" class="btn btn-primary" />
+            <div class="col-sm-offset-6">
+                <input type="submit" value="Add Stock"  onclick="this.form.submit();  this.disabled = true; this.value = 'sending...'; return false" class="btn btn-info" />
             </div>
         </div>
         <hr />

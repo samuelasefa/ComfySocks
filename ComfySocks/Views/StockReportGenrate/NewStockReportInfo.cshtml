@@ -1,0 +1,85 @@
+﻿@model ComfySocks.Models.GenerateReport.ReportInformation
+@{
+    ViewBag.Title = null;
+}
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+<div class="box box-body box-info" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'; text-align:center">OnTransit Information</h4>
+    <hr />
+    @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+    @*<div class="form-group">
+        @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control datepicker", @placeholder = "Eg:06-05-2020",@autocomplete = "Off" } })
+            <br />
+            @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+        </div>
+    </div>*@
+    <div class="form-group">
+        @Html.LabelFor(model => model.GeneratedBy, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.EditorFor(model => model.GeneratedBy, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Jhon smith" } })
+            <br />
+            @Html.ValidationMessageFor(model => model.GeneratedBy, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-2" })
+        <div class="col-md-10">
+            @Html.TextAreaFor(model => model.Remark, new { htmlAttributes = new { @class = "form-control", @placeholder = "Eg:Write Some thing here?", col = 1, @row = 1 } })
+            <br />
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" value="Create"  onclick="this.form.submit();  this.disabled = true; this.value = 'sending...'; return false" class="btn btn-info" />
+        </div>
+    </div>
+    <div>
+        @Html.ActionLink("Back to List", "StockReportList")
+    </div>
+</div>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+<script src="~/Scripts/sweetalert.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
+
+
+@if (ViewBag.errorMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("error", "@ViewBag.errorMessage");
+                }
+    </script>
+
+}
+@if (ViewBag.succsessMessage != null)
+{
+    <script>
+                window.onload = function () {
+                    sweetAlert("success","@ViewBag.succsessMessage");
+                }
+    </script>
+
+}
+
+<script>
+        //datepicker
+        $(function () {
+            $(".datepicker").datepicker({
+                format: 'dd-MM-yyyy'
+            });
+        });
+</script>

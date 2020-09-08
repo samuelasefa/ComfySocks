@@ -10,6 +10,7 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using ComfySocks.Models;
 using System.Data.Entity;
+using System.IO;
 
 namespace ComfySocks.Controllers
 {
@@ -65,7 +66,7 @@ namespace ComfySocks.Controllers
             {
                 return RedirectToAction("Unautorize", "Home", null);
             }
-            return View();
+            return PartialView();
         }
 
         //
@@ -77,7 +78,7 @@ namespace ComfySocks.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View(model);
+                return PartialView(model);
             }
 
             // This doesn't count login failures towards account lockout
@@ -100,19 +101,19 @@ namespace ComfySocks.Controllers
                         case SignInStatus.Failure:
                         default:
                             ModelState.AddModelError("", "Invalid login attempt.");
-                            return View(model);
+                            return PartialView(model);
                     }
                 }
                 else
                 {
                     ModelState.AddModelError("", "Your account has been Blocked. Contact Your admin for more information");
-                    return View(model);
+                    return PartialView(model);
                 }
             }
             else {
                 ModelState.AddModelError("", "Invalid login attempt.");
             }
-            return View(model);
+            return PartialView(model);
         }
 
         public ActionResult UserList()
@@ -121,7 +122,6 @@ namespace ComfySocks.Controllers
             ViewBag.users = users;
             return View(users);
         }
-
         //activate user
         public ActionResult Activate(string id)
         {
@@ -208,7 +208,11 @@ namespace ComfySocks.Controllers
         {
             if (ModelState.IsValid)
             {
+                
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.UserName + "@csm.com", FullName = model.FullName, IsActive = true};
+
+                //here pass the byte array to user context to store db
+
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -449,8 +453,8 @@ namespace ComfySocks.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-            return RedirectToAction("Index", "Home");
+            AuthenticationManager.SignOut();
+            return RedirectToAction("Login", "Account");
         }
 
         //

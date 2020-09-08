@@ -1,30 +1,68 @@
 ﻿@model ComfySocks.Models.InventoryModel.Supplier
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="box box-info box-body">
+<div class="box box-body box-info" style="border-radius:10px">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-        <div class="form-horizontal">
-            <h4>Supplier</h4>
-            <hr />
-            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-            @Html.HiddenFor(model => model.ID)
-
+    <div class="form-horizontal">
+        <h4 style="text-align:center; font-family:'Maiandra GD'">Edit Supplier Information</h4>
+        <div>
+            <i class="fa fa-backward"></i>
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+        <hr />
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        @Html.HiddenFor(model => model.ID)
+        <div class="col-md-6">
             <div class="form-group">
-                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control", @placeholder = "FullName" } })
+                    @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.TinNumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "TIN Number", maxlength = "10" } })
+                    @Html.ValidationMessageFor(model => model.TinNumber, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
-                @Html.LabelFor(model => model.No, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                    @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.SubCity, new { htmlAttributes = new { @class = "form-control", @placeholder = "Sub City" } })
+                    @Html.ValidationMessageFor(model => model.SubCity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Woreda, new { htmlAttributes = new { @class = "form-control", @placeholder = "Woreda" } })
+                    @Html.ValidationMessageFor(model => model.Woreda, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.HouseNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "House Number" } })
+                    @Html.ValidationMessageFor(model => model.HouseNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
                 <div class="col-md-10">
                     @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
@@ -32,16 +70,20 @@
             </div>
 
             <div class="form-group">
-                <div class="col-md-offset-2 col-md-10">
-                    <input type="submit" value="Save" class="btn btn-default" />
+                <div class="col-md-10">
+                    <input type="submit" value="Update" class="btn btn-info btn-block" />
                 </div>
             </div>
         </div>
+    </div>
+
+        <div>
+            <p style="color:gray">
+                -
+                <br />
+                Update supplier Information
+            </p>
+        </div>
     }
 
-    <div>
-        @Html.ActionLink("Back to List", "Index")
-    </div>
 </div>
-
-

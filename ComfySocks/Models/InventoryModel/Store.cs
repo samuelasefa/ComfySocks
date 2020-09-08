@@ -1,4 +1,4 @@
-﻿using ComfySocks.Models.ProductInfo;
+﻿using ComfySocks.Models.ProductRecivingInfo;
 using ComfySocks.Models.PurchaseRequestInfo;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,7 +23,7 @@ namespace ComfySocks.Models.InventoryModel
 
         //Collection
         public virtual ICollection<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
-        public virtual ICollection<ProductInformation> ProductInformation { get; set; }
         public virtual ICollection<Stock> Stocks { get; set; }
+        public virtual ICollection<ProductInformation> ProductInformation { get; set; }
     }
 }

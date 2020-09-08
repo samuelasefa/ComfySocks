@@ -20,7 +20,7 @@ namespace ComfySocks.Models.PurchaseRequestInfo
     {
             public int ID { get; set; }
             [Required(ErrorMessage = "Request Date is required")]
-            [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+            [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
             public DateTime Date { get; set; }
             public string PurchaseRequestNumber{ get; set; }
             [Display(Name = "Approved By")]

@@ -1,5 +1,4 @@
 ﻿using ComfySocks.Models.Items;
-using ComfySocks.Models.ProductInfo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -19,13 +18,15 @@ namespace ComfySocks.Models.InventoryModel
         public string ItemCode { get; set; }
         public int StockInformationID { get; set; }
 
-        [Display(Name ="Unit Price")]
-        public float UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
+
         [Required]
         public float Quantity { get; set; }
         [Required]
         [Display(Name = "To Store")]
         public int StoreID { get; set; }
+
+        public float OnTransit { get; set; }
 
         public float Total { get; set; }
         //added

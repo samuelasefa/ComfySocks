@@ -1,14 +1,15 @@
 ﻿@model ComfySocks.Models.OfficeRequest.OfficeMaterialRequest
 
 @{
-    ViewBag.Title = "New Office Material Request";
+    ViewBag.Title = null;
 }
 
 
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">New Office Material Request</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -50,15 +51,21 @@
 
                                 @foreach (ComfySocks.Models.Items.Item s in ViewBag.ItemID)
                                 {
-                                    <tr onclick="ItemSelected('@s.ID', '@s.Code')">
-                                        <td>@s.Code</td>
-                                        <td>@s.Name @s.ItemType.Name</td>
-                                        <td>@s.Unit.Name</td>
-                                        <td style="text-align:center">
-                                            @{var avaliable = db.AvaliableOnStocks.Find(s.ID);}
-                                            @avaliable.Avaliable
-                                        </td>
-                                    </tr>
+                                <tr onclick="ItemSelected('@s.ID', '@s.Code')">
+                                    <td>@s.Code</td>
+                                    <td>@s.Name @s.ItemType.Name</td>
+                                    <td>@s.Unit.Name</td>
+                                    <td>
+                                        @try
+                                        {
+                                            @s.AvaliableOnStocks.Avaliable
+                                        }
+                                        catch
+                                        {
+                                            <h5>0</h5>
+                                        }
+                                    </td>
+                                </tr>
                                 }
 
                             </tbody>
@@ -91,11 +98,18 @@
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                                         <div class="col-md-3">
-                                            <div class="form-group">
+                                            <div class="form-group hidden">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.ItemID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
                                                     @Html.ValidationMessageFor(model => model.ItemID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item Code</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -170,7 +184,7 @@
                     @if (ViewBag.haveItem == true)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/OfficeMaterialRequest/NewOfficeMaterialInfo">
+                        <a class="btn btn-info pull-right" href="~/OfficeMaterialRequest/NewOfficeMaterialInfo">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -192,7 +206,9 @@
 <link href="~/Scripts/sweetalert.css" rel="stylesheet" />
 <script>
     function ItemSelected(id, Code) {
-        document.getElementById("ItemID").value = id, Code;
+        document.getElementById("ItemID").value = id;
+        document.getElementById("ItemCode").value = Code;
+
     }
 
     //datatabale
@@ -200,6 +216,9 @@
         "info": false,
         "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
         "lengthChange": false,
+        "paging": false,
+        "scrollCollapse": true,
+        "scrollY":"150px"
     });
 </script>
 

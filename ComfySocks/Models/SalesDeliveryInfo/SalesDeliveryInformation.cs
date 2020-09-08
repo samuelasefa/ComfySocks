@@ -20,7 +20,7 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         }
 
         public int ID { get; set; }
-        [DisplayFormat(DataFormatString = "{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name = "Transfer No")]
@@ -32,10 +32,18 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         [Display(Name ="Section/Department")]
         public string From { get; set; }
 
+        [Display(Name ="Issued By")]
+        public string Issuedby { get; set; }
+
         [Display(Name = "Received by")]
         public string Receivedby { get; set; }
 
-        [Display(Name ="Issued by")]
+
+        [Display(Name = "Approved By")]
+        public string Approvedby { get; set; }
+
+        [Display(Name ="Deliverd by")]
+        public string Deliverdby { get; set; }
         public string ApplictionUserID { get; set; }
 
         public string Status { get; set; }

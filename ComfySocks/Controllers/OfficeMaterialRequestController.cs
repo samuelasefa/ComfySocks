@@ -23,12 +23,12 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var OfficeMaterial = (from officereq in db.OfficeMaterialRequestInformation orderby officereq.ID descending select officereq).ToList();
+            var OfficeMaterial = (from officereq in db.OfficeMaterialRequestInformation orderby officereq.Date descending select officereq).ToList();
 
             return View(OfficeMaterial);
         }
         [Authorize(Roles = "Super Admin, Production")]
-        public ActionResult NewOfficeMaterialRequest()
+        public ActionResult NewOfficeMaterialRequest(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
@@ -44,7 +44,16 @@ namespace ComfySocks.Controllers
                 
             }
             ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.OfficeMaterial orderby S.ID ascending select S).ToList();
-            
+            if (id != 0)
+            {
+                List<OfficeMaterialRequestVM> selectedOfficeMaterialRequests = new List<OfficeMaterialRequestVM>();
+                selectedOfficeMaterialRequests = (List<OfficeMaterialRequestVM>)TempData[User.Identity.GetUserId() + "selectedOfficeMaterialRequests"];
+                TempData[User.Identity.GetUserId() + "selectedOfficeMaterialRequests"] = selectedOfficeMaterialRequests;
+                ViewBag.selectedOfficeMaterialRequests = selectedOfficeMaterialRequests;
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "selectedOfficeMaterialRequests"] = null;
+            }
             return View();
         }
 
@@ -63,7 +72,7 @@ namespace ComfySocks.Controllers
                 selectedOfficeMaterialRequests = (List<OfficeMaterialRequestVM>)TempData[User.Identity.GetUserId() + "selectedOfficeMaterialRequests"];
             }
             officeMaterialRequest.OfficeMaterialRequestInformationID = 1;
-            officeMaterialRequest.RemaningDelivery = (float)officeMaterialRequest.Quantity;
+            officeMaterialRequest.RemaningDelivery = officeMaterialRequest.Quantity;
             officeMaterialRequest.Deliverd = false;
 
             if (ModelState.IsValid)
@@ -314,16 +323,16 @@ namespace ComfySocks.Controllers
                 foreach (OfficeMaterialRequest officeMaterialRequest in officeMaterialRequestInformation.OfficeMaterialRequest)
                 {
                     Stock stock = (from s in db.Stocks where s.ItemID == officeMaterialRequest.ItemID && s.StoreID == officeMaterialRequestInformation.StoreID select s).First();
-                    stock.Total -= (float)officeMaterialRequest.Quantity;
+                    stock.Total -= officeMaterialRequest.Quantity;
                     db.Entry(stock).State = EntityState.Modified;
                     db.SaveChanges();
                     AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(officeMaterialRequest.ItemID);
                     Item i = db.Items.Find(avaliableOnStock.ID);
-                    float deference = avaliableOnStock.RecentlyReduced - officeMaterialRequest.Quantity;
+                    var deference = avaliableOnStock.RecentlyReduced - officeMaterialRequest.Quantity;
 
                     if (deference > 0)
                     {
-                        avaliableOnStock.RecentlyReduced -= (float)officeMaterialRequest.Quantity;
+                        avaliableOnStock.RecentlyReduced -= officeMaterialRequest.Quantity;
                     }
                     else {
                         avaliableOnStock.RecentlyReduced = 0;

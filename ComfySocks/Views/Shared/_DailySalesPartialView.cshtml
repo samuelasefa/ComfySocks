@@ -1,0 +1,97 @@
+﻿@model IEnumerable<ComfySocks.Models.SalesInfo.Sales>
+<table class="table datatable table-striped" id="datatable">
+    <thead>
+        <tr class="dataTableHead">
+            <th>
+                @Html.DisplayNameFor(model => model.SalesInformation.Date)
+            </th>
+            <th>
+                Item Description
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProductCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UnitPrice)
+            </th>
+            <th>
+                Total
+            </th>
+            <th>
+                Transaction By
+            </th>
+        </tr>
+    </thead>
+    @{decimal Total = 0;}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalesInformation.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProductCode)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Quantity)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UnitPrice)
+            </td>
+            <td>
+                @*Html.DisplayFor(modelItem => item.UserID)*@
+                @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+                    var fullname = db.Users.Where(u => u.Id == item.ApplicationUserID).First().FullName ?? "n/a";}
+                @fullname
+            </td>
+        </tr>
+
+    }
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td><b>Grand Total : </b></td>
+            <td><strong>@Total</strong> </td>
+            <td></td>
+        </tr>
+    </tfoot>
+</table>
+<script>$(document).ready(function () {
+        var table = $('#datatable').dataTable({
+            "paging": false,
+            "info": true,
+            "filter":false
+        });
+        var tableTools = new $.fn.dataTable.TableTools(table, {
+            'aButtons': [
+                {
+                    'sExtends': 'xls',
+                    'sButtonText': 'Save to Excel',
+                    'sFileName': 'DailySales.xls'
+                },
+                {
+                    'sExtends': 'print',
+                    'bShowAll': true,
+                },
+                {
+                    'sExtends': 'pdf',
+                    'bFooter': true,
+                    'bShowAll': true,
+                    'sPdfMessage': 'Your custom message would go here.'
+                },
+                'copy'
+            ],
+            'sSwfPath': 'http://cdn.datatables.net/tabletools/2.2.4/swf/copy_csv_xls_pdf.swf'
+        });
+        $(tableTools.fnContainer()).insertBefore('#datatable_wrapper');
+    });</script>
+

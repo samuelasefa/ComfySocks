@@ -1,9 +1,10 @@
-﻿using ComfySocks.Models.InventoryModel;
+﻿using ComfySocks.Models.GenerateReport;
+using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
 using ComfySocks.Models.OfficeDeliveryInfo;
 using ComfySocks.Models.OfficeRequest;
 using ComfySocks.Models.Order;
-using ComfySocks.Models.ProductInfo;
+using ComfySocks.Models.ProductRecivingInfo;
 using ComfySocks.Models.ProductTransferInfo;
 using ComfySocks.Models.PurchaseRequestInfo;
 using ComfySocks.Models.Repository;
@@ -41,8 +42,6 @@ namespace ComfySocks.Models
         public virtual ICollection<StoreRequestInformation> StoreRequestInformation { get; set; }
         public virtual ICollection<ProductionOrder> ProductioOrders{ get; set; }
         public virtual ICollection<ProductionOrderInfo> ProductionOrderInfos{ get; set; }
-        public virtual ICollection<Product> Products { get; set; }
-        public virtual ICollection<ProductInformation> ProductInformation { get; set; }
         public virtual ICollection<Transfer> Transfers{ get; set; }
         public virtual ICollection<TransferInformation> TransferInformation { get; set; }
         public virtual ICollection<Sales> Sales { get; set; }
@@ -58,6 +57,14 @@ namespace ComfySocks.Models
         public virtual ICollection<OfficeDeliveryInformation> OfficeDeliveryInformation { get; set; }
         public virtual ICollection<PurchaseRequest> PurchaseRequests { get; set; }
         public virtual ICollection<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
+        public virtual ICollection<Product> Product { get; set; }
+        public virtual ICollection<ProductInformation> ProductInformation { get; set; }
+        public virtual ICollection<Report> Reports { get; set; }
+        public virtual ICollection<ReportInformation> ReportInformation { get; set; }
+        public virtual ICollection<LogicalOnTransit> LogicalOnTransit { get; set; }
+        public virtual ICollection<MonthlyConsumption> MonthlyConsumptions { get; set; }
+        public virtual ICollection<Recivied> Recivieds { get; set; }
+        public virtual ICollection<EndingBalance> EndingBalances { get; set; }
         public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
@@ -94,12 +101,7 @@ namespace ComfySocks.Models
                 .HasMany(e => e.ItemTypes)
                 .WithRequired(e => e.ApplicationUser)
                 .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ApplicationUser>()
-              .HasMany(e => e.Items)
-              .WithRequired(e => e.ApplicationUser)
-              .WillCascadeOnDelete(false);
-
+            
             modelBuilder.Entity<ItemType>()
               .HasMany(e => e.Items)
               .WithRequired(e => e.ItemType)
@@ -142,9 +144,7 @@ namespace ComfySocks.Models
         public DbSet<Customer> Customers { get; set; }
         public DbSet <ProductionOrder> ProductionOrders { get; set; }
         public DbSet<ProductionOrderInfo> ProductionOrderInfos { get; set; }
-        public DbSet<Product> Products{ get; set; }
         public DbSet<Transfer> Transfers { get; set; }
-        public DbSet<ProductInformation> ProductInformation { get; set; }
         public DbSet<TransferInformation> TransferInformation{ get; set; }
         public DbSet<Sales> Sales { get; set; }
         public DbSet<SalesInformation> SalesInformation { get; set; }
@@ -165,5 +165,13 @@ namespace ComfySocks.Models
         public DbSet<OfficeDeliveryInformation> OfficeDeliveryInformation  { get; set; }
         public DbSet<PurchaseRequest> PurchaseRequests { get; set; }
         public DbSet<PurchaseRequestInformation> PurchaseRequestInformation { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductInformation> ProductInformation { get; set; }
+        public DbSet<Report> Report { get; set; }
+        public DbSet<ReportInformation> ReportInformation { get; set; }
+        public DbSet<LogicalOnTransit> LogicalOnTransit { get; set; }
+        public DbSet<MonthlyConsumption> MonthlyConsumptions { get; set; }
+        public DbSet<Recivied> Recivieds { get; set; }
+        public DbSet<EndingBalance> EndingBalances { get; set; }
     }
 }

@@ -14,7 +14,7 @@
     @*TODO: Change App name*@
     <title>@ViewBag.Title</title>
 
-    <link rel="shortcut icon" href="~/Content/images/logo.jpg" />
+    <link rel="shortcut icon" href="~/Content/images/ourlogo.png" />
     <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
     @*Source Sans Pro from Google Fonts*@
     <link href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic" rel="stylesheet" />
@@ -94,23 +94,22 @@
 
 
 <body class="skin-blue" style="margin-top:-50px">
-
     @* loader*@
-   @*
-     <div class="loader" id='loadingmessage' style='display:none'>
-        <center>
-            <img class="loading-image" src="~/Content/images/477.GIF" />
-        </center>
-    </div>
+    @*
+         <div class="loader" id='loadingmessage' style='display:none'>
+            <center>
+                <img class="loading-image" src="~/Content/images/477.GIF" />
+            </center>
+        </div>
     *@
     <div class="wrapper">
         @Html.Partial("_AdminLteTopMenu")
         <!-- Left side column. contains the logo and sidebar -->
         @Html.Partial("_AdminLteLeftMenu")
         <!-- Content Wrapper. Contains page content -->
-        <div class="content-wrapper" style="background-color:#FFFFFF; padding-top:50px">
+        <div class="content-wrapper" style="background-color:#EDFEFE; padding-top:50px">
             <!-- Content Header (Page header) -->
-       
+
             <section class="content-header" style=" margin-top:-20px;">
                 <h3>
                     @ViewBag.Title
@@ -120,26 +119,23 @@
             </section>
             <!-- Main content -->
             <section class="content" style=" margin-top:-20px;">
-               
-                 @RenderBody()
 
+                @RenderBody()
             </section><!-- /.content -->
         </div><!-- /.content-wrapper -->
-        <footer class="main-footer no-print">
-            <div class="pull-right hidden-xs">
-                <b>Version</b> 1.0
-            </div>
-            <strong>Copyright &copy; 2019 &nbsp;<a> VTS center</a>.</strong> All rights reserved.
-        </footer>    
+
     </div>
-    
+    <footer class="main-footer no-print">
+        <div class="pull-right hidden-xs">
+            <b>Version</b> 1.0
+        </div>
+        <strong>Copyright &copy; 2020 &nbsp;<a>ENIN THECH SOLuTIONS PLC</a>.</strong> All rights reserved.
+    </footer>
     <!-- ./wrapper -->
     @* Bundles assume jquery 2.1.3 and Bootstrap 3 *@
 
-
     @* for ajax loader*@
-    
-    
+
 
     @Scripts.Render("~/bundles/bootstrap")
     <!-- FastClick -->
@@ -155,15 +151,13 @@
     <script src="~/Scripts/AdminLTE/plugins/daterangepicker/daterangepicker.js" type="text/javascript"></script>
     <!-- datepicker -->
     <script src="~/Scripts/AdminLTE/plugins/datepicker/bootstrap-datepicker.js" type="text/javascript"></script>
-   
+
     <!-- SlimScroll 1.3.0 -->
     <script src="~/Scripts/AdminLTE/plugins/slimScroll/jquery.slimscroll.min.js" type="text/javascript"></script>
     <!-- ChartJS 1.0.1 -->
     <script src="~/Scripts/AdminLTE/plugins/chartjs/Chart.min.js" type="text/javascript"></script>
-
     <!-- ---- MY JS  -->
     <script src="~/Scripts/MyJs/my.js"></script>
-
 
     @RenderSection("scripts", required: false)
     <noscript><h3>Please, enable JavaScript.</h3></noscript>
@@ -177,12 +171,13 @@
         background: linear-gradient(#ECFEFE, #FFFFFF);
         position:fixed;
     }
+
     .skin-blue .main-header .navbar .sidebar-toggle:hover {
         background-color: #00CCD2;
     }
     .skin-blue .sidebar-menu > li > a:hover,
     .skin-blue .sidebar-menu > li.active > a {
-        color: #ffffff;
+        color: #000000;
         background: rgba(138, 240, 243, 0.9019607843137255);
         border-left-color: #3c8dbc;
     }

@@ -29,7 +29,7 @@ namespace ComfySocks.Controllers
             ViewBag.ID = id;
 
             TempData[User.Identity.GetUserId() + "SaleID"] = id;
-            var deliverd = (from d in db.SalesDeliveryInformation where d.SalesInformationID == id orderby d.ID descending select d).ToList();
+            var deliverd = (from d in db.SalesDeliveryInformation where d.SalesInformationID == id orderby d.Date descending select d).ToList();
             return View(deliverd);
         }
 
@@ -78,7 +78,7 @@ namespace ComfySocks.Controllers
                     TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable To load sales Inforamtion From Database";
                     TempData[User.Identity.GetUserId() + "errorMessage"] = "Sales id for saleItem =" + salesDelivery.SalesID;
                     TempData[User.Identity.GetUserId() + "selectedDelivery"] = null;
-                    return RedirectToAction("SalesDeliveryList", new { id = id });
+                    return RedirectToAction("SalesDeliveryList");
                 }
 
                 foreach (SalesDeliveryVM d in selectedDelivery)
@@ -157,7 +157,7 @@ namespace ComfySocks.Controllers
             selectedDelivery = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
             foreach (var s in selectedDelivery)
             {
-                if (s.SalesDelivery.SalesID == id)
+                if (s.SalesDelivery.Sales.ItemID == id)
                 {
                     selectedDelivery.Remove(s);
                     ViewBag.succsessMessage = "Sales Delivery successfully Removed";
@@ -191,15 +191,10 @@ namespace ComfySocks.Controllers
             TempData[User.Identity.GetUserId() + "SaleInfoID"] = saleId;
             List<SalesDeliveryVM> deliverylist = (List<SalesDeliveryVM>)TempData[User.Identity.GetUserId() + "selectedDelivery"];
             TempData[User.Identity.GetUserId() + "selectedDelivery"] = deliverylist;
-
-
-            if (salesDeliveryInformation.Date > DateTime.Now)
-            {
-                ViewBag.errorMessage = "The date information you provide is not valid!.";
-                return View(salesDeliveryInformation);
-            }
+            
             SalesDeliveryVM d = deliverylist.FirstOrDefault();
             salesDeliveryInformation.ApplictionUserID = User.Identity.GetUserId();
+            salesDeliveryInformation.Date = DateTime.Now;
 
             try
             {
@@ -211,7 +206,7 @@ namespace ComfySocks.Controllers
             catch
             {
                 salesDeliveryInformation.SalesInformationID = saleId;
-                salesDeliveryInformation.DeliveryNumber = "No-0001";
+                salesDeliveryInformation.DeliveryNumber = "No" + 0.ToString("D4"); ;
             }
             if (ModelState.IsValid)
             {
@@ -255,7 +250,7 @@ namespace ComfySocks.Controllers
                     }
                     TempData[User.Identity.GetUserId() + "succsessMessage"] = "Delivery information registered!.";
 
-                    return RedirectToAction("SalesDetail", "Sales", new { id = salesDeliveryInformation.SalesInformationID });
+                    return RedirectToAction("SalesDeliveryList", "SalesDelivery", new { id = salesDeliveryInformation.ID });
 
                 }
                 catch (Exception e)

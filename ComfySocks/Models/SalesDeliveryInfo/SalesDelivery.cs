@@ -20,7 +20,7 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         [Required]
         [Display(Name ="SalesID")]
         public int SalesID { get; set; }
-
+        public string ProductCode { get; set; }
         [Required]
         [Display(Name ="Deliverd Quantity")]
         public float Quantity { get; set; }
@@ -38,7 +38,7 @@ namespace ComfySocks.Models.SalesDeliveryInfo
         public string ItemDescription { get; set; }
         public string ItemCode { get; set; }
         public string Unit { get; set; }
-        public float UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }
         public string Remark { get; set; }
         public float Remaining { get; set; }
     }

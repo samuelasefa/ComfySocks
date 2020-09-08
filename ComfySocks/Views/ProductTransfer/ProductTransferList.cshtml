@@ -1,9 +1,11 @@
 ﻿@model IEnumerable<ComfySocks.Models.ProductTransferInfo.TransferInformation>
 @{
-    ViewBag.Title = "Transfered Product List";
+    ViewBag.Title = null;
 }
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h3 style="text-align:center;font-family:'Malgun Gothic'">Finished Product Transfer List</h3>
+    <hr />
     @if (User.IsInRole("Super Admin") || User.IsInRole("Production"))
     {
         <p>
@@ -16,42 +18,75 @@
             @Html.ActionLink("Create New", "NewTransferEntry", new { @id = ViewBag.ID })
         </p>
     }
-    <table class="table table-bordered table-striped" id="dtaTable">
-        <thead style=" background-color:#00CCD2; color:white" ;>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Date)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.ApplicationUserID)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Status)
-                </th>
-                <th>Action</th>
-            </tr>
+        <table class="table table-bordered table-striped" id="dtaTable">
+            <thead style=" background-color:#00CCD2; color:white" ;>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ApplicationUserID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>Action</th>
+                </tr>
 
-        </thead>
-        @foreach (var item in Model)
-        {
+            </thead>
+            <tfoot style=" background-color:#00CCD2; color:white" ;>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ApplicationUserID)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Date)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Status)
+                    </th>
+                    <th>Action</th>
+                </tr>
+
+            </tfoot>
+            @{ 
+                int i = 1;
+            }
+            @foreach (var item in Model)
+            {
             <tr>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Date)
+                    @Html.Raw(i++)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.ApplicationUser.UserName)
+                    @Html.DisplayFor(modelItem => item.ApplicationUser.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Status)
                 </td>
                 <td>
                     @Html.ActionLink("View ", "TransferDetail", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-eye-open" })
-
+                    @if (User.IsInRole("Super Admin") || User.IsInRole("Store Manager"))
+                    {
+                        if (item.Status == "Transferd")
+                        {
+                            @Html.ActionLink("FGRV", "NewProductReciving", "FinishedProduct", new { id = item.ID }, new { @class = "btn btn-sm btn-info glyphicon glyphicon-arrow-down &nbsp;" })
+                        }
+                    }
                 </td>
             </tr>
-        }
+            }
 
-    </table>
+        </table>
 
 </div>
 

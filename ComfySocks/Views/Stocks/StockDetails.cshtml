@@ -1,4 +1,5 @@
 ﻿@model ComfySocks.Models.InventoryModel.StockInformation
+
 <div class="row">
     <div class="col-md-10">
         @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
@@ -10,7 +11,7 @@
 
     </div>
 </div>
-<div class="box box-info" id="printable">
+<div class="box box-info" id="printable" style="border-radius:10px">
     <div style="margin:40px">
         <div>
             <img src='~/Images/logo1.png' class="col-sm-12 " id="logo-img" style="margin-bottom:30px;margin-left:-10px;margin-right:0px;height:130px" />
@@ -28,7 +29,7 @@
         <table class="table">
             <tr>
                 <td>
-                    Suppler's Name: @Html.DisplayFor(modelItem => Model.Supplier.Name)
+                    Suppler's Name: @Html.DisplayFor(modelItem => Model.Supplier.FullName) 
                 </td>
                 <td>
                     Supplier's Invoice No: @Html.DisplayFor(modelItem => Model.Supplier.No)
@@ -51,9 +52,9 @@
                 </tr>
             </thead>
             @{
-                double VAT = 0;
-                float totalPrice = 0;
-                float GrandTotal = 0;
+                decimal VAT = 0;
+                decimal totalPrice = 0;
+                decimal GrandTotal = 0;
                 int i = 1;
 
             }
@@ -71,8 +72,8 @@
                         @stock.Quantity
                     </td>
                     <td>@stock.UnitPrice</td>
-                    <td>@(stock.UnitPrice * stock.Quantity)</td>
-                    <td class="hidden">@(totalPrice += (float)(stock.UnitPrice * stock.Quantity))</td>
+                    <td>@(stock.UnitPrice * (decimal)stock.Quantity)</td>
+                    <td class="hidden">@(totalPrice += (stock.UnitPrice * (decimal)stock.Quantity))</td>
                     <td class="hidden">@(VAT= stock.StockInformation.Tax)</td>
                     <td class="hidden">@(GrandTotal= stock.StockInformation.GrandTotal))</td>
                 </tr>
@@ -100,7 +101,7 @@
                     Deliverd by : @Model.Deliveredby
                 </div>
                 <div class="col-md-4">
-                    Received by : @Model.ApplicationUser.UserName
+                    Received by : @Model.ApplicationUser.FullName
                 </div>
                 <div class="col-md-4">
                     Approved by :@Model.Approvedby

@@ -1,11 +1,12 @@
 ﻿@model ComfySocks.Models.SalesDeliveryInfo.SalesDelivery
 @{
-    ViewBag.Title = "Sales Delivery";
+    ViewBag.Title = null;
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">Sales Delivery</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -55,14 +56,14 @@
 
                                         @foreach (ComfySocks.Models.SalesInfo.Sales s in ViewBag.SalesID)
                                         {
-                                        <tr onclick="ItemSelected('@s.ID', '@s.Item.Code')">
-                                            <td>@s.Item.Name</td>
-                                            <td>@s.Item.Code</td>
-                                            <td>@s.Item.Unit.Name</td>
-                                            <td>@s.Quantity</td>
-                                            <td>@s.UnitPrice</td>
-                                            <td>@s.RemaningDelivery</td>
-                                        </tr>
+                                            <tr onclick="ItemSelected('@s.ID', '@s.Item.Code')">
+                                                <td>@s.Item.Name</td>
+                                                <td>@s.Item.Code</td>
+                                                <td>@s.Item.Unit.Name</td>
+                                                <td>@s.Quantity</td>
+                                                <td>@s.UnitPrice</td>
+                                                <td>@s.RemaningDelivery</td>
+                                            </tr>
                                         }
 
                                     </tbody>
@@ -95,12 +96,21 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 hidden">
                                             <div class="form-group">
-                                                <p style="text-align:center">Item</p>
+                                                <p style="text-align:center">Product</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.SalesID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
                                                     @Html.ValidationMessageFor(model => model.SalesID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Product Code</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ProductCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ProductCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -151,7 +161,6 @@
                                         <th>Quantity</th>
                                         <th style="color:red">Remaining</th>
                                         <th>Remark</th>
-                                        <th><i class="glyphicon glyphicon-trash"></i></th>
                                     </tr>
                                 </thead>
                                 @foreach (ComfySocks.Models.SalesDeliveryInfo.SalesDeliveryVM items in ViewBag.selectedDelivery)
@@ -162,8 +171,7 @@
                                         <td>@items.Unit</td>
                                         <td>@items.SalesDelivery.Quantity</td>
                                         <td>@items.Remaining</td>
-                                        <td>@items.Remark</td>
-                                        <td><a href="~/SalesDelivery/Remove?id=@items.SalesDelivery.SalesID"><span class="fa fa-remove"></span></a></td>
+                                        <td>@items.SalesDelivery.Remark</td>
                                     </tr>
                                 }
                             </table>
@@ -175,7 +183,7 @@
                         @if (ViewBag.haveItem == true)
                         {
 
-                            <a class="btn btn-primary pull-right" href="~/SalesDelivery/NewSalesDeliveryInfo">
+                            <a class="btn btn-info pull-right" href="~/SalesDelivery/NewSalesDeliveryInfo">
                                 Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                             </a>
                         }
@@ -185,7 +193,8 @@
             </div>
             <script>
                 function ItemSelected(id, Code) {
-                    document.getElementById("SalesID").value = id, Code;
+                    document.getElementById("SalesID").value = id;
+                    document.getElementById("ProductCode").value = Code;
                 }
 
                 //datatabale
@@ -193,16 +202,18 @@
                     "info": false,
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                     "lengthChange": false,
+                    "paging": false,
+                    "scrollCollapse": true,
+                    "scrollY":"150px"
                 });
             </script>
         }
     }
-        <br />
-        <div>
-            @Html.ActionLink("Back to List", "SalesDeliveryList", new {id = ViewBag.id })
-        </div>
-        <hr />
+    <hr />
+    <div>
+        @Html.ActionLink("Back to List", "SalesDeliveryList", new { id = ViewBag.ID })
     </div>
+</div>
 
 <script src="~/Scripts/sweetalert.js"></script>
 <script src="~/Scripts/sweetalert.min.js"></script>

@@ -2,13 +2,14 @@
 
 @{
 
-                ViewBag.Title = "New Material Entry";
+                ViewBag.Title = null;
 }
 
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">New Material Entry</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -86,7 +87,7 @@
                         </div>
                     </div>
                     <div class="col-md-12">
-                        @using (Html.BeginForm("NewPurchaseEntry","Stocks", FormMethod.Post))
+                        @using (Html.BeginForm("NewPurchaseEntry", "Stocks", FormMethod.Post))
                         {
                             @Html.ValidationSummary(true, "", new { @class = "text-danger" })
                             @Html.AntiForgeryToken()
@@ -135,10 +136,18 @@
                                                 <p style="text-align:center">Unit Price</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.UnitPrice, new { htmlAttributes = new { @class = "form-control input-sm" } })
-                                                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
+                                        @*<div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">OnTransit</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.OnTransit, new { htmlAttributes = new { @class = "form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.OnTransit, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>*@
 
                                         &nbsp;
                                         <div style="float:right; margin-left:10px">
@@ -162,7 +171,7 @@
                 <div id="" class="tablecontainer" style="height:260px; overflow-y:scroll; border:1px solid #BFAEAE">
                     @if (ViewBag.SelectedList != null)
                     {
-                        float totalPrice = 0;
+                        decimal totalPrice = 0;
                         <table class="table table-border table-striped" id="dtaTable">
                             <thead>
                                 <tr>
@@ -184,8 +193,8 @@
                                     <td>@items.Unit</td>
                                     <td>@items.Stock.Quantity</td>
                                     <td>@items.Stock.UnitPrice</td>
-                                    <td>@(items.Stock.Quantity * items.Stock.UnitPrice)</td>
-                                    <td class="hidden">@(totalPrice += (float)(items.Stock.Quantity * items.Stock.UnitPrice))</td>
+                                    <td>@((decimal)items.Stock.Quantity * items.Stock.UnitPrice)</td>
+                                    <td class="hidden">@(totalPrice += ((decimal)items.Stock.Quantity * items.Stock.UnitPrice))</td>
                                     <td><a href="~/Stocks/RemoveSelected?id=@items.Stock.ItemID"><span class="fa fa-remove"></span></a></td>
                                 </tr>
                             }
@@ -203,7 +212,7 @@
                     @if (ViewBag.haveItem == true)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/Stocks/NewStockInformation">
+                        <a class="btn btn-info pull-right" href="~/Stocks/NewStockInformation">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -212,11 +221,10 @@
             </div>
         </div>
     }
-        <br />
+    <hr />
     <div>
         @Html.ActionLink("Back to List", "StockList")
     </div>
-    <hr />
 </div>
 
 <script src="~/Scripts/sweetalert.js"></script>
@@ -272,8 +280,12 @@
     //datatabale
     $("#maintable").DataTable({
         "info": false,
-        "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        "lengthMenu": [[4, 10, 25, 50, -1], [4, 10, 25, 50, "All"]],
         "lengthChange": false,
+        "scrollY": "150px",
+        "scrollCollapse": true,
+        "paging": false
+        
     });
 </script>
 

@@ -1,6 +1,7 @@
 ﻿using ComfySocks.Models.Items;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
@@ -15,7 +16,7 @@ namespace ComfySocks.Repository
 
         //reference
         public virtual Item Item { get; set; }
-
+        [Display(Name ="Avaliable Quantity")]
         public float RowMaterialAavliable { get; set; }
         public float RecentlyReducedRowMaterialAvaliable { get; set; }
     }

@@ -24,8 +24,8 @@ namespace ComfySocks.Models.ProductTransferInfo
         public float Quantity{ get; set; }
         public string Remark { get; set; }
 
-        public float Total { get; set; }
-        public float PPT { get; set; }
+        public float RemaningDelivery { get; set; }
+
         //reference
         public virtual Item Item { get; set; }
         public virtual TransferInformation TransferInformation { get; set; }

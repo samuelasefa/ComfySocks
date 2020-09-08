@@ -1,92 +1,81 @@
 ﻿@model ComfySocks.Models.Order.Customer
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     @using (Html.BeginForm())
     {
         @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
-        <h4>Customer</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.ID)
-        <div class="form-group">
-            @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
-            </div>
-        </div>
+        <div class="form-horizontal">
+            <h4 style="text-align:center">Edit Customer Information</h4>
+            <hr />
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+            @Html.HiddenFor(model => model.ID)
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.FullName, new { htmlAttributes = new { @class = "form-control", @placeholder = "First Name" } })
+                        @Html.ValidationMessageFor(model => model.FullName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.TinNumber, new { htmlAttributes = new { @class = "form-control", @placeholder = "TIN Number" } })
+                        @Html.ValidationMessageFor(model => model.TinNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.LastName, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control", @placeholder = "City" } })
+                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.SubCity, new { htmlAttributes = new { @class = "form-control", @placeholder = "Sub City" } })
+                        @Html.ValidationMessageFor(model => model.SubCity, "", new { @class = "text-danger" })
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="form-group">
-            @Html.LabelFor(model => model.TinNumber, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.TinNumber, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.TinNumber, "", new { @class = "text-danger" })
-            </div>
-        </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.woreda, new { htmlAttributes = new { @class = "form-control", @placeholder = "Woreda" } })
+                        @Html.ValidationMessageFor(model => model.woreda, "", new { @class = "text-danger" })
+                    </div>
+                </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.City, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.HouseNo, new { htmlAttributes = new { @class = "form-control", @placeholder = "House Number" } })
+                        @Html.ValidationMessageFor(model => model.HouseNo, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => model.No, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.No, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <input type="submit" value="Update" class="btn btn-info btn-block" />
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Save" class="btn btn-default" />
-            </div>
-        </div>
-    </div>
     }
 
     <div>
+        <i class="fa fa-backward"></i>
         @Html.ActionLink("Back to List", "Index")
     </div>
+    <hr />
 </div>
-
-<script src="~/Scripts/sweetalert.js"></script>
-<script src="~/Scripts/sweetalert.min.js"></script>
-<link href="~/Scripts/sweetalert.css" rel="stylesheet" />
-
-
-@if (ViewBag.Customer != null)
-{
-    <script>
-        window.onload = function() {
-            sweetAlert("Information", "@ViewBag.Customer", "Info");
-            return false;
-    }
-    </script>
-}
-
-@if (ViewBag.errorMessage != null)
-{
-    <script>
-        window.onload = function() {
-            sweetAlert("Opps...", "@ViewBag.errorMessage","error");
-            return false;
-    }
-    </script>
-}
-@if (ViewBag.succsessMessage != null)   
-{
-    <script>
-        window.onload = function() {
-            sweetAlert("Congratualtion", "@ViewBag.succsessMessage", "success");
-            return false;
-    }
-    </script>
-}

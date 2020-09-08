@@ -2,14 +2,12 @@
 @{
     ViewBag.Title = null;
 }
-<br />
-<br />
-<div class="col-sm-8 col-sm-offset-2 panel">
+<div class="box box-body box-info" style="border-radius:10px">
     <br />
-    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form", enctype = "multipart/form-data" }))
     {
         @Html.AntiForgeryToken()
-        <h4>Create a new local account.</h4>
+        <h4 style="text-align:center;font-family:'Malgun Gothic'">Create a new local account.</h4>
         <hr />
         @Html.ValidationSummary("", new { @class = "text-danger" })
         <div class="form-group">
@@ -48,6 +46,12 @@
                 <input type="submit" class="btn btn-default" value="Register" />
             </div>
         </div>
+
+        <hr />
+        <div>
+            @Html.ActionLink("Back to List", "UserList")
+        </div>
+
     }
 </div>
 

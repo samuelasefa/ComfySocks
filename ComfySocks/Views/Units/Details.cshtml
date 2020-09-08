@@ -1,12 +1,12 @@
 ﻿@model ComfySocks.Models.Items.Unit
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div>
-        <h4>Unit</h4>
+        <h4 style="text-align:center;font-family:'Maiandra GD'">Unit Details</h4>
         <hr />
         <dl class="dl-horizontal">
             <dt>
@@ -33,9 +33,10 @@
             </dd>
         </dl>
     </div>
+    <hr />
     <p>
-        @Html.ActionLink("Back to List", "UnitList")
-        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin"))
+        @Html.ActionLink("Back to List", "UnitList") |
+        @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Store Manager"))
         {
             @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) 
         }

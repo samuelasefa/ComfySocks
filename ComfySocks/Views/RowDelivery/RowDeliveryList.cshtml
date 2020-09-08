@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<ComfySocks.Models.RowDeliveryInfo.RowDeliveryInformation>
 
-<div class="box box-body box-info">
+@{ 
+    ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
+}
+<div class="box box-body box-info" style="border-radius:10px">
     <div class="row">
         <div class="col-md-10">
             @if (User.IsInRole("Super Admin") || User.IsInRole("Admin") || User.IsInRole("Production"))
@@ -17,34 +20,18 @@
 
                 <div class="col-sm-offset-9 col-sm-3" style="text-align:center">
                     <a class="fa fa-print" onclick="Print('@d.ID')" style="margin-right:650px;">Print</a>
-                    @if (d.Status != "Rejected Delivery")
-                    {
-                        <a href="~/RowDelivery/DropDelivery?id=@ViewBag.ID" class="fa fa-close" style="margin-right:650px;">Cancel</a>
-                    }
                 </div>
                 <div class="col-sm-8" style="border:solid 2px black; margin-left:150px" id="@d.ID">
                     <div style="margin-left:60px;margin-right:50px">
-                        <h3 style="color:orangered" class="col-sm-12">@d.Status</h3>
                         <div class="col-sm-12">
                             <div style="float:left">
                                 <h3 style="text-align:center">Store Issue Voucher</h3>
-                                @if (d.Section == null)
-                                {
-                                    <h5>Section/Department: @d.Section</h5>
-                                }
-                                else
-                                {
-                                    <h5>Section/Department</h5>
-                                }
-                                @{ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();
-                                    var RequestNo = db.RowDeliveryInformation.Find(d.StoreRequestInformationID);
-
-                                }
-                                <h5>@d.StoreRequestInformation.StoreRequestNumber</h5>
+                                <h5>Section/Department: @d.Section</h5>
+                                <h5>Requestion @d.StoreRequestInformation.StoreRequestNumber</h5>
 
                             </div>
                             <div style="float:right">
-                                <h5>Date @d.Date.ToShortDateString()</h5>
+                                <h5>Date @Html.DisplayFor(modelItem => d.Date)</h5>
                                 <h5>@d.StoreIssueNumber</h5>
                             </div>
                         </div>
@@ -64,10 +51,11 @@
                                         <td>Total Price</td>
                                     </tr>
                                 </thead>
-
+                                @{
+                                    int i = 1;
+                                }
                                 @foreach (ComfySocks.Models.RowDeliveryInfo.RowDelivery item in d.RowDeliveries)
                                 {
-                                    int i = 1;
                                     <tr>
                                         <td>@Html.Raw(i++)</td>
                                         <td>@item.StoreRequest.Item.Name @item.StoreRequest.Item.ItemType.Name</td>
@@ -87,6 +75,19 @@
 
                     </div>
                 </div>
+                <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
+                    <br /><br /><br /><br /><br /><br />
+                    <h5 style="margin-left:50px;margin-right:50px">Issued by:@d.IssuedBy</h5>
+                    <h5 style="margin-left:50px;margin-right:50px">Approved by:@d.ApprovedBy</h5>
+                    <h5 style="margin-left:50px;margin-right:50px">Recived the Above Goods:@d.RecividBy</h5>
+                </div>
+                <div class="hidden">
+                    <h5>
+                        If you have any questions about this quotation, please contact
+                        info@comfysocksmanufuctring.com/ and stay tunned!!!
+                        Thank You For Your Business!
+                    </h5>
+                </div>
             }
         }
         else
@@ -100,15 +101,7 @@
                 </ul>
             </div>
         }
-       @foreach (ComfySocks.Models.RowDeliveryInfo.RowDeliveryInformation d in Model)
-        {
-        <div style="float:left;position:fixed;top:90vh;" id="footer" class="hidden">
-            <br /><br /><br /><br /><br /><br />
-            <h5 style="margin-left:50px;margin-right:50px">Issued by: @d.IssuedBy</h5>
-            <h5 style="margin-left:50px;margin-right:50px">Approved by:@d.ApprovedBy</h5>
-            <h5 style="margin-left:50px;margin-right:50px">Recived the Above Goods:@d.RecividBy</h5>
-        </div>
-        }
+
         <div id="logo" class="hidden"><img src='~/Images/logo1.png' style='margin-bottom:30px;margin-left:-10px;margin-right:-110px;height:123px' /></div>
     </div>
     <hr />

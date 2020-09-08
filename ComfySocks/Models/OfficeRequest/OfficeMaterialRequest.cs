@@ -11,6 +11,8 @@ namespace ComfySocks.Models.OfficeRequest
             public int ID { get; set; }
             public int OfficeMaterialRequestInformationID { get; set; }
             public int ItemID { get; set; }
+            public string ItemCode { get; set; }
+
             public float Quantity { get; set; }
             public string Remark { get; set; }
             public bool Deliverd { get; set; }

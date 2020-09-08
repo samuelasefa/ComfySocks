@@ -13,7 +13,7 @@ namespace ComfySocks.Models.Order
         public int ID { get; set; }
         public int CustomerID { get; set; }
 
-        [DisplayFormat(DataFormatString ="{0:MM-dd-yyyy}", ApplyFormatInEditMode = true)]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         public string OrderNumber { get; set; }

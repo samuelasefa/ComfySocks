@@ -1,11 +1,12 @@
 ﻿@model ComfySocks.Models.OfficeDeliveryInfo.OfficeDelivery
 @{
-    ViewBag.Title = "Office Material Delivery";
+    ViewBag.Title = null;
 
 }
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
-<div class="box box-info box-body">
+<div class="box box-info box-body"  style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">Office Material Delivery</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -88,12 +89,21 @@
                                 <div class="col-md-12">
                                     <div class="row">
                                         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-                                        <div class="col-md-3">
+                                        <div class="col-md-3 hidden">
                                             <div class="form-group">
                                                 <p style="text-align:center">Item</p>
                                                 <div class="col-md-12">
                                                     @Html.EditorFor(model => model.OfficeMaterialRequestID, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
                                                     @Html.ValidationMessageFor(model => model.OfficeMaterialRequestID, "", new { @class = "text-danger" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <p style="text-align:center">Item</p>
+                                                <div class="col-md-12">
+                                                    @Html.EditorFor(model => model.ItemCode, new { htmlAttributes = new { @class = "ItemID form-control input-sm" } })
+                                                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
                                         </div>
@@ -106,7 +116,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        @*<div class="col-md-3">
+
+                                        <div class="col-md-3">
                                             <div class="form-group">
                                                 <p style="text-align:center">Remark</p>
                                                 <div class="col-md-12">
@@ -114,12 +125,12 @@
                                                     @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
                                                 </div>
                                             </div>
-                                        </div>*@
+                                        </div>
                                         &nbsp;
-                                        <div class="col-md-3">
+                                        <div style="float:right; margin-right:50px">
                                             <div class="form-group">
                                                 <div class="col-md-offset-1 col-md-12">
-                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:8px" />
+                                                    <input type="submit" value="AddToList" class="btn btn-sm btn-info" style="margin-top:10px" />
                                                 </div>
                                             </div>
                                         </div>
@@ -143,7 +154,7 @@
                                         <th>Unit</th>
                                         <th>Quantity</th>
                                         <th>Remaining</th>
-                                        <th><i class="glyphicon glyphicon-trash"></i></th>
+                                        <th>Remark</th>
                                     </tr>
                                 </thead>
                                 @foreach (ComfySocks.Models.OfficeDeliveryInfo.OfficeDeliveryVM items in ViewBag.selectedDelivery)
@@ -154,7 +165,7 @@
                                         <td>@items.Unit</td>
                                         <td>@items.OfficeDelivery.Quantity</td>
                                         <td>@items.Remaining</td>
-                                        <td><a href="~/OfficeMaterialDelivery/Remove?id=@items.OfficeDelivery.OfficeMaterialRequestID"><span class="fa fa-remove"></span></a></td>
+                                        <td>@items.OfficeDelivery.Remark</td>
                                     </tr>
                                 }
                             </table>
@@ -166,7 +177,7 @@
                         @if (ViewBag.haveItem == true)
                         {
 
-                            <a class="btn btn-primary pull-right" href="~/OfficeMaterialDelivery/NewOfficeMaterilDeliveryInfo">
+                            <a class="btn btn-info pull-right" href="~/OfficeMaterialDelivery/NewOfficeMaterilDeliveryInfo">
                                 Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                             </a>
                         }
@@ -177,6 +188,7 @@
             <script>
                 function ItemSelected(id, Code) {
                     document.getElementById("OfficeMaterialRequestID").value = id, Code;
+                    document.getElementById("ItemCode").value = Code;
                 }
 
                 //datatabale
@@ -184,6 +196,9 @@
                     "info": false,
                     "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
                     "lengthChange": false,
+                    "paging": false,
+                    "scrollCollapse": true,
+                    "scrollY":"150px"
                 });
             </script>
         }

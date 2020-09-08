@@ -1,20 +1,69 @@
 ﻿@model ComfySocks.Models.InventoryModel.Supplier
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div>
-        <h4>Supplier</h4>
+        <h4 style="text-align:center;font-family:'Maiandra GD'">Details of Supplier</h4>
         <hr />
         <dl class="dl-horizontal">
             <dt>
-                @Html.DisplayNameFor(model => model.Name)
+                 Registration Date:
             </dt>
 
             <dd>
-                @Html.DisplayFor(model => model.Name)
+                @Html.DisplayFor(model => model.Date)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.FullName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.FullName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.TinNumber)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.TinNumber)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.City)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.City)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.SubCity)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.SubCity)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.Woreda)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.Woreda)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(model => model.HouseNo)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(model => model.HouseNo)
             </dd>
 
             <dt>
@@ -27,6 +76,7 @@
 
         </dl>
     </div>
+    <hr />
     <p>
         @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
         @Html.ActionLink("Back to List", "Index")

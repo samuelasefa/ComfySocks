@@ -1,12 +1,12 @@
 ﻿@model ComfySocks.Models.InventoryModel.Store
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = null;
 }
 
-<div class="box box-body box-info">
+<div class="box box-body box-info" style="border-radius:10px">
     <div>
-        <h4>Store</h4>
+        <h4 style="text-align:center;font-family:'Maiandra GD'">Details of Store</h4>
         <hr />
         <dl class="dl-horizontal">
             <dt>
@@ -42,6 +42,7 @@
 
         </dl>
     </div>
+    <hr />
     <p>
         @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
         @Html.ActionLink("Back to List", "Index")

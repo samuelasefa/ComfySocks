@@ -1,12 +1,13 @@
 ﻿@model ComfySocks.Models.ProductTransferInfo.Transfer
 @{
-    ViewBag.Title = "Product Transfer Entry";
+    ViewBag.Title = null;
 }
 
 @{ ComfySocks.Models.ApplicationDbContext db = new ComfySocks.Models.ApplicationDbContext();}
 
 
-<div class="box box-info box-body">
+<div class="box box-info box-body" style="border-radius:10px">
+    <h4 style="font-family:'Malgun Gothic'">Finished Product Transfer Entry</h4>
     @if (ViewBag.RequiredItems != null)
     {
         <div class="jumbotron">
@@ -15,13 +16,9 @@
                 <li style="color:orange">
                     @ViewBag.item
                 </li>
-                <li style="color:orange">
-                    @ViewBag.store
-                </li>
             </ul>
         </div>
     }
-
     else
     {
         <div class="row">
@@ -159,7 +156,7 @@
                     @if (ViewBag.selectedTransfer != null)
                     {
 
-                        <a class="btn btn-primary pull-right" href="~/ProductTransfer/NewTransferInfo">
+                        <a class="btn btn-info pull-right" href="~/ProductTransfer/NewTransferInfo">
                             Next&nbsp;<span class="glyphicon glyphicon-triangle-right"></span>
                         </a>
                     }
@@ -170,10 +167,11 @@
         </div>
 
     }
-    <div> 
+    <hr />
+
+    <div>
         @Html.ActionLink("Back to List", "ProductTransferList", new { @id = ViewBag.ID })
     </div>
-    <hr />
 
 </div>
 
@@ -215,7 +213,7 @@
 {
     <script>
         window.onload = function () {
-            sweetAlert("Shouldn't Be Empty!!", "Please Fill Supplier,Item and Store Information", "info");
+            sweetAlert("Shouldn't Be Empty!!", "Please ,Product Item Information", "info");
             return false;
         }
     </script>
@@ -232,6 +230,9 @@
         "info": false,
         "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
         "lengthChange": false,
+        "scrollCollapse": true,
+        "paging": false,
+        "scrollY": "150px"
     });
 </script>
 

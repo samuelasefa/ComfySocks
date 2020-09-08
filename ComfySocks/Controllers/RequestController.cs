@@ -1,4 +1,4 @@
-﻿using ComfySocks.Models;
+using ComfySocks.Models;
 using ComfySocks.Models.InventoryModel;
 using ComfySocks.Models.Items;
 using ComfySocks.Models.Request;
@@ -12,7 +12,7 @@ using System.Web.Mvc;
 
 namespace ComfySocks.Controllers
 {
-    [Authorize(Roles = "Super Admin, Production, Store Manager, Finance")]
+    [Authorize(Roles = "Super Admin, Production, Store Manager, Finance, Admin")]
     public class RequestController : Controller  
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -22,11 +22,11 @@ namespace ComfySocks.Controllers
             if (TempData[User.Identity.GetUserId() + "succsessMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null; }
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
 
-            var storeRequestInfo = (from request in db.StoreRequestInformation orderby request.ID ascending select request).ToList();
+            var storeRequestInfo = (from request in db.StoreRequestInformation orderby request.Date descending select request).ToList();
 
             return View(storeRequestInfo);
         }
-        public ActionResult NewRequestEntry()
+        public ActionResult NewRequestEntry(int id = 0)
         {
             if (TempData[User.Identity.GetUserId() + "successMessage"] != null) { ViewBag.succsessMessage = TempData[User.Identity.GetUserId() + "succsessMessage"]; TempData[User.Identity.GetUserId() + "succsessMessage"] = null;}
             if (TempData[User.Identity.GetUserId() + "errorMessage"] != null) { ViewBag.errorMessage = TempData[User.Identity.GetUserId() + "errorMessage"]; TempData[User.Identity.GetUserId() + "errorMessage"] = null; }
@@ -42,7 +42,17 @@ namespace ComfySocks.Controllers
                 }
             }
             ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
-               
+
+            if (id != 0)
+            {
+                List<StoreRequestVM> selectedStoreRequests = new List<StoreRequestVM>();
+                selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
+                TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
+                ViewBag.selectedStoreRequests = selectedStoreRequests.ToList();
+            }
+            else {
+                TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = null;
+            }
             return View();
         }
        
@@ -74,7 +84,8 @@ namespace ComfySocks.Controllers
                             sr.StoreRequest.Quantity += storeRequest.Quantity;
                             found = true;
                             ViewBag.infoMessage = "Item is Added !!!";
-                            break;
+                            //break;
+                            ModelState.Clear();
                         }
                         else if (AvalableQuantity(sr.StoreRequest.ItemID) == -2)
                         {
@@ -102,7 +113,7 @@ namespace ComfySocks.Controllers
                         storeRequestVM.Unit = item.Unit.Name;
                         storeRequestVM.StoreRequest = storeRequest;
                         selectedStoreRequests.Add(storeRequestVM);
-                        
+                        ModelState.Clear();
                     }
                     else if (AvalableQuantity(storeRequest.ItemID) == -2)
                     {
@@ -124,9 +135,8 @@ namespace ComfySocks.Controllers
             {
                 ViewBag.haveItem = true;
             }
-
+            
             ViewBag.ItemID = (from S in db.Items where S.StoreType == StoreType.RowMaterial orderby S.ID descending select S).ToList();
-
             return View();
         }
 
@@ -137,11 +147,13 @@ namespace ComfySocks.Controllers
 
             foreach (StoreRequestVM s in selectedStoreRequests)
             {
-                if (s.StoreRequest.ID == id)
+                if (s.StoreRequest.ItemID == id)
                 {
+                    selectedStoreRequests.Remove(s);
+                    ViewBag.succsessMessage = "Selected Item is removed succesffuly";
+                    break;
                 }
-                selectedStoreRequests.Remove(s);
-                break;
+                
             }
             TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
             ViewBag.selectedStoreRequests = selectedStoreRequests;
@@ -162,7 +174,6 @@ namespace ComfySocks.Controllers
             {
                 selectedStoreRequests = (List<StoreRequestVM>)TempData[User.Identity.GetUserId() + "selectedStoreRequests"];
                 TempData[User.Identity.GetUserId() + "selectedStoreRequests"] = selectedStoreRequests;
-
             }
             else
             {
@@ -191,7 +202,6 @@ namespace ComfySocks.Controllers
                 TempData[User.Identity.GetUserId() + "errorMessage"] = "Unable to extract selected Store Order";
                 return RedirectToAction("NewRequestEntry");
             }
-            StoreRequestInformation.ApplicationUserID = User.Identity.GetUserId();
             try
             {
                 int LastId = (from sr in db.StoreRequestInformation orderby sr.ID descending select sr.ID).First();
@@ -201,42 +211,45 @@ namespace ComfySocks.Controllers
             {
                 StoreRequestInformation.StoreRequestNumber = "No:-"+ 1.ToString("D4");
             }
-            StoreRequestInformation.Date = DateTime.Now;
             bool pass = true;
-            if (ModelState.IsValid)
+
+            try
             {
-                try
+                StoreRequestInformation requestInfo = (StoreRequestInformation)TempData[User.Identity.GetUserId() + "requestInfo"];
+                StoreRequestInformation.Date = DateTime.Now;
+                StoreRequestInformation.ApplicationUserID = User.Identity.GetUserId();
+                StoreRequestInformation.Status = "Submmited";
+                db.StoreRequestInformation.Add(StoreRequestInformation);
+                db.SaveChanges();
+                ModelState.Clear();
+
+                if (ModelState.IsValid)
                 {
-                    StoreRequestInformation.Status = "Submmited";
-                    db.StoreRequestInformation.Add(StoreRequestInformation);
-                    db.SaveChanges();
-                    pass = true;
-                }
-                catch (Exception e)
-                {
-                    ViewBag.errorMessage = "Unable to Preform the Requste you need! View Error detial" + e;
-                    pass = false;
-                }
-                if (pass)
-                {
-                    try
+                    
+                    if (pass)
                     {
-                        foreach (StoreRequestVM sr in selectedStoreRequests)
+                        try
                         {
-                            sr.StoreRequest.StoreRequestInformationID = StoreRequestInformation.ID;
-                            db.StoreRequest.Add(sr.StoreRequest);
-                            db.SaveChanges();
+                            foreach (StoreRequestVM sr in selectedStoreRequests)
+                            {
+                                sr.StoreRequest.StoreRequestInformationID = StoreRequestInformation.ID;
+                                db.StoreRequest.Add(sr.StoreRequest);
+                                db.SaveChanges();
+                                ViewBag.succsessMessage = "StoreRequest is Submmeted";
+                            }
+                            ViewBag.succsessMessage = "Store Request is Succesfully Submited!!";
+                            return RedirectToAction("StoreRequestDetial", new { id = StoreRequestInformation.ID });
+                           
                         }
-                        ViewBag.succsessMessage = "Store Request is Succesfully Submited!!";
-                        return RedirectToAction("StoreRequestDetial", new { id = StoreRequestInformation.ID });
-                    }
-                    catch(Exception e)
-                    {   
-                        ViewBag.errorMessage = "Unable to preform the request you need View error detail" + e;
+                        catch (Exception e)
+                        {
+                            ViewBag.errorMessage = "Unable to preform the request you need View error detail" + e;
+                        }
                     }
                 }
             }
-            return View();
+            catch (Exception) { }
+            return View(StoreRequestInformation);
         }
 
         public ActionResult StoreRequestDetial(int? id)
@@ -272,10 +285,6 @@ namespace ComfySocks.Controllers
             bool pass = true;
             foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
             {
-                //StoreRequest request = (from sr in db.StoreRequest where sr.ItemID == storeRequest.ItemID select sr).First();
-                //request.Quantity += storeRequest.Quantity;
-                //db.Entry(request).State = EntityState.Modified;
-                //db.SaveChanges();
                 Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
                 AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(stock.ItemID);
                 if (stock == null)
@@ -325,7 +334,7 @@ namespace ComfySocks.Controllers
                     db.SaveChanges();
                 }
                 StoreRequestInformation.Status = "Approved";
-                StoreRequestInformation.ApprovedBy = User.Identity.GetUserName();
+                StoreRequestInformation.ApprovedBy = User.Identity.Name;
                 db.Entry(StoreRequestInformation).State = EntityState.Modified;
                 db.SaveChanges();
                 ViewBag.succsessMessage = "Store Request is approved!!.";
@@ -383,19 +392,6 @@ namespace ComfySocks.Controllers
             }
             if (pass)
             {
-                foreach (StoreRequest storeRequest in StoreRequestInformation.StoreRequest)
-                {
-                    Stock stock = (from s in db.Stocks where s.ItemID == storeRequest.ItemID && s.StoreID == StoreRequestInformation.StoreID select s).First();
-                    stock.Total = stock.Total;
-                    db.Entry(stock).State = EntityState.Modified;
-                    db.SaveChanges();
-                    AvaliableOnStock avaliableOnStock = db.AvaliableOnStocks.Find(storeRequest.ItemID);
-                    Item i = db.Items.Find(avaliableOnStock.ID);
-                    avaliableOnStock.RecentlyReduced = 0;
-                    avaliableOnStock.Avaliable = stock.Total;
-                    db.Entry(avaliableOnStock).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
                 StoreRequestInformation.Status = "Rejected";
                 StoreRequestInformation.ApprovedBy = User.Identity.GetUserName();
                 db.Entry(StoreRequestInformation).State = EntityState.Modified;
